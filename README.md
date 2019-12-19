@@ -1,8 +1,7 @@
-''''
-Implementare delle api per gestire eventi.
+# Implementare delle api per gestire eventi.
 
 
-Dall'applicazione mobile dovrà essere possibile:
+## Dall'applicazione mobile dovrà essere possibile:
 
     - Aggiungere e modificare un evento
     - Iscrivere, disicrivere partecipanti
@@ -10,7 +9,7 @@ Dall'applicazione mobile dovrà essere possibile:
 
 
 
-Ogni evento è caratterizzato da:
+## Ogni evento è caratterizzato da:
 
     - Luogo (nome, indirizzo)
     - Data e orario (possono essere più d’uno)
@@ -22,7 +21,7 @@ Ogni evento è caratterizzato da:
 
 
 
-Ogni Anagrafica è caratterizzata da:
+## Ogni Anagrafica è caratterizzata da:
 
     - Nome
     - Tipologia (persona giuridica, persona fisica)
