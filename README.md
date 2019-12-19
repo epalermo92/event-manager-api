@@ -27,4 +27,3 @@
     - Tipologia (persona giuridica, persona fisica)
     - Codice fiscale se persona fisica
     - Partita IVA se persona giuridica.
-''''
