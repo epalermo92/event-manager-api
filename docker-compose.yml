@@ -1,0 +1,25 @@
+version: '3'
+services:
+  php:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    image: our-php-mysql
+    ports:
+      - '22:22'
+    volumes:
+      - .:/var/www/event-manager-app
+    depends_on:
+      - mysql
+    links:
+      - mysql
+
+  mysql:
+    image: mysql:5.7
+    ports:
+      - '3306:3306'
+    environment:
+      MYSQL_ROOT_PASSWORD: emanuele-gianfranco
+      MYSQL_DATABASE: event-manager
+      MYSQL_USER: event-manager
+      MYSQL_PASSWORD: emanuele-gianfranco
