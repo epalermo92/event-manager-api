@@ -1,6 +1,4 @@
-/.web-server-pid
 /app/config/parameters.yml
-/build/
 /phpunit.xml
 /var/*
 !/var/cache
@@ -14,7 +12,4 @@
 !var/sessions/.gitkeep
 !var/SymfonyRequirements.php
 /vendor/
-/web/bundles/
 .idea/
-docker-compose.yml
-docker-compose.override.yml

@@ -4,11 +4,11 @@ services:
     build:
       context: .
       dockerfile: ./Dockerfile
-    image: our-php-mysql
+    image: php-event-manager-app
     ports:
-      - '22:22'
+      - '80:80'
     volumes:
-      - .:/var/www/event-manager-app
+      - .:/var/www
     depends_on:
       - mysql
     links:

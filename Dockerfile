@@ -1,8 +1,12 @@
-FROM php:7.3-apache
-COPY . /var/www/event-manager-app
-WORKDIR /var/www/event-manager-app
+FROM php:7.2-apache
 
-RUN apt-get update
-RUN apt-get upgrade -y
-RUN docker-php-ext-install pdo pdo_mysql mysqli
-RUN a2enmod rewrite
+RUN apt-get update \
+    && apt-get upgrade -y \
+    && docker-php-ext-install pdo pdo_mysql mysqli \
+    && a2enmod rewrite
+
+COPY ./000-default.conf /etc/apache2/sites-available/000-default.conf
+RUN mkdir -p /var/www/var \
+    && chown -R www-data:www-data /var/www
+
+WORKDIR /var/www
