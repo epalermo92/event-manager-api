@@ -1,0 +1,11 @@
+version: '3'
+
+services:
+  php:
+    ports:
+    - "22:22"
+    environment:
+      PHP_IDE_CONFIG: "serverName="
+    mysql:
+      ports:
+        - "3306:3306"
