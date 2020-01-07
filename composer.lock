@@ -1,10 +1,10 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "291de18e15bb102b1f3cda1996e94d3f",
+    "content-hash": "fac54c7220d6b1fb3cfb11d5e7a48fea",
     "packages": [
         {
             "name": "composer/ca-bundle",
@@ -2331,6 +2331,61 @@
                 "templating"
             ],
             "time": "2019-11-11T16:49:32+00:00"
+        },
+        {
+            "name": "widmogrod/php-functional",
+            "version": "3.2.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/widmogrod/php-functional.git",
+                "reference": "7638cd408fb170464d0a86d3481ef9c0bd914634"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/widmogrod/php-functional/zipball/7638cd408fb170464d0a86d3481ef9c0bd914634",
+                "reference": "7638cd408fb170464d0a86d3481ef9c0bd914634",
+                "shasum": ""
+            },
+            "require-dev": {
+                "codeclimate/php-test-reporter": "^0.4.4",
+                "friendsofphp/php-cs-fixer": "^1.12",
+                "phpunit/phpunit": "^4.7"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Widmogrod\\": "./src"
+                },
+                "files": [
+                    "src/Functional/functions.php",
+                    "src/Functional/predicates.php",
+                    "src/Functional/strings.php",
+                    "src/Functional/monoid.php",
+                    "src/Functional/setoid.php",
+                    "src/Monad/Control/functions.php",
+                    "src/Monad/Either/functions.php",
+                    "src/Monad/Maybe/functions.php",
+                    "src/Monad/Free/functions.php",
+                    "src/Monad/Free2/functions.php",
+                    "src/Monad/IO/functions.php",
+                    "src/Monad/IO/errors.php",
+                    "src/Monad/Reader/functions.php",
+                    "src/Monad/State/functions.php",
+                    "src/Monad/Writer/functions.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Gabriel Habryn",
+                    "email": "widmogrod@gmail.com"
+                }
+            ],
+            "description": "Functors, Applicative and Monads are fascinating concept. Purpose of this library is to explore them in OOP PHP world.",
+            "time": "2017-12-12T21:23:06+00:00"
         }
     ],
     "packages-dev": [
