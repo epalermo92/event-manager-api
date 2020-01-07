@@ -39,7 +39,7 @@ class Event
     /**
      * @return string
      */
-    public function getPlace()
+    public function getPlace(): string
     {
         return $this->place;
     }
@@ -47,7 +47,7 @@ class Event
     /**
      * @return \DateTime
      */
-    public function getDate()
+    public function getDate(): \DateTime
     {
         return $this->date;
     }
@@ -55,7 +55,7 @@ class Event
     /**
      * @return string
      */
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
@@ -63,7 +63,7 @@ class Event
     /**
      * @return int
      */
-    public function getNumMaxParticipants()
+    public function getNumMaxParticipants(): int
     {
         return $this->numMaxParticipants;
     }
@@ -71,7 +71,7 @@ class Event
     /**
      * @return string
      */
-    public function getDescription()
+    public function getDescription(): string
     {
         return $this->description;
     }
@@ -87,7 +87,7 @@ class Event
     /**
      * @return \NaturalIdentity[]
      */
-    public function getParticipants()
+    public function getParticipants(): array
     {
         return $this->participants;
     }
