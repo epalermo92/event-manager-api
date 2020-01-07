@@ -2,6 +2,10 @@
 
 namespace AppBundle\Builder;
 
+use AppBundle\Entity\LegalIdentity;
+use AppBundle\Entity\NaturalIdentity;
+use Symfony\Component\Security\Core\Exception\RuntimeException;
+use Widmogrod\Monad\Either\Either;
 use function Widmogrod\Monad\Either\left;
 use function Widmogrod\Monad\Either\right;
 
@@ -9,7 +13,7 @@ class IdentityBuilder
 {
 
 
-    public static function build($name, $surname, $type)
+    public static function build($name, $surname, $type): Either
     {
         if (!is_string($name))
         {

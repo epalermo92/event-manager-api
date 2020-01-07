@@ -22,17 +22,17 @@ class AbstractIdentity
         $this->type = $type;
     }
 
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
-    public function getSurname()
+    public function getSurname(): string
     {
         return $this->surname;
     }
 
-     public function getType()
+     public function getType(): string
     {
         return $this->type;
     }
