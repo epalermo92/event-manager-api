@@ -3,7 +3,7 @@ services:
   php:
     build:
       context: .
-      dockerfile: ./Dockerfile
+      dockerfile: docker/Dockerfile
     image: php-event-manager-app
     ports:
       - '80:80'

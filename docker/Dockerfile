@@ -5,7 +5,7 @@ RUN apt-get update \
     && docker-php-ext-install pdo pdo_mysql mysqli \
     && a2enmod rewrite
 
-COPY ./000-default.conf /etc/apache2/sites-available/000-default.conf
+COPY 000-default.conf /etc/apache2/sites-available/000-default.conf
 RUN mkdir -p /var/www/var \
     && chown -R www-data:www-data /var/www
 
