@@ -1,5 +1,6 @@
 <?php
 
+namespace AppBundle\Entity;
 
 class LegalIdentity extends AbstractIdentity
 {
