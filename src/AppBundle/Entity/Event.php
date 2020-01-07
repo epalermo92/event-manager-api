@@ -19,10 +19,10 @@ class Event
     /** @var string $description */
     private $description;
 
-    /** @var \LegalIdentity|\NaturalIdentity $organizer */
+    /** @var LegalIdentity|NaturalIdentity $organizer */
     private $organizer;
 
-    /** @var \NaturalIdentity[] $participants */
+    /** @var NaturalIdentity[] $participants */
     private $participants;
 
     public function __construct($place, $date, $name, $numMaxParticipants, $description, $organizer, $participants)
@@ -77,7 +77,7 @@ class Event
     }
 
     /**
-     * @return \LegalIdentity|\NaturalIdentity
+     * @return LegalIdentity|NaturalIdentity
      */
     public function getOrganizer()
     {
@@ -85,7 +85,7 @@ class Event
     }
 
     /**
-     * @return \NaturalIdentity[]
+     * @return NaturalIdentity[]
      */
     public function getParticipants(): array
     {
