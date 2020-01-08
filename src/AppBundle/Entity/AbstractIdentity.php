@@ -37,6 +37,11 @@ abstract class AbstractIdentity
      */
     private $surname;
 
+    /**
+     * @ORM\ManyToMany(targetEntity="Event",inversedBy="participants")
+     * @ORM\JoinTable(name="event_participants")
+     */
+    private $events;
 
     public function __construct($name, $surname, $type)
     {

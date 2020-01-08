@@ -58,8 +58,7 @@ class Event
     private $organizer;
 
     /**
-     * @var NaturalIdentity[]
-     * @ORM\Column(name="participants", type="string")
+     * @ORM\ManyToMany(targetEntity="NaturalIdentity",mappedBy="events")
      */
     private $participants;
 
