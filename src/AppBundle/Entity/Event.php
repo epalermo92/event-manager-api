@@ -53,7 +53,8 @@ class Event
 
     /**
      * @var NaturalIdentity|LegalIdentity
-     * @ORM\Column(name="organizer", type="string")
+     * @ORM\OneToOne(targetEntity="AbstractIdentity")
+     * @ORM\JoinColumn(name="organizer",referencedColumnName="id")
      */
     private $organizer;
 
