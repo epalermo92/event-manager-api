@@ -11,6 +11,12 @@ class NaturalIdentity extends AbstractIdentity
 {
     public function __construct($name, $surname)
     {
-        parent::__construct($name, $surname, 'N');
+        parent::__construct($name, $surname, 'natural');
+    }
+
+
+    public function getType(): string
+    {
+        return self::NATURAL;
     }
 }

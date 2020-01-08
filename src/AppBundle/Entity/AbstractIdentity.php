@@ -8,10 +8,14 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Entity()
  * @ORM\Table(name="Identity")
  * @ORM\InheritanceType("SINGLE_TABLE")
- * @ORM\DiscriminatorColumn(name="identity")
+ * @ORM\DiscriminatorColumn(name="type", type="string")
+ * @ORM\DiscriminatorMap("legal" = "LegalIdentity", "natural" = "NaturalIdentity")
  */
 abstract class AbstractIdentity
 {
+    protected const LEGAL = 'legal';
+
+    protected const NATURAL = 'natural';
 
     /**
      * @var integer
@@ -33,11 +37,6 @@ abstract class AbstractIdentity
      */
     private $surname;
 
-    /**
-     * @var string
-     * @ORM\Column(name="type", type="string")
-     */
-    private $type;
 
     public function __construct($name, $surname, $type)
     {
@@ -61,8 +60,5 @@ abstract class AbstractIdentity
         return $this->surname;
     }
 
-    public function getType(): string
-    {
-        return $this->type;
-    }
+    abstract public function getType(): string;
 }
