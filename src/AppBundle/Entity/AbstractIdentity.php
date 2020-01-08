@@ -23,31 +23,19 @@ abstract class AbstractIdentity
      * @ORM\Column(name="id", type="integer")
      * @ORM\GeneratedValue(strategy="AUTO")
      */
-    private $id;
+    protected $id;
 
     /**
      * @var string
      * @ORM\Column(name="name", type="string")
      */
-    private $name;
-
-    /**
-     * @var string
-     * @ORM\Column(name="surname", type="string")
-     */
-    private $surname;
+    protected $name;
 
     /**
      * @ORM\ManyToMany(targetEntity="Event",inversedBy="participants")
      * @ORM\JoinTable(name="event_participants")
      */
-    private $events;
-
-    public function __construct($name, $surname)
-    {
-        $this->name = $name;
-        $this->surname = $surname;
-    }
+    protected $events;
 
     public function getId(): int
     {
@@ -57,11 +45,6 @@ abstract class AbstractIdentity
     public function getName(): string
     {
         return $this->name;
-    }
-
-    public function getSurname(): string
-    {
-        return $this->surname;
     }
 
     abstract public function getType(): string;

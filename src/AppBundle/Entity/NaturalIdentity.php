@@ -9,9 +9,21 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class NaturalIdentity extends AbstractIdentity
 {
-    public function __construct($name, $surname)
+    /**
+     * @var string
+     * @ORM\Column(name="surname", type="string")
+     */
+    private $surname;
+
+    public function __construct(string $name, string $surname)
     {
-        parent::__construct($name, $surname, 'natural');
+        $this->name = $name;
+        $this->surname = $surname;
+    }
+
+    public function getSurname(): string
+    {
+        return $this->surname;
     }
 
 

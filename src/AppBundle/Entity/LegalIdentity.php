@@ -9,9 +9,9 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class LegalIdentity extends AbstractIdentity
 {
-    public function __construct($name, $surname)
+    public function __construct(string $name)
     {
-        parent::__construct($name, $surname, 'legal');
+        $this->name = $name;
     }
 
     public function getType(): string
