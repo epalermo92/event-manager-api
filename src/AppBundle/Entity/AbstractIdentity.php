@@ -9,13 +9,13 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="Identity")
  * @ORM\InheritanceType("SINGLE_TABLE")
  * @ORM\DiscriminatorColumn("discriminator", type="string", length=15)
- * @ORM\DiscriminatorMap("natural" = "NaturalIdentity", "legal" = "LegalIdentity")
  */
 abstract class AbstractIdentity
 {
 
     /**
      * @var integer
+     * @ORM\Id()
      * @ORM\Column(name="id", type="integer")
      * @ORM\GeneratedValue(strategy="AUTO")
      */
@@ -24,21 +24,18 @@ abstract class AbstractIdentity
     /**
      * @var string
      * @ORM\Column(name="name", type="string")
-     * @Assert\NotBlank()
      */
     private $name;
 
     /**
      * @var string
      * @ORM\Column(name="surname", type="string")
-     * @Assert\NotBlank()
      */
     private $surname;
 
     /**
      * @var string
      * @ORM\Column(name="type", type="string")
-     * @Assert\NotBlank()
      */
     private $type;
 

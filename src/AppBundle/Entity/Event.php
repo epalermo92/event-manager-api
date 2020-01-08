@@ -14,6 +14,7 @@ class Event
 {
     /**
      * @var integer
+     * @ORM\Id()
      * @ORM\Column(name="id", type="integer")
      * @ORM\GeneratedValue(strategy="AUTO")
      */
@@ -22,49 +23,42 @@ class Event
     /**
      * @var string
      * @ORM\Column(name="place", type="string")
-     * @Assert\NotBlank()
      */
     private $place;
 
     /**
      * @var DateTime
      * @ORM\Column(name="date", type="datetime")
-     * @Assert\NotBlank()
      */
     private $date;
 
     /**
      * @var string
      * @ORM\Column(name="name", type="string")
-     * @Assert\NotBlank()
      */
     private $name;
 
     /**
      * @var string
      * @ORM\Column(name="num_max_participants", type="integer")
-     * @Assert\NotBlank()
      */
     private $numMaxParticipants;
 
     /**
      * @var string
      * @ORM\Column(name="description", type="string")
-     * @Assert\NotBlank()
      */
     private $description;
 
     /**
      * @var NaturalIdentity|LegalIdentity
      * @ORM\Column(name="organizer", type="string")
-     * @Assert\NotBlank()
      */
     private $organizer;
 
     /**
      * @var NaturalIdentity[]
      * @ORM\Column(name="participants", type="string")
-     * @Assert\NotBlank()
      */
     private $participants;
 
