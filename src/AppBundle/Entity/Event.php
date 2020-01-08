@@ -52,7 +52,6 @@ class Event
     private $description;
 
     /**
-     * @var NaturalIdentity|LegalIdentity
      * @ORM\OneToOne(targetEntity="AbstractIdentity")
      * @ORM\JoinColumn(name="organizer",referencedColumnName="id")
      */
