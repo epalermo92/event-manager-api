@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity()
- * @ORM\Table(name="Identity")
+ * @ORM\Table(name="Event")
  * @ORM\InheritanceType("SINGLE_TABLE")
  */
 class Event
