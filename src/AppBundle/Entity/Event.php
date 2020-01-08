@@ -3,6 +3,7 @@
 namespace AppBundle\Entity;
 
 use DateTime;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -70,7 +71,7 @@ class Event
         $this->numMaxParticipants = $numMaxParticipants;
         $this->description = $description;
         $this->organizer = $organizer;
-        $this->participants = $participants;
+        $this->participants = new ArrayCollection();
     }
 
     /**
@@ -113,17 +114,11 @@ class Event
         return $this->description;
     }
 
-    /**
-     * @return LegalIdentity|NaturalIdentity
-     */
     public function getOrganizer()
     {
         return $this->organizer;
     }
 
-    /**
-     * @return NaturalIdentity[]
-     */
     public function getParticipants(): array
     {
         return $this->participants;

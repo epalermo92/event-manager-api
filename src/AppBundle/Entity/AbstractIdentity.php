@@ -2,6 +2,7 @@
 
 namespace AppBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -17,8 +18,12 @@ abstract class AbstractIdentity
 
     protected const NATURAL = 'natural';
 
+    public function __construct()
+    {
+        $this->events = new ArrayCollection();
+    }
+
     /**
-     * @var integer
      * @ORM\Id()
      * @ORM\Column(name="id", type="integer")
      * @ORM\GeneratedValue(strategy="AUTO")
