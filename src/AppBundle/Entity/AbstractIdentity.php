@@ -43,11 +43,10 @@ abstract class AbstractIdentity
      */
     private $events;
 
-    public function __construct($name, $surname, $type)
+    public function __construct($name, $surname)
     {
         $this->name = $name;
         $this->surname = $surname;
-        $this->type = $type;
     }
 
     public function getId(): int
