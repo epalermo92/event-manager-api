@@ -9,7 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="Identity")
  * @ORM\InheritanceType("SINGLE_TABLE")
  * @ORM\DiscriminatorColumn(name="type", type="string")
- * @ORM\DiscriminatorMap("legal" = "LegalIdentity", "natural" = "NaturalIdentity")
+ * @ORM\DiscriminatorMap({"natural" = "NaturalIdentity", "legal" = "LegalIdentity"})
  */
 abstract class AbstractIdentity
 {
