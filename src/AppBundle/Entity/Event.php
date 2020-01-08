@@ -2,27 +2,70 @@
 
 namespace AppBundle\Entity;
 
+use DateTime;
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * @ORM\Entity()
+ * @ORM\Table(name="Identity")
+ * @ORM\InheritanceType("SINGLE_TABLE")
+ */
 class Event
 {
-    /** @var string $place */
+    /**
+     * @var integer
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
+     */
+    private $id;
+
+    /**
+     * @var string
+     * @ORM\Column(name="place", type="string")
+     * @Assert\NotBlank()
+     */
     private $place;
 
-    /** @var \DateTime $date */
+    /**
+     * @var DateTime
+     * @ORM\Column(name="date", type="datetime")
+     * @Assert\NotBlank()
+     */
     private $date;
 
-    /** @var string $name */
+    /**
+     * @var string
+     * @ORM\Column(name="name", type="string")
+     * @Assert\NotBlank()
+     */
     private $name;
 
-    /** @var int $numMaxParticipants */
+    /**
+     * @var string
+     * @ORM\Column(name="num_max_participants", type="integer")
+     * @Assert\NotBlank()
+     */
     private $numMaxParticipants;
 
-    /** @var string $description */
+    /**
+     * @var string
+     * @ORM\Column(name="description", type="string")
+     * @Assert\NotBlank()
+     */
     private $description;
 
-    /** @var LegalIdentity|NaturalIdentity $organizer */
+    /**
+     * @var NaturalIdentity|LegalIdentity
+     * @ORM\Column(name="organizer", type="string")
+     * @Assert\NotBlank()
+     */
     private $organizer;
 
-    /** @var NaturalIdentity[] $participants */
+    /**
+     * @var NaturalIdentity[]
+     * @ORM\Column(name="participants", type="string")
+     * @Assert\NotBlank()
+     */
     private $participants;
 
     public function __construct($place, $date, $name, $numMaxParticipants, $description, $organizer, $participants)
@@ -45,9 +88,9 @@ class Event
     }
 
     /**
-     * @return \DateTime
+     * @return string
      */
-    public function getDate(): \DateTime
+    public function getDate(): string
     {
         return $this->date;
     }
