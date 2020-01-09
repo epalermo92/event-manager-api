@@ -37,7 +37,11 @@ class LegalIdentity extends AbstractIdentity
      */
     public function jsonSerialize()
     {
-        // TODO: Implement jsonSerialize() method.
+        return [
+            'id' => $this->id ,
+            'name' => $this->name ,
+            'partitaIva' => $this->partitaIva ,
+        ];
     }
 }
 

@@ -50,6 +50,11 @@ class NaturalIdentity extends AbstractIdentity
      */
     public function jsonSerialize()
     {
-        // TODO: Implement jsonSerialize() method.
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+            'surname' => $this->surname,
+            'codiceFiscale' => $this->codiceFiscale,
+        ];
     }
 }
