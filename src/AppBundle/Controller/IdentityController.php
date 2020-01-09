@@ -2,7 +2,9 @@
 
 namespace AppBundle\Controller;
 
-class IdentityController
-{
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
+class IdentityController extends Controller
+{
+    //TODO
 }
