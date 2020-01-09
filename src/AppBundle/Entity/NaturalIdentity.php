@@ -15,10 +15,16 @@ class NaturalIdentity extends AbstractIdentity
      */
     private $surname;
 
-    public function __construct(string $name, string $surname)
+    /**
+     * @ORM\Column(name="codiceFiscale", type="string")
+     */
+    private $codiceFiscale;
+
+    public function __construct(string $name, string $surname, string $codiceFiscale)
     {
         $this->name = $name;
         $this->surname = $surname;
+        $this->codiceFiscale = $codiceFiscale;
     }
 
     public function getSurname(): string
@@ -30,5 +36,10 @@ class NaturalIdentity extends AbstractIdentity
     public function getType(): string
     {
         return self::NATURAL;
+    }
+
+    public function getCodiceFiscale():string
+    {
+        return $this->codiceFiscale;
     }
 }

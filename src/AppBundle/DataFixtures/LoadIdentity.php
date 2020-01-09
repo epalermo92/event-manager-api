@@ -12,14 +12,14 @@ class LoadIdentity extends Fixture
 {
     public function load(ObjectManager $manager)
     {
-        $manager->persist(new NaturalIdentity('Cristiano', 'Ronaldo'));
-        $manager->persist(new NaturalIdentity('Lionel', 'Messi'));
-        $manager->persist(new NaturalIdentity('Ciro', 'Immobile'));
-        $manager->persist(new NaturalIdentity('Gianluigi', 'Buffon'));
-        $manager->persist(new LegalIdentity('Juventus'));
-        $manager->persist(new LegalIdentity('Real Madrid'));
-        $manager->persist(new LegalIdentity('Barilla'));
-        $manager->persist(new LegalIdentity('Lindt'));
+        $manager->persist(new NaturalIdentity('Cristiano', 'Ronaldo', 'VVVLTK81D18I723B'));
+        $manager->persist(new NaturalIdentity('Lionel', 'Messi','XKMDRH81M66H101H'));
+        $manager->persist(new NaturalIdentity('Ciro', 'Immobile','FFGJRF47B24A681B'));
+        $manager->persist(new NaturalIdentity('Gianluigi', 'Buffon','MNNNPV49A58E932I'));
+        $manager->persist(new LegalIdentity('Juventus','12345678912'));
+        $manager->persist(new LegalIdentity('Real Madrid','78945612378'));
+        $manager->persist(new LegalIdentity('Barilla','98765432198'));
+        $manager->persist(new LegalIdentity('Lindt','32165498732'));
 
         $manager->flush();
     }

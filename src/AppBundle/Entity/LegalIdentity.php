@@ -9,13 +9,25 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class LegalIdentity extends AbstractIdentity
 {
-    public function __construct(string $name)
+    /**
+     * @ORM\Column(name="partitaIva", type="string")
+     */
+    private $partitaIva;
+
+    public function __construct(string $name, string $partitaIva)
     {
         $this->name = $name;
+        $this->partitaIva = $partitaIva;
     }
 
     public function getType(): string
     {
         return self::LEGAL;
     }
+
+    public function getPartitaIva()
+    {
+        return $this->partitaIva;
+    }
 }
+
