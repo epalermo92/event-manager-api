@@ -5,6 +5,7 @@ namespace AppBundle\Entity;
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Form\AbstractType;
 
 /**
  * @ORM\Entity()
@@ -79,9 +80,9 @@ class Event
     }
 
     /**
-     * @return string
+     * @return DateTime
      */
-    public function getDate(): string
+    public function getDate(): DateTime
     {
         return $this->date;
     }
@@ -110,13 +111,20 @@ class Event
         return $this->description;
     }
 
-    public function getOrganizer()
+    /**
+     * @return AbstractIdentity
+     */
+    public function getOrganizer(): AbstractIdentity
     {
         return $this->organizer;
     }
 
+    /**
+     * @return ArrayCollection
+     */
     public function getParticipants(): ArrayCollection
     {
         return $this->participants;
     }
+
 }
