@@ -133,9 +133,13 @@ class Event implements \JsonSerializable
     public function jsonSerialize()
     {
         return [
-            'description' => $this->description,
             'id' => $this->id,
-            'participants'=> $this->participants
+            'name' => $this->name,
+            'description' => $this->description,
+            'participants'=> $this->participants,
+            'place' => $this->place,
+            'date' => $this->date,
+            'organizer' => $this->organizer
         ];
     }
 }
