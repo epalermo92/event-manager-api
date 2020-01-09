@@ -2,6 +2,7 @@
 
 namespace AppBundle\DataFixtures;
 
+use AppBundle\Entity\AbstractIdentity;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\LegalIdentity;
 use AppBundle\Entity\NaturalIdentity;
@@ -14,8 +15,10 @@ class LoadEvent extends Fixture implements DependentFixtureInterface
 {
     public function load(ObjectManager $manager)
     {
-        $manager->persist(new Event('Santiago Bernabeu', new DateTime(), 'Finale Champions League', 100000, 'description', new NaturalIdentity('Cristiano','Ronaldo'), 7));
-        $manager->persist(new Event('Santiago Bernabeu', new DateTime(), 'Finale Champions League', 100000, 'description', new NaturalIdentity('Cristiano','Ronaldo'), 8));
+        $organizer = $manager->getRepository(AbstractIdentity::class)->find(2);
+        $manager->persist(new Event('Santiago Bernabeu', new DateTime(), 'Finale Champions League', 100000, 'description', $organizer, 7));
+        $organizer = $manager->getRepository(AbstractIdentity::class)->find(7);
+        $manager->persist(new Event('Santiago Bernabeu', new DateTime(), 'Finale Champions League', 100000, 'description', $organizer, 8));
 
         $manager->flush();
     }
