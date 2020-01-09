@@ -53,9 +53,7 @@ class Event
     private $description;
 
     /**
-     * @var integer
-     * @ORM\OneToOne(targetEntity="AbstractIdentity")
-     * @ORM\JoinColumn(name="organizer",referencedColumnName="id")
+     * @ORM\OneToOne(targetEntity="AbstractIdentity",cascade={"persist"})
      */
     private $organizer;
 
