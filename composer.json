@@ -27,7 +27,8 @@
         "twig/twig": "^1.0||^2.0",
         "widmogrod/php-functional": "^3.2",
         "symfony/dotenv": "^3.4",
-        "symfony/form": "^3.4"
+        "symfony/form": "^3.4",
+        "ext-json": "*"
     },
     "require-dev": {
         "sensio/generator-bundle": "^3.0",

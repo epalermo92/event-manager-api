@@ -20,23 +20,6 @@ class DefaultController extends Controller
     }
 
     /**
-     * @Route("/create-event",name="create-event")
-     */
-    public function createEvent()
-    {
-        $form = $this->createFormBuilder()
-            ->add('name', TextType::class)
-            ->add('description', TextType::class)
-            ->add('place', TextType::class)
-            ->add('num_max_participants', NumberType::class)
-            ->getForm();
-
-        return $this->render('default/create_event.html.twig', [
-            'form' => $form->createView(),
-        ]);
-    }
-
-    /**
      * @Route("/identity_creation", name="identity-creation")
      */
     public function createIdentity()
