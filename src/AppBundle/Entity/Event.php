@@ -39,7 +39,6 @@ class Event
     private $name;
 
     /**
-     * @var string
      * @ORM\Column(name="num_max_participants", type="integer")
      */
     private $numMaxParticipants;
@@ -116,7 +115,7 @@ class Event
         return $this->organizer;
     }
 
-    public function getParticipants(): array
+    public function getParticipants(): ArrayCollection
     {
         return $this->participants;
     }

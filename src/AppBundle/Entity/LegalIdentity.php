@@ -25,7 +25,7 @@ class LegalIdentity extends AbstractIdentity
         return self::LEGAL;
     }
 
-    public function getPartitaIva()
+    public function getPartitaIva(): string
     {
         return $this->partitaIva;
     }
