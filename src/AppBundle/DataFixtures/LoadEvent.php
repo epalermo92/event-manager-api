@@ -14,10 +14,10 @@ class LoadEvent extends Fixture implements DependentFixtureInterface
 {
     public function load(ObjectManager $manager)
     {
-//        $manager->persist(new Event('Santiago Bernabeu', new DateTime(), 'Finale Champions League', 100000, 'description', new NaturalIdentity('Cristiano', 'Ronaldo'), 7));
-//        $manager->persist(new Event('Santiago Bernabeu', new DateTime(), 'Finale Champions League', 100000, 'description', new LegalIdentity('Juventus'), 8));
-//
-//        $manager->flush();
+        $manager->persist(new Event('Santiago Bernabeu', new DateTime(), 'Finale Champions League', 100000, 'description', 2, 7));
+        $manager->persist(new Event('Santiago Bernabeu', new DateTime(), 'Finale Champions League', 100000, 'description', 7, 8));
+
+        $manager->flush();
     }
 
     public function getDependencies(): array
