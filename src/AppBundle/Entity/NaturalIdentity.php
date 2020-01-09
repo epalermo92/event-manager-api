@@ -22,6 +22,8 @@ class NaturalIdentity extends AbstractIdentity
 
     public function __construct(string $name, string $surname, string $codiceFiscale)
     {
+        parent::__construct();
+
         $this->name = $name;
         $this->surname = $surname;
         $this->codiceFiscale = $codiceFiscale;
@@ -41,5 +43,13 @@ class NaturalIdentity extends AbstractIdentity
     public function getCodiceFiscale():string
     {
         return $this->codiceFiscale;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function jsonSerialize()
+    {
+        // TODO: Implement jsonSerialize() method.
     }
 }

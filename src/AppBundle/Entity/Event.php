@@ -11,7 +11,7 @@ use Symfony\Component\Form\AbstractType;
  * @ORM\Entity()
  * @ORM\Table(name="Event")
  */
-class Event
+class Event implements \JsonSerializable
 {
     /**
      * @var integer
@@ -127,4 +127,15 @@ class Event
         return $this->participants;
     }
 
+    /**
+     * @inheritDoc
+     */
+    public function jsonSerialize()
+    {
+        return [
+            'description' => $this->description,
+            'id' => $this->id,
+            'participants'=> $this->participants
+        ];
+    }
 }

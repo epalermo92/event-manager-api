@@ -12,7 +12,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\DiscriminatorColumn(name="type", type="string")
  * @ORM\DiscriminatorMap({"natural" = "NaturalIdentity", "legal" = "LegalIdentity"})
  */
-abstract class AbstractIdentity
+abstract class AbstractIdentity implements \JsonSerializable
 {
     protected const LEGAL = 'legal';
 
