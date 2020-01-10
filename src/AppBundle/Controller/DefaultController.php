@@ -18,27 +18,4 @@ class DefaultController extends Controller
     {
         return $this->render('default/index.html.twig');
     }
-
-    /**
-     * @Route("/identity_creation", name="identity-creation")
-     */
-    public function createIdentity()
-    {
-        $form = $this->createFormBuilder()
-            ->add('name', TextType::class)
-            ->add('surname', TextType::class)
-            ->add('type', ChoiceType::class, [
-                'choices' => [
-                    'Natural' => 'natural',
-                    'Legal' => 'legal',
-                ],
-                'placeholder' => 'Add type',
-                'required' => true,
-            ])
-            ->getForm();
-
-        return $this->render('default/create_identity.html.twig', [
-            'form' => $form->createView(),
-        ]);
-    }
 }

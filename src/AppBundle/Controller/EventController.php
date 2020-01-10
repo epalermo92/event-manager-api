@@ -2,12 +2,17 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Entity\AbstractIdentity;
 use AppBundle\Entity\Event;
+use DateTime;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
+use Widmogrod\Monad\Either\Left;
+use function Widmogrod\Monad\Either\left;
 
 class EventController extends Controller
 {
@@ -40,5 +45,27 @@ class EventController extends Controller
         $events = $eventRepository->findAll();
 
         return JsonResponse::create($events);
+    }
+
+    /**
+     * @Route("/delete-event/{id}",name="delete-event")
+     * @return JsonResponse|Left
+     * @throws \Exception
+     */
+    public function delete($id)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $event = $em->getRepository(Event::class)->find($id);
+
+        if (!$event) {
+            return left(new NotFoundHttpException('No event found for id '.$id));
+        }
+
+        $em->remove($event);
+        $em->flush();
+
+        return JsonResponse::create([
+            'result' => 'true'
+        ]);
     }
 }
