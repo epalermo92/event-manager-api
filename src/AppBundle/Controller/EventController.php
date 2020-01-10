@@ -48,9 +48,30 @@ class EventController extends Controller
     }
 
     /**
+     * @Route("/update-event/{id}",name="update-event")
+     * @return JsonResponse|Left
+     */
+    public function update($id)
+    {
+//        $em = $this->getDoctrine()->getManager();
+//        $event = $em->getRepository(Event::class)->find($id);
+//
+//        if (!$event) {
+//            return left(new NotFoundHttpException('No event found for id '.$id));
+//        }
+//
+//        $event->setName('New product name!');
+//        $em->flush();
+//
+//        return JsonResponse::create([
+//            'result' => true
+//        ]);
+        //TODO
+    }
+
+    /**
      * @Route("/delete-event/{id}",name="delete-event")
      * @return JsonResponse|Left
-     * @throws \Exception
      */
     public function delete($id)
     {
@@ -65,7 +86,7 @@ class EventController extends Controller
         $em->flush();
 
         return JsonResponse::create([
-            'result' => 'true'
+            'result' => true
         ]);
     }
 }
