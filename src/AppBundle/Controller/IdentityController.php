@@ -3,6 +3,8 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Entity\AbstractIdentity;
+use AppBundle\Routing\FormType\IdentityFormType;
+use AppBundle\Routing\Transformer\IdentityTransformer;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -43,6 +45,33 @@ class IdentityController extends Controller
         return JsonResponse::create([
             'result' => true
         ]);
+    }
 
+    /**
+     * @Route("/identity_create", name="identity-create")
+     * @param IdentityFormType $form
+     * @return JsonResponse|\Widmogrod\Monad\Either\Either
+     */
+    public function createIdentity()
+    {
+        $form = new IdentityFormType();
+        $form['name'] = 'Pippo';
+        $form['surname'] = 'Topolino';
+        $form['codiceFiscale'] = 'PPOTLN45T56U527G';
+
+        if (!IdentityTransformer::isValid($form))
+        {
+            return IdentityTransformer::create($form)->DoTransformInvalid();
+        }
+
+        $entityManager = $this->getDoctrine()->getManager();
+        $newIdentity = IdentityTransformer::create($form)->DoTransformValid();
+
+        $entityManager->persist($newIdentity);
+        $entityManager->flush();
+
+        return JsonResponse::create([
+            'result' => true
+        ]);
     }
 }
