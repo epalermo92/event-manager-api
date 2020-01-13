@@ -10,7 +10,7 @@ use Widmogrod\Monad\Either\Either;
 interface TransformerInterface
 {
     /**
-     * @return Either|AbstractIdentity
+     * @return Either
      */
     public function DoTransformValid();
 

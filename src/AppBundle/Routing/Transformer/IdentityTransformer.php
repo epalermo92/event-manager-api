@@ -47,7 +47,7 @@ class IdentityTransformer implements TransformerInterface
     }
 
     /**
-     * @return Either|AbstractIdentity
+     * @return Either
      */
     public function DoTransformValid()
     {
