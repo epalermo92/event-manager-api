@@ -6,6 +6,7 @@ use AppBundle\Entity\AbstractIdentity;
 use AppBundle\Routing\FormType\IdentityFormType;
 use AppBundle\Routing\Transformer\IdentityTransformer;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
@@ -54,10 +55,17 @@ class IdentityController extends Controller
      */
     public function createIdentity()
     {
-        $form = new IdentityFormType();
-        $form['name'] = 'Pippo';
-        $form['surname'] = 'Topolino';
-        $form['codiceFiscale'] = 'PPOTLN45T56U527G';
+        $form = $this->createFormBuilder()
+            ->add('name', TextType::class)
+            ->add('surname', TextType::class)
+            ->add('codiceFiscale', TextType::class)
+            ->add('type', TextType::class)
+            ->getForm();
+
+        $form->get('name')->setData('Pippo');
+        $form->get('surname')->setData('Topolino');
+        $form->get('codiceFiscale')->setData('PPOTLN45T56U527G');
+        $form->get('type')->setData('natural');
 
         if (!IdentityTransformer::isValid($form))
         {

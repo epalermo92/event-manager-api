@@ -13,14 +13,17 @@ class IdentityBuilder
 {
 
 
-    public static function build($name, $surname, $type): Either
+    public static function build($type, $name, $surname , $codice): Either
     {
         if (!is_string($name)) {
             return left(new RuntimeException($name . 'must be instance of string, ' . gettype($name) . ' given.'));
         }
-        if (!is_string($surname)) {
-            return left(new RuntimeException($surname . 'must be instance of string, ' . gettype($surname) . ' given.'));
-
+//        if (!is_string($surname)) {
+//            return left(new RuntimeException($surname . 'must be instance of string, ' . gettype($surname) . ' given.'));
+//
+//        }
+        if (!is_string($codice)) {
+            return left(new RuntimeException($codice . 'must be instance of string, ' . gettype($codice) . ' given.'));
         }
         if (!is_string($type)) {
             return left(new RuntimeException($type . 'must be instance of string, ' . gettype($type) . ' given.'));
@@ -31,8 +34,12 @@ class IdentityBuilder
         }
 
         if ($type === 'legal') {
-            return right(new LegalIdentity($name, $surname));
+            return right(new LegalIdentity($name, $codice));
         }
-        return right(new NaturalIdentity($name, $surname));
+
+        if ($type === 'natural') {
+            return right(new NaturalIdentity($name, $surname, $codice));
+        }
+        return left(new RuntimeException('Invalid person type.'));
     }
 }

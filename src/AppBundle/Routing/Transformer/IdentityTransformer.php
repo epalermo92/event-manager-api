@@ -6,9 +6,9 @@ namespace AppBundle\Routing\Transformer;
 
 use AppBundle\Builder\IdentityBuilder;
 use AppBundle\Entity\AbstractIdentity;
-use AppBundle\Routing\FormType\IdentityFormType;
 use Widmogrod\Monad\Either\Either;
 use Widmogrod\Monad\Either\Left;
+use Symfony\Component\Form\FormInterface;
 
 class IdentityTransformer implements TransformerInterface
 {
@@ -27,14 +27,21 @@ class IdentityTransformer implements TransformerInterface
      */
     private $codiceFiscale;
 
-    public function __construct(IdentityFormType $form)
+    /**
+     * @var string
+     */
+    private $type;
+
+    public function __construct(FormInterface $form)
     {
-        $this->name = $form['name'];
-        $this->surname = $form['surname'];
-        $this->codiceFiscale = $form['codiceFiscale'];
+
+        $this->name = $form->get('name');
+        $this->surname = $form->get('surname');
+        $this->codiceFiscale = $form->get('codiceFiscale');
+        $this->type = $form->get('type');
     }
 
-    public static function create(IdentityFormType $form): IdentityTransformer
+    public static function create(FormInterface $form): IdentityTransformer
     {
         return new self($form);
     }
@@ -44,7 +51,7 @@ class IdentityTransformer implements TransformerInterface
      */
     public function DoTransformValid()
     {
-        return IdentityBuilder::build($this->name, $this->surname, $this->codiceFiscale);
+        return IdentityBuilder::build($this->type, $this->name, $this->surname, $this->codiceFiscale);
     }
 
     public function DoTransformInvalid(): Either
@@ -52,8 +59,8 @@ class IdentityTransformer implements TransformerInterface
         return new Left(new  \RuntimeException('The form is not valid.'));
     }
 
-    public static function isValid(IdentityFormType $form): bool
+    public static function isValid(FormInterface $form): bool
     {
-        return (is_string($form['name']) || is_string($form['surname']) || is_string($form['type']));
+        return (is_string($form->get('name')) && is_string($form->get('surname')) && is_string($form->get('codiceFiscale')));
     }
 }
