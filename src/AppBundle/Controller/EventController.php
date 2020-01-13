@@ -6,6 +6,7 @@ use AppBundle\Entity\AbstractIdentity;
 use AppBundle\Entity\Event;
 use AppBundle\Routing\Transformer\EventTransformer;
 use DateTime;
+use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -13,6 +14,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Widmogrod\Monad\Either\Left;
+use Widmogrod\Monad\Either\Right;
 use function Widmogrod\Monad\Either\left;
 
 class EventController extends Controller
@@ -29,24 +31,28 @@ class EventController extends Controller
             ->add('num_max_participants', NumberType::class)
             ->getForm();
 
-        $event = EventTransformer::transform($form)->either(
-            static function (\Exception $exception){
-                echo $exception->getMessage();
-            },
-            static function (Event $event){
-                return $event;
-            }
-        );
+        $form->get('name')->setData('Christams Party');
+        $form->get('description')->setData('Festa di Natale');
+        $form->get('place')->setData('Gadames');
+        $form->get('num_max_participants')->setData('300');
+
+        $event = EventTransformer::transform($form);
 
         $em = $this->getDoctrine()->getManager();
 
-        $em->persist($event);
-        $em->flush();
+        if ($event instanceof Right)
+        {
+            $em->persist($event->extract());
+            $em->flush();
 
+            return JsonResponse::create([
+                'result' => true
+            ]);
+        }
 
-        return JsonResponse::create(
-            ['data' => $event]
-        );
+        return JsonResponse::create([
+            'result' => false
+        ]);
     }
 
     /**
@@ -66,20 +72,22 @@ class EventController extends Controller
      */
     public function update($id)
     {
-//        $em = $this->getDoctrine()->getManager();
-//        $event = $em->getRepository(Event::class)->find($id);
-//
-//        if (!$event) {
-//            return left(new NotFoundHttpException('No event found for id '.$id));
-//        }
-//
-//        $event->setName('New product name!');
-//        $em->flush();
-//
-//        return JsonResponse::create([
-//            'result' => true
-//        ]);
-        //TODO
+        $em = $this->getDoctrine()->getManager();
+        /** @var Event $event */
+        $event = $em->getRepository(Event::class)->find($id);
+
+        if (!$event) {
+            return left(new NotFoundHttpException('No event found for id '.$id));
+        }
+
+//        /** @var ArrayCollection $participants */
+//        $participants = $event->getParticipants();
+//        $event->updateEntity($event->getPlace(),$event->getDate(),$event->getName(),$event->getNumMaxParticipants(),$event->getDescription(),$event->getOrganizer(),$participants);
+        $em->flush();
+
+        return JsonResponse::create([
+            'result' => true
+        ]);
     }
 
     /**

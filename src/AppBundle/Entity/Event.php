@@ -126,6 +126,17 @@ class Event implements \JsonSerializable
         return $this->participants;
     }
 
+    public function updateEntity(string $place, string $date, string $name, int $numMaxParticipants, string $description, AbstractIdentity $organizer, ArrayCollection $participants)
+    {
+        $this->place = $place;
+        $this->date = $date;
+        $this->name = $name;
+        $this->numMaxParticipants = $numMaxParticipants;
+        $this->description = $description;
+        $this->organizer = $organizer;
+        $this->participants = $participants;
+    }
+
     /**
      * @inheritDoc
      */
@@ -135,7 +146,7 @@ class Event implements \JsonSerializable
             'id' => $this->id,
             'name' => $this->name,
             'description' => $this->description,
-            'participants'=> $this->participants,
+            'participants' => $this->participants,
             'place' => $this->place,
             'date' => $this->date,
             'organizer' => $this->organizer
