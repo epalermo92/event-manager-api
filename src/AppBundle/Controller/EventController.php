@@ -2,11 +2,8 @@
 
 namespace AppBundle\Controller;
 
-use AppBundle\Entity\AbstractIdentity;
 use AppBundle\Entity\Event;
 use AppBundle\Routing\Transformer\EventTransformer;
-use DateTime;
-use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -40,8 +37,7 @@ class EventController extends Controller
 
         $em = $this->getDoctrine()->getManager();
 
-        if ($event instanceof Right)
-        {
+        if ($event instanceof Right) {
             $em->persist($event->extract());
             $em->flush();
 
@@ -77,12 +73,10 @@ class EventController extends Controller
         $event = $em->getRepository(Event::class)->find($id);
 
         if (!$event) {
-            return left(new NotFoundHttpException('No event found for id '.$id));
+            return left(new NotFoundHttpException('No event found for id ' . $id));
         }
 
-//        /** @var ArrayCollection $participants */
-//        $participants = $event->getParticipants();
-//        $event->updateEntity($event->getPlace(),$event->getDate(),$event->getName(),$event->getNumMaxParticipants(),$event->getDescription(),$event->getOrganizer(),$participants);
+        $event->updateEntity($event->getPlace(), $event->getName(), $event->getNumMaxParticipants(), $event->getDescription());
         $em->flush();
 
         return JsonResponse::create([
