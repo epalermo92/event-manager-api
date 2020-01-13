@@ -3,6 +3,7 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Entity\AbstractIdentity;
+use AppBundle\Entity\LegalIdentity;
 use AppBundle\Entity\NaturalIdentity;
 use AppBundle\Routing\FormType\IdentityFormType;
 use AppBundle\Routing\Transformer\IdentityTransformer;
@@ -85,5 +86,29 @@ class IdentityController extends Controller
         return JsonResponse::create([
             'result' => false
             ]);
+    }
+
+    /**
+     * @Route("/identity_update/{id}", name="identity-update")
+     */
+    public function updateIdentity($id)
+    {
+        $entityManager = $this->getDoctrine()->getManager();
+        $identityToUpdate = $entityManager->getRepository(AbstractIdentity::class)->find($id);
+
+        if (!$identityToUpdate) {
+            return JsonResponse::create([
+                'result' => false
+            ]);
+        }
+
+        $newIdentity = new LegalIdentity('Facile.it', '350789989');
+        /** @var LegalIdentity $identityToUpdate */
+        $identityToUpdate->updateIdentity($newIdentity);
+        $entityManager->flush();
+
+        return JsonResponse::create([
+            'result' => true
+        ]);
     }
 }

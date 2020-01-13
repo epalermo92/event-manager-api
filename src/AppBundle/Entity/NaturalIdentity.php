@@ -57,4 +57,11 @@ class NaturalIdentity extends AbstractIdentity
             'codiceFiscale' => $this->codiceFiscale,
         ];
     }
+
+    public function updateIdentity(NaturalIdentity $newIdentity):void
+    {
+        $this->name = $newIdentity->getName();
+        $this->surname = $newIdentity->getSurname();
+        $this->codiceFiscale = $newIdentity->getCodiceFiscale();
+    }
 }

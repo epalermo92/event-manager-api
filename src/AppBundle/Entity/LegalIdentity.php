@@ -43,5 +43,11 @@ class LegalIdentity extends AbstractIdentity
             'partitaIva' => $this->partitaIva ,
         ];
     }
+
+    public function updateIdentity(LegalIdentity $newIdentity):void
+    {
+        $this->name = $newIdentity->getName();
+        $this->partitaIva = $newIdentity->getPartitaIva();
+    }
 }
 
