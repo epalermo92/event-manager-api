@@ -3,6 +3,7 @@
 {% block body %}
    <h1 style="text-align: center">Event Manager App</h1>
    <ul style="text-align: center;list-style-type: none">
+      <li><a href="{{ path('list-events') }}">Lista eventi</a></li>
       <li><a href="{{ path('create-event') }}">Aggiungi evento</a></li>
       <li><a href="">Modifica evento</a></li>
       <li><a href="{{ path('delete-event',{'id' : 1}) }}">Rimuovi evento</a></li>
@@ -10,8 +11,5 @@
       <li><a href="{{ path('identity-create') }}">Aggiungi persona</a></li>
       <li><a href="{{ path('identity-update',{'id' : 4}) }}">Modifica dati persona</a></li>
       <li><a href="{{ path('identities-delete',{'id' : 1}) }}">Rimuovi persona</a></li>
-{#      <li><a href="{{ path('identity-creation') }}">Aggiungi Persona</a></li>#}
-      <li><a href="">Aggiungere/Rimuovere partecipanti</a></li>
-      <li><a href="{{ path('list-events') }}">Lista eventi</a></li>
    </ul>
 {% endblock %}
