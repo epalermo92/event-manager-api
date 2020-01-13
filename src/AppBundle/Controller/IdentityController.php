@@ -3,6 +3,7 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Entity\AbstractIdentity;
+use AppBundle\Entity\NaturalIdentity;
 use AppBundle\Routing\FormType\IdentityFormType;
 use AppBundle\Routing\Transformer\IdentityTransformer;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -11,6 +12,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Widmogrod\Monad\Either\Left;
+use Widmogrod\Monad\Either\Right;
 use function Widmogrod\Monad\Either\left;
 
 class IdentityController extends Controller
@@ -56,30 +58,32 @@ class IdentityController extends Controller
     public function createIdentity()
     {
         $form = $this->createFormBuilder()
+            ->add('type', TextType::class)
             ->add('name', TextType::class)
             ->add('surname', TextType::class)
-            ->add('codiceFiscale', TextType::class)
-            ->add('type', TextType::class)
+            ->add('codice', TextType::class)
             ->getForm();
 
+        $form->get('type')->setData('natural');
         $form->get('name')->setData('Pippo');
         $form->get('surname')->setData('Topolino');
-        $form->get('codiceFiscale')->setData('PPOTLN45T56U527G');
-        $form->get('type')->setData('natural');
-
-        if (!IdentityTransformer::isValid($form))
-        {
-            return IdentityTransformer::create($form)->DoTransformInvalid();
-        }
+        $form->get('codice')->setData('PPOTLN45T56U527G');
 
         $entityManager = $this->getDoctrine()->getManager();
-        $newIdentity = IdentityTransformer::create($form)->DoTransformValid();
+        $newIdentity = IdentityTransformer::transform($form);
 
-        $entityManager->persist($newIdentity);
-        $entityManager->flush();
+        if ($newIdentity instanceof Right)
+        {
+            $entityManager->persist($newIdentity->extract());
+            $entityManager->flush();
+
+            return JsonResponse::create([
+                'result' => true
+            ]);
+        }
 
         return JsonResponse::create([
-            'result' => true
-        ]);
+            'result' => false
+            ]);
     }
 }
