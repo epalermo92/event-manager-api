@@ -4,22 +4,18 @@ namespace AppBundle\Controller;
 
 use AppBundle\Entity\AbstractIdentity;
 use AppBundle\Entity\LegalIdentity;
-use AppBundle\Entity\NaturalIdentity;
-use AppBundle\Routing\FormType\IdentityFormType;
 use AppBundle\Routing\Transformer\IdentityTransformer;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
-use Widmogrod\Monad\Either\Left;
 use Widmogrod\Monad\Either\Right;
-use function Widmogrod\Monad\Either\left;
 
 class IdentityController extends Controller
 {
     /**
      * @Route("/identities_list", name="identities-list")
+     * @return JsonResponse
      */
     public function list():JsonResponse
     {
@@ -31,16 +27,18 @@ class IdentityController extends Controller
 
     /**
      * @Route("/identities_delete/{id}", name="identities-delete")
-     * @return JsonResponse|Left
+     * @return JsonResponse
      */
-    public function deleteIdentity($id)
+    public function deleteIdentity($id): JsonResponse
     {
         $entityManager = $this->getDoctrine()->getManager();
         $identity = $entityManager->getRepository(AbstractIdentity::class)->find($id);
 
         if (!$identity)
         {
-            return left(new NotFoundHttpException('Identity not found'));
+            return JsonResponse::create([
+                'result' => 'Identity not found in database'
+            ]);
         }
 
         $entityManager->remove($identity);
@@ -53,10 +51,9 @@ class IdentityController extends Controller
 
     /**
      * @Route("/identity_create", name="identity-create")
-     * @param IdentityFormType $form
-     * @return JsonResponse|\Widmogrod\Monad\Either\Either
+     * @return JsonResponse
      */
-    public function createIdentity()
+    public function createIdentity(): JsonResponse
     {
         $form = $this->createFormBuilder()
             ->add('type', TextType::class)
@@ -90,8 +87,10 @@ class IdentityController extends Controller
 
     /**
      * @Route("/identity_update/{id}", name="identity-update")
+     * @param string $id
+     * @return JsonResponse
      */
-    public function updateIdentity($id)
+    public function updateIdentity(string $id): JsonResponse
     {
         $entityManager = $this->getDoctrine()->getManager();
         $identityToUpdate = $entityManager->getRepository(AbstractIdentity::class)->find($id);
