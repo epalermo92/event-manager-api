@@ -8,11 +8,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
-use Widmogrod\Monad\Either\Left;
 use Widmogrod\Monad\Either\Right;
-use function Widmogrod\Monad\Either\left;
 
 class EventController extends Controller
 {
@@ -64,7 +61,7 @@ class EventController extends Controller
 
     /**
      * @Route("/update-event/{id}",name="update-event")
-     * @return JsonResponse|Left
+     * @return JsonResponse
      */
     public function update($id)
     {
@@ -73,7 +70,9 @@ class EventController extends Controller
         $event = $em->getRepository(Event::class)->find($id);
 
         if (!$event) {
-            return left(new NotFoundHttpException('No event found for id ' . $id));
+            return JsonResponse::create([
+                'result' => false
+            ]);
         }
 
         $event->updateEntity($event->getPlace(), $event->getName(), $event->getNumMaxParticipants(), $event->getDescription());
@@ -86,7 +85,7 @@ class EventController extends Controller
 
     /**
      * @Route("/delete-event/{id}",name="delete-event")
-     * @return JsonResponse|Left
+     * @return JsonResponse
      */
     public function delete($id)
     {
@@ -94,7 +93,9 @@ class EventController extends Controller
         $event = $em->getRepository(Event::class)->find($id);
 
         if (!$event) {
-            return left(new NotFoundHttpException('No event found for id ' . $id));
+            return JsonResponse::create([
+                'result' => false
+            ]);
         }
 
         $em->remove($event);
