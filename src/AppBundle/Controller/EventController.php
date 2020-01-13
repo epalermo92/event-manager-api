@@ -29,12 +29,20 @@ class EventController extends Controller
             ->add('num_max_participants', NumberType::class)
             ->getForm();
 
-        //EventTransformer::transform($form);
-        //TODO
-        $organizer = $this->getDoctrine()->getManager()->getRepository(AbstractIdentity::class)->find(2);
-        $participant = $this->getDoctrine()->getManager()->getRepository(AbstractIdentity::class)->find(7);
+        $event = EventTransformer::transform($form)->either(
+            static function (\Exception $exception){
+                echo $exception->getMessage();
+            },
+            static function (Event $event){
+                return $event;
+            }
+        );
 
-//        $event = new Event($place,new DateTime(),$name,$num_max_participants,$description,$organizer,$participant);
+        $em = $this->getDoctrine()->getManager();
+
+        $em->persist($event);
+        $em->flush();
+
 
         return JsonResponse::create(
             ['data' => $event]
@@ -84,7 +92,7 @@ class EventController extends Controller
         $event = $em->getRepository(Event::class)->find($id);
 
         if (!$event) {
-            return left(new NotFoundHttpException('No event found for id '.$id));
+            return left(new NotFoundHttpException('No event found for id ' . $id));
         }
 
         $em->remove($event);
