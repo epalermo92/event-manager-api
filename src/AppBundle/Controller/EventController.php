@@ -4,6 +4,7 @@ namespace AppBundle\Controller;
 
 use AppBundle\Entity\AbstractIdentity;
 use AppBundle\Entity\Event;
+use AppBundle\Routing\Transformer\EventTransformer;
 use DateTime;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
@@ -28,11 +29,15 @@ class EventController extends Controller
             ->add('num_max_participants', NumberType::class)
             ->getForm();
 
-        $form->get('name')->setData('Christmas Party');
+        //EventTransformer::transform($form);
+        //TODO
+        $organizer = $this->getDoctrine()->getManager()->getRepository(AbstractIdentity::class)->find(2);
+        $participant = $this->getDoctrine()->getManager()->getRepository(AbstractIdentity::class)->find(7);
 
+//        $event = new Event($place,new DateTime(),$name,$num_max_participants,$description,$organizer,$participant);
 
         return JsonResponse::create(
-            ['data' => $form->getData()]
+            ['data' => $event]
         );
     }
 

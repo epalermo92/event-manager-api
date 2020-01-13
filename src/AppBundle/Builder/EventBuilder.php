@@ -9,12 +9,12 @@ use function Widmogrod\Monad\Either\left;
 
 class EventBuilder
 {
-    public static function build($place, $date, $name, $numMaxParticipants, $description, $organizer, $participants): Either
+    public static function build(array $params): Either
     {
-        if ($numMaxParticipants < 0) {
+        if ($params['num_max_participants'] < 0) {
             return left(new \LogicException('cant build event because participants number is negative!'));
         }
 
-        return new right(new Event($place, $date, $name, $numMaxParticipants, $description, $organizer, $participants));
+        return new right(new Event($params['place'], $params['date'], $params['name'], $params['num_max_participants'], $params['description'], $params['organizer'], $params['participants']));
     }
 }
