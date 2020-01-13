@@ -34,16 +34,4 @@ class EventTransformer implements TransformerInterface
         return new self($form);
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function DoTransformValid()
-    {
-        // TODO: Implement DoTransformValid() method.
-    }
-
-    public function DoTransformInvalid(): Either
-    {
-        // TODO: Implement DoTransformInvalid() method.
-    }
 }
