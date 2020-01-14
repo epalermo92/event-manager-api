@@ -2,9 +2,12 @@
 
 namespace AppBundle\Routing\FormType;
 
+use AppBundle\Entity\AbstractIdentity;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
+use AppBundle\Entity\NaturalIdentity;
 
 class EventFormType extends AbstractRequestType
 {
@@ -12,22 +15,34 @@ class EventFormType extends AbstractRequestType
     {
         $builder->add('name', TextType::class, [
             'label' => 'Nome',
-            'required' => true,
+            'required' => true
         ]);
 
         $builder->add('description', TextType::class, [
             'label' => 'descrizione',
-            'required' => true,
+            'required' => true
         ]);
 
         $builder->add('place', TextType::class, [
             'label' => 'Luogo',
-            'required' => true,
+            'required' => true
         ]);
 
         $builder->add('num_max_participants', NumberType::class, [
             'label' => 'Num max participanti',
-            'required' => true,
+            'required' => true
+        ]);
+
+        $builder->add('organizer',EntityType::class, [
+            'class' => AbstractIdentity::class,
+            'label' => 'organizer',
+            'required' => true
+        ]);
+
+        $builder->add('participants', EntityType::class, [
+            'class' => NaturalIdentity::class,
+            'label' => 'Num max participanti',
+            'required' => true
         ]);
     }
 }
