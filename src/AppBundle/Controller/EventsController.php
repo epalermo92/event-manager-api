@@ -14,9 +14,9 @@ use Widmogrod\Monad\Either\Right;
 class EventsController extends Controller
 {
     /**
-     * @Route("/api/post-events",name="post-events",methods={"POST"})
+     * @Route("/api/events/post",name="post-events",methods={"POST"})
      */
-    public function postEvents(): JsonResponse
+    public function postEventsAction(): JsonResponse
     {
         $form = $this->createFormBuilder()
             ->add('name', TextType::class)
@@ -49,9 +49,9 @@ class EventsController extends Controller
     }
 
     /**
-     * @Route("/api/get-events",name="get-events",methods={"GET"})
+     * @Route("/api/events/get",name="get-events",methods={"GET"})
      */
-    public function getEvents(): JsonResponse
+    public function getEventsAction(): JsonResponse
     {
         $eventRepository = $this->getDoctrine()->getRepository(Event::class);
         $events = $eventRepository->findAll();
@@ -60,10 +60,10 @@ class EventsController extends Controller
     }
 
     /**
-     * @Route("/api/put-events/{id}",name="put-events",methods={"PUT"})
+     * @Route("/api/events/put/{id}",name="put-events",methods={"PUT"})
      * @return JsonResponse
      */
-    public function putEvents($id): JsonResponse
+    public function putEventsAction($id): JsonResponse
     {
         $em = $this->getDoctrine()->getManager();
         /** @var Event $event */
@@ -84,10 +84,10 @@ class EventsController extends Controller
     }
 
     /**
-     * @Route("/api/delete-events/{id}",name="delete-events",methods={"DELETE"})
+     * @Route("/api/events/delete/{id}",name="delete-events",methods={"DELETE"})
      * @return JsonResponse
      */
-    public function deleteEvents($id): JsonResponse
+    public function deleteEventsAction($id): JsonResponse
     {
         $em = $this->getDoctrine()->getManager();
         $event = $em->getRepository(Event::class)->find($id);
@@ -103,6 +103,25 @@ class EventsController extends Controller
 
         return JsonResponse::create([
             'result' => true
+        ]);
+    }
+
+    /**
+     * @Route("/api/events/get/{id}",name="get-event",methods={"GET"})
+     * @return JsonResponse
+     */
+    public function getEventAction($id): JsonResponse
+    {
+        $event = $this->getDoctrine()->getRepository(Event::class)->find($id);
+
+        if (!$event) {
+            return JsonResponse::create([
+                'result' => false
+            ]);
+        }
+
+        return JsonResponse::create([
+           'result' => true
         ]);
     }
 }
