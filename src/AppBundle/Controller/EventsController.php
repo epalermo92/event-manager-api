@@ -24,7 +24,7 @@ class EventsController extends Controller
             ->add('place', TextType::class)
             ->add('num_max_participants', NumberType::class)
             ->getForm();
-
+        
         $form->get('name')->setData('Christams Party');
         $form->get('description')->setData('Festa di Natale');
         $form->get('place')->setData('Gadames');

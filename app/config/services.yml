@@ -37,3 +37,9 @@ services:
         resource: '../../src/AppBundle/DataFixtures'
         public: true
         tags: ['doctrine.fixture.orm']
+
+    AppBundle\Service\:
+        resource: '../../src/AppBundle/Service'
+        public: true
+        tags: ['database-manager']
+
