@@ -14,10 +14,9 @@ use Widmogrod\Monad\Either\Right;
 class IdentityController extends Controller
 {
     /**
-     * @Route("/identities_list", name="identities-list")
-     * @return JsonResponse
+     * @Route("/api/identities/get", name="get-identities", methods={"GET"})
      */
-    public function list():JsonResponse
+    public function getIdentitiesAction():JsonResponse
     {
         $identitiesRepository = $this->getDoctrine()->getRepository(AbstractIdentity::class);
         $identities = $identitiesRepository->findAll();
@@ -26,10 +25,9 @@ class IdentityController extends Controller
     }
 
     /**
-     * @Route("/identities_delete/{id}", name="identities-delete")
-     * @return JsonResponse
+     * @Route("/api/identities/delete/{id}", name="delete-identities", methods={"DELETE"})
      */
-    public function deleteIdentity($id): JsonResponse
+    public function deleteIdentitiesAction($id): JsonResponse
     {
         $entityManager = $this->getDoctrine()->getManager();
         $identity = $entityManager->getRepository(AbstractIdentity::class)->find($id);
@@ -50,10 +48,9 @@ class IdentityController extends Controller
     }
 
     /**
-     * @Route("/identity_create", name="identity-create")
-     * @return JsonResponse
+     * @Route("/api/identities/post", name="post-identities", methods={"POST"})
      */
-    public function createIdentity(): JsonResponse
+    public function postIdentitiesAction(): JsonResponse
     {
         $form = $this->createFormBuilder()
             ->add('type', TextType::class)
@@ -86,11 +83,9 @@ class IdentityController extends Controller
     }
 
     /**
-     * @Route("/identity_update/{id}", name="identity-update")
-     * @param string $id
-     * @return JsonResponse
+     * @Route("/api/identities/put/{id}", name="put-identities", methods={"PUT"})
      */
-    public function updateIdentity(string $id): JsonResponse
+    public function putIdentitiesAction(string $id): JsonResponse
     {
         $entityManager = $this->getDoctrine()->getManager();
         $identityToUpdate = $entityManager->getRepository(AbstractIdentity::class)->find($id);
@@ -108,6 +103,27 @@ class IdentityController extends Controller
 
         return JsonResponse::create([
             'result' => true
+        ]);
+    }
+
+    /**
+     * @Route("/api/identities/get/{id}", name="get-identity", methods={"GET"})
+     */
+    public function getIdentityAction($id)
+    {
+        $entityManager = $this->getDoctrine()->getManager();
+        $identitiesRepository = $entityManager->getRepository(AbstractIdentity::class);
+        $identity = $entityManager->getRepository(AbstractIdentity::class)->find($id);
+
+        if (!$identity)
+        {
+            return JsonResponse::create([
+                'result' => false
+            ]);
+        }
+
+        return JsonResponse::create([
+            'result' => $identity
         ]);
     }
 }

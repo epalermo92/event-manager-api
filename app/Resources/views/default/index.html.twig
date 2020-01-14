@@ -7,9 +7,10 @@
       <li><a href="{{ path('create-event') }}">Aggiungi evento</a></li>
       <li><a href="{{ path('update-event',{'id': 2}) }}">Modifica evento</a></li>
       <li><a href="{{ path('delete-event',{'id' : 1}) }}">Rimuovi evento</a></li>
-      <li><a href="{{ path('identities-list') }}">Lista Persone</a></li>
-      <li><a href="{{ path('identity-create') }}">Aggiungi persona</a></li>
-      <li><a href="{{ path('identity-update',{'id' : 4}) }}">Modifica dati persona</a></li>
-      <li><a href="{{ path('identities-delete',{'id' : 1}) }}">Rimuovi persona</a></li>
+      <li><a href="{{ path('get-identities') }}">Lista Persone</a></li>
+      <li><a href="{{ path('post-identities') }}">Aggiungi persona</a></li>
+      <li><a href="{{ path('put-identities',{'id' : 4}) }}">Modifica dati persona</a></li>
+      <li><a href="{{ path('delete-identities',{'id' : 1}) }}">Rimuovi persona</a></li>
+      <li><a href="{{ path('get-identity',{'id' : 1}) }}">Mostra dati persona</a></li>
    </ul>
 {% endblock %}
