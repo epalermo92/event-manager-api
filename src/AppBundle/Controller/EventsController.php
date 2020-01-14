@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace AppBundle\Controller;
 
@@ -11,12 +11,12 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Widmogrod\Monad\Either\Right;
 
-class EventController extends Controller
+class EventsController extends Controller
 {
     /**
-     * @Route("/create-event",name="create-event")
+     * @Route("/api/post-events",name="post-events",methods={"POST"})
      */
-    public function create()
+    public function postEvents(): JsonResponse
     {
         $form = $this->createFormBuilder()
             ->add('name', TextType::class)
@@ -49,9 +49,9 @@ class EventController extends Controller
     }
 
     /**
-     * @Route("/list-events",name="list-events")
+     * @Route("/api/get-events",name="get-events",methods={"GET"})
      */
-    public function list()
+    public function getEvents(): JsonResponse
     {
         $eventRepository = $this->getDoctrine()->getRepository(Event::class);
         $events = $eventRepository->findAll();
@@ -60,10 +60,10 @@ class EventController extends Controller
     }
 
     /**
-     * @Route("/update-event/{id}",name="update-event")
+     * @Route("/api/put-events/{id}",name="put-events",methods={"PUT"})
      * @return JsonResponse
      */
-    public function update($id)
+    public function putEvents($id): JsonResponse
     {
         $em = $this->getDoctrine()->getManager();
         /** @var Event $event */
@@ -84,10 +84,10 @@ class EventController extends Controller
     }
 
     /**
-     * @Route("/delete-event/{id}",name="delete-event")
+     * @Route("/api/delete-events/{id}",name="delete-events",methods={"DELETE"})
      * @return JsonResponse
      */
-    public function delete($id)
+    public function deleteEvents($id): JsonResponse
     {
         $em = $this->getDoctrine()->getManager();
         $event = $em->getRepository(Event::class)->find($id);
