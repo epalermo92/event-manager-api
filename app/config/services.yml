@@ -38,8 +38,10 @@ services:
         public: true
         tags: ['doctrine.fixture.orm']
 
-    AppBundle\Service\:
-        resource: '../../src/AppBundle/Service'
-        public: true
-        tags: ['database-manager']
+
+    AppBundle\Service\EntityPersister:
+        public: false
+    entity_persister:
+           alias: AppBundle\Service\EntityPersister
+           public: true
 
