@@ -4,13 +4,17 @@ namespace AppBundle\Controller;
 
 use AppBundle\Entity\AbstractIdentity;
 use AppBundle\Entity\LegalIdentity;
+use AppBundle\Routing\FormType\IdentityFormType;
 use AppBundle\Routing\Transformer\IdentityTransformer;
 use AppBundle\Service\EntityPersister;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
+use Widmogrod\Monad\Either\Either;
 use Widmogrod\Monad\Either\Right;
+use function Widmogrod\Functional\bind;
+use function Widmogrod\Functional\pipeline;
 
 class IdentityController extends Controller
 {
@@ -28,10 +32,9 @@ class IdentityController extends Controller
      */
     public function getIdentitiesAction():JsonResponse
     {
-        $identitiesRepository = $this->getDoctrine()->getRepository(AbstractIdentity::class);
-        $identities = $identitiesRepository->findAll();
-
-        return JsonResponse::create($identities);
+        return JsonResponse::create(
+            $this->entityPersister->getRepository(AbstractIdentity::class)->findAll()
+        );
     }
 
     /**
@@ -39,8 +42,7 @@ class IdentityController extends Controller
      */
     public function deleteIdentitiesAction($id): JsonResponse
     {
-        $entityManager = $this->getDoctrine()->getManager();
-        $identity = $entityManager->getRepository(AbstractIdentity::class)->find($id);
+        $identity = $this->entityPersister->getRepository(AbstractIdentity::class)->find($id);
 
         if (!$identity)
         {
@@ -60,36 +62,36 @@ class IdentityController extends Controller
     /**
      * @Route("/api/identities", name="post-identities", methods={"POST"})
      */
-    public function postIdentitiesAction(): JsonResponse
+    public function postIdentitiesAction(Request $request): JsonResponse
     {
-        $form = $this->createFormBuilder()
-            ->add('type', TextType::class)
-            ->add('name', TextType::class)
-            ->add('surname', TextType::class)
-            ->add('codice', TextType::class)
-            ->getForm();
+        /** @var Either $result */
+        $result = pipeline(
+            static function (array $in): Either {
+                return IdentityTransformer::create()->transform(...$in);
+            },
+            bind(
+                static function (AbstractIdentity $identity):Either {
+                    $this->entityPersister->save($identity);
+                    return new Right($identity->getId());
+                }
+            )
+        )([
+            $form = $this->createForm(IdentityFormType::class, null, ['method' => Request::METHOD_POST]),
+            $request
+        ]);
 
-        $form->get('type')->setData('natural');
-        $form->get('name')->setData('Pippo');
-        $form->get('surname')->setData('Topolino');
-        $form->get('codice')->setData('PPOTLN45T56U527G');
-
-        $entityManager = $this->getDoctrine()->getManager();
-        $newIdentity = IdentityTransformer::transform($form);
-
-        if ($newIdentity instanceof Right)
-        {
-            $entityManager->persist($newIdentity->extract());
-            $entityManager->flush();
-
-            return JsonResponse::create([
-                'result' => true
-            ]);
-        }
-
-        return JsonResponse::create([
-            'result' => false
-            ]);
+        return $result->either(
+            static function (\Exception $exception) {
+                return JsonResponse::create([
+                    'Exception' => $exception->getMessage()
+                ]);
+            },
+            static function (int $id) {
+                return JsonResponse::create([
+                    'id' => $id
+                ]);
+            }
+        );
     }
 
     /**
