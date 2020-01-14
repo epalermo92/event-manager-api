@@ -13,6 +13,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Widmogrod\Monad\Either\Either;
 use function Widmogrod\Functional\bind;
 use function Widmogrod\Functional\pipeline;
+use function Widmogrod\Monad\Either\right;
 
 
 class EventsController extends Controller
@@ -28,8 +29,9 @@ class EventsController extends Controller
                 return EventTransformer::create()->transform(...$in);
             },
             bind(
-                function (Event $event) : Either {
-                    // perist
+                static function (Event $event) : Either {
+                    $this->get('entity_persister')->save($event);
+                    return right($event);
                 }
             )
         )(
