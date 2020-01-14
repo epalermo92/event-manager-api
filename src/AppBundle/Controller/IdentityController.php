@@ -5,6 +5,7 @@ namespace AppBundle\Controller;
 use AppBundle\Entity\AbstractIdentity;
 use AppBundle\Entity\LegalIdentity;
 use AppBundle\Routing\Transformer\IdentityTransformer;
+use AppBundle\Service\DatabaseManager;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -13,6 +14,15 @@ use Widmogrod\Monad\Either\Right;
 
 class IdentityController extends Controller
 {
+    private $databaseManager;
+
+    public function __construct(
+        DatabaseManager $databaseManager
+    )
+    {
+        $this->databaseManager = $databaseManager;
+    }
+
     /**
      * @Route("/api/identities/get", name="get-identities", methods={"GET"})
      */

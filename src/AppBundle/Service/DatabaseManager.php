@@ -17,6 +17,11 @@ class DatabaseManager
         $this->entityManager = $entityManager;
     }
 
+    public function getRepository(string $class)
+    {
+        return $this->entityManager->getRepository($class);
+    }
+
     public function persist(object $object)
     {
         $this->entityManager->persist($object);
