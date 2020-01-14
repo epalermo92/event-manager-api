@@ -1,10 +1,10 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "6181d52332b913e6c9565195957508ce",
+    "content-hash": "bf01afe6941efcdb9db048fcee1ecb3b",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -1146,6 +1146,50 @@
                 "rest"
             ],
             "time": "2019-12-18T15:40:05+00:00"
+        },
+        {
+            "name": "functional-php/fantasy-land",
+            "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/functional-php/fantasy-land.git",
+                "reference": "c855c856e70db81032a8a4fd17bd74a58d26a279"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/functional-php/fantasy-land/zipball/c855c856e70db81032a8a4fd17bd74a58d26a279",
+                "reference": "c855c856e70db81032a8a4fd17bd74a58d26a279",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.1"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^2",
+                "giorgiosironi/eris": "^0.9",
+                "phpunit/phpunit": "^5"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "FunctionalPHP\\": "./src"
+                },
+                "files": [
+                    "src/FantasyLand/functions.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Gabriel Habryn",
+                    "email": "widmogrod+github@gmail.com"
+                }
+            ],
+            "description": "Specification for interoperability of common algebraic structures in PHP",
+            "time": "2018-02-18T14:54:04+00:00"
         },
         {
             "name": "incenteev/composer-parameter-handler",
@@ -2996,26 +3040,26 @@
         },
         {
             "name": "widmogrod/php-functional",
-            "version": "3.4.0",
+            "version": "5.3.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/widmogrod/php-functional.git",
-                "reference": "08a34ad5a5cd643aea97b6b32be283d23cc1b8fd"
+                "reference": "b7ce6daaebefb559b22e8a75e5c09d2e77863111"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/widmogrod/php-functional/zipball/08a34ad5a5cd643aea97b6b32be283d23cc1b8fd",
-                "reference": "08a34ad5a5cd643aea97b6b32be283d23cc1b8fd",
+                "url": "https://api.github.com/repos/widmogrod/php-functional/zipball/b7ce6daaebefb559b22e8a75e5c09d2e77863111",
+                "reference": "b7ce6daaebefb559b22e8a75e5c09d2e77863111",
                 "shasum": ""
             },
             "require": {
+                "functional-php/fantasy-land": "^1",
                 "php": ">=7.1"
             },
             "require-dev": {
-                "codeclimate/php-test-reporter": "^0.4.4",
                 "friendsofphp/php-cs-fixer": "^2",
                 "giorgiosironi/eris": "^0.9",
-                "phpunit/phpunit": "^4.7"
+                "phpunit/phpunit": "^6"
             },
             "type": "library",
             "autoload": {
@@ -3023,21 +3067,28 @@
                     "Widmogrod\\": "./src"
                 },
                 "files": [
+                    "src/Functional/array.php",
                     "src/Functional/functions.php",
+                    "src/Functional/miscellaneous.php",
+                    "src/Functional/listt.php",
+                    "src/Functional/zipping.php",
+                    "src/Functional/sublist.php",
+                    "src/Functional/infinit.php",
                     "src/Functional/predicates.php",
                     "src/Functional/strings.php",
                     "src/Functional/monoid.php",
                     "src/Functional/setoid.php",
-                    "src/Monad/Control/functions.php",
                     "src/Monad/Either/functions.php",
                     "src/Monad/Maybe/functions.php",
                     "src/Monad/Free/functions.php",
-                    "src/Monad/Free2/functions.php",
                     "src/Monad/IO/functions.php",
                     "src/Monad/IO/errors.php",
                     "src/Monad/Reader/functions.php",
                     "src/Monad/State/functions.php",
-                    "src/Monad/Writer/functions.php"
+                    "src/Monad/Writer/functions.php",
+                    "src/Monad/Control/Doo/actions.php",
+                    "src/Monad/Control/Doo/interpretation.php",
+                    "src/Useful/match.php"
                 ]
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -3051,26 +3102,27 @@
                 }
             ],
             "description": "Functors, Applicative and Monads are fascinating concept. Purpose of this library is to explore them in OOP PHP world.",
-            "time": "2017-12-17T15:57:06+00:00"
+            "time": "2019-11-06T23:16:39+00:00"
         }
     ],
     "packages-dev": [
         {
             "name": "doctrine/data-fixtures",
-            "version": "1.4.0",
+            "version": "1.4.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/data-fixtures.git",
-                "reference": "608a35a3b5bcc4214d116603095f8b0c51091592"
+                "reference": "640ab13b91bac8925af3da94dee4daf96b62a428"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/data-fixtures/zipball/608a35a3b5bcc4214d116603095f8b0c51091592",
-                "reference": "608a35a3b5bcc4214d116603095f8b0c51091592",
+                "url": "https://api.github.com/repos/doctrine/data-fixtures/zipball/640ab13b91bac8925af3da94dee4daf96b62a428",
+                "reference": "640ab13b91bac8925af3da94dee4daf96b62a428",
                 "shasum": ""
             },
             "require": {
                 "doctrine/common": "^2.11",
+                "doctrine/persistence": "^1.3.3",
                 "php": "^7.2"
             },
             "conflict": {
@@ -3081,7 +3133,7 @@
                 "doctrine/coding-standard": "^6.0",
                 "doctrine/dbal": "^2.5.4",
                 "doctrine/mongodb-odm": "^1.3.0",
-                "doctrine/orm": "^2.5.4",
+                "doctrine/orm": "^2.7.0",
                 "phpunit/phpunit": "^7.0"
             },
             "suggest": {
@@ -3116,7 +3168,7 @@
             "keywords": [
                 "database"
             ],
-            "time": "2019-10-30T20:03:18+00:00"
+            "time": "2020-01-13T18:16:40+00:00"
         },
         {
             "name": "doctrine/doctrine-fixtures-bundle",
