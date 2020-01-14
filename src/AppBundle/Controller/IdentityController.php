@@ -5,7 +5,7 @@ namespace AppBundle\Controller;
 use AppBundle\Entity\AbstractIdentity;
 use AppBundle\Entity\LegalIdentity;
 use AppBundle\Routing\Transformer\IdentityTransformer;
-use AppBundle\Service\DatabaseManager;
+use AppBundle\Service\EntityPersister;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -14,17 +14,17 @@ use Widmogrod\Monad\Either\Right;
 
 class IdentityController extends Controller
 {
-    private $databaseManager;
+    private $entityPersister;
 
     public function __construct(
-        DatabaseManager $databaseManager
+        EntityPersister $entityPersister
     )
     {
-        $this->databaseManager = $databaseManager;
+        $this->entityPersister = $entityPersister;
     }
 
     /**
-     * @Route("/api/identities/get", name="get-identities", methods={"GET"})
+     * @Route("/api/identities", name="get-identities", methods={"GET"})
      */
     public function getIdentitiesAction():JsonResponse
     {
@@ -35,7 +35,7 @@ class IdentityController extends Controller
     }
 
     /**
-     * @Route("/api/identities/delete/{id}", name="delete-identities", methods={"DELETE"})
+     * @Route("/api/identities/{id}", name="delete-identities", methods={"DELETE"})
      */
     public function deleteIdentitiesAction($id): JsonResponse
     {
@@ -58,7 +58,7 @@ class IdentityController extends Controller
     }
 
     /**
-     * @Route("/api/identities/post", name="post-identities", methods={"POST"})
+     * @Route("/api/identities", name="post-identities", methods={"POST"})
      */
     public function postIdentitiesAction(): JsonResponse
     {
@@ -93,7 +93,7 @@ class IdentityController extends Controller
     }
 
     /**
-     * @Route("/api/identities/put/{id}", name="put-identities", methods={"PUT"})
+     * @Route("/api/identities/{id}", name="put-identities", methods={"PUT"})
      */
     public function putIdentitiesAction(string $id): JsonResponse
     {
@@ -117,7 +117,7 @@ class IdentityController extends Controller
     }
 
     /**
-     * @Route("/api/identities/get/{id}", name="get-identity", methods={"GET"})
+     * @Route("/api/identities/{id}", name="get-identity", methods={"GET"})
      */
     public function getIdentityAction($id)
     {
