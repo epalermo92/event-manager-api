@@ -13,21 +13,26 @@ class IdentityFormType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder->add('name', TextType::class, [
-            'label' => 'Nome',
+            'label' => 'name',
             'required' => true,
         ]);
 
         $builder->add('surname', TextType::class, [
-            'label' => 'Cognome',
+            'label' => 'surname',
             'required' => true,
         ]);
 
-        $builder->add('codiceFiscale', TextType::class, [
-            'label' => 'codiceFiscale',
+        $builder->add('codice', TextType::class, [
+            'label' => 'codice',
             'required' => true,
         ]);
 
-//        $builder->add('type', ChoiceType::class, [
+        $builder->add('type', TextType::class, [
+            'label' => 'type',
+            'required' => true,
+        ]);
+
+        //        $builder->add('type', ChoiceType::class, [
 //            'label' => 'Persona',
 //            'choices' => [
 //                'Natural' => 'natural',

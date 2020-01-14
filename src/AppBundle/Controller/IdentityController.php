@@ -60,7 +60,9 @@ class IdentityController extends Controller
     }
 
     /**
-     * @Route("/api/identities", name="post-identities", methods={"POST"})
+     * @Route("/api/identities/pippo", name="post-identities")
+     * @param Request $request
+     * @return JsonResponse
      */
     public function postIdentitiesAction(Request $request): JsonResponse
     {
@@ -70,25 +72,38 @@ class IdentityController extends Controller
                 return IdentityTransformer::create()->transform(...$in);
             },
             bind(
-                static function (AbstractIdentity $identity):Either {
+                static function (AbstractIdentity $identity): Either {
                     $this->entityPersister->save($identity);
+
                     return new Right($identity->getId());
                 }
             )
-        )([
-            $form = $this->createForm(IdentityFormType::class, null, ['method' => Request::METHOD_POST]),
-            $request
-        ]);
+        )(
+            [
+                $form = $this->createForm(
+                    IdentityFormType::class,
+                    [
+                        'name' => 'Pippo',
+                        'surname' => 'Topolino',
+                        'codice' => 'PPPTLN33T13D122F',
+                        'type' => 'natural',
+                    ],
+                    ['method' => Request::METHOD_POST]
+                ),
+                $request,
+            ]
+        );
 
         return $result->either(
             static function (\Exception $exception) {
                 return JsonResponse::create([
-                    'Exception' => $exception->getMessage()
+                    'Exception' => $exception->getMessage() . 'Sei un Fallito'
                 ]);
             },
             static function (int $id) {
                 return JsonResponse::create([
-                    'id' => $id
+                    'id' => $id,
+                    'Ciao' => 'bello'
                 ]);
             }
         );
@@ -99,8 +114,7 @@ class IdentityController extends Controller
      */
     public function putIdentitiesAction(string $id): JsonResponse
     {
-        $entityManager = $this->getDoctrine()->getManager();
-        $identityToUpdate = $entityManager->getRepository(AbstractIdentity::class)->find($id);
+        $identityToUpdate = $this->entityPersister->getRepository(AbstractIdentity::class)->find($id);
 
         if (!$identityToUpdate) {
             return JsonResponse::create([
