@@ -3,25 +3,17 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Entity\Event;
-use AppBundle\Exceptions\FormNotValidException;
 use AppBundle\Routing\FormType\EventFormType;
 use AppBundle\Routing\ResponseLeftHandler;
 use AppBundle\Routing\Transformer\EventTransformer;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\Form\Extension\Core\Type\NumberType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Widmogrod\Monad\Either\Either;
-use Widmogrod\Monad\Either\Right;
 use function Widmogrod\Functional\bind;
 use function Widmogrod\Functional\pipeline;
-use function Widmogrod\Useful\match;
-use const Widmogrod\Functional\bind;
-use const Widmogrod\Functional\reThrow;
-use const Widmogrod\Useful\any;
+
 
 class EventsController extends Controller
 {
@@ -72,7 +64,7 @@ class EventsController extends Controller
     }
 
     /**
-     * @Route("/api/events",name="put-events",methods={"PUT"})
+     * @Route("/api/events/{event}",name="put-events",methods={"PUT"})
      * @return JsonResponse
      */
     public function putEventsAction($id): JsonResponse
@@ -96,7 +88,7 @@ class EventsController extends Controller
     }
 
     /**
-     * @Route("/api/events",name="delete-events",methods={"DELETE"})
+     * @Route("/api/events/{event}",name="delete-events",methods={"DELETE"})
      * @return JsonResponse
      */
     public function deleteEventsAction(Event $event): JsonResponse
@@ -119,7 +111,7 @@ class EventsController extends Controller
     }
 
     /**
-     * @Route("/api/events",name="get-event",methods={"GET"})
+     * @Route("/api/events/{event}",name="get-event",methods={"GET"})
      * @return JsonResponse
      */
     public function getEventAction($id): JsonResponse
