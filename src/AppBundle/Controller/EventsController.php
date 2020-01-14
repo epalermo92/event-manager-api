@@ -3,49 +3,61 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Entity\Event;
+use AppBundle\Exceptions\FormNotValidException;
+use AppBundle\Routing\FormType\EventFormType;
+use AppBundle\Routing\ResponseLeftHandler;
 use AppBundle\Routing\Transformer\EventTransformer;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Widmogrod\Monad\Either\Either;
 use Widmogrod\Monad\Either\Right;
+use function Widmogrod\Functional\bind;
+use function Widmogrod\Functional\pipeline;
+use function Widmogrod\Useful\match;
+use const Widmogrod\Functional\bind;
+use const Widmogrod\Functional\reThrow;
+use const Widmogrod\Useful\any;
 
 class EventsController extends Controller
 {
     /**
      * @Route("/api/events/post",name="post-events",methods={"POST"})
      */
-    public function postEventsAction(): JsonResponse
+    public function postEventsAction(Request $request): JsonResponse
     {
-        $form = $this->createFormBuilder()
-            ->add('name', TextType::class)
-            ->add('description', TextType::class)
-            ->add('place', TextType::class)
-            ->add('num_max_participants', NumberType::class)
-            ->getForm();
-        
-        $form->get('name')->setData('Christams Party');
-        $form->get('description')->setData('Festa di Natale');
-        $form->get('place')->setData('Gadames');
-        $form->get('num_max_participants')->setData('300');
+        /** @var Either<\Exception, Event> $r */
+        $r = pipeline(
+            static function (array $in): Either {
+                return EventTransformer::create()->transform(...$in);
+            },
+            bind(
+                function (Event $event) : Either {
+                    // perist
+                }
+            )
+        )(
+            [
+                $this->createForm(EventFormType::class, null, ['method' => Request::METHOD_POST]),
+                $request
+            ]
+        );
 
-        $event = EventTransformer::transform($form);
-
-        $em = $this->getDoctrine()->getManager();
-
-        if ($event instanceof Right) {
-            $em->persist($event->extract());
-            $em->flush();
-
-            return JsonResponse::create([
-                'result' => true
-            ]);
-        }
-
-        return JsonResponse::create([
-            'result' => false
-        ]);
+        return $r->either(
+            ResponseLeftHandler::handle(),
+            static function (Event $event) {
+                return JsonResponse::create(
+                    [
+                        'id' => $event->getId(),
+                    ],
+                    JsonResponse::HTTP_CREATED
+                );
+            }
+        );
     }
 
     /**
@@ -60,7 +72,7 @@ class EventsController extends Controller
     }
 
     /**
-     * @Route("/api/events/put/{id}",name="put-events",methods={"PUT"})
+     * @Route("/api/events/{id}",name="put-events",methods={"PUT"})
      * @return JsonResponse
      */
     public function putEventsAction($id): JsonResponse
@@ -84,10 +96,10 @@ class EventsController extends Controller
     }
 
     /**
-     * @Route("/api/events/delete/{id}",name="delete-events",methods={"DELETE"})
+     * @Route("/api/events/{event}",name="delete-events",methods={"DELETE"})
      * @return JsonResponse
      */
-    public function deleteEventsAction($id): JsonResponse
+    public function deleteEventsAction(Event $event): JsonResponse
     {
         $em = $this->getDoctrine()->getManager();
         $event = $em->getRepository(Event::class)->find($id);

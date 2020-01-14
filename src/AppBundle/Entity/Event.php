@@ -70,6 +70,11 @@ class Event implements \JsonSerializable
         $this->participants = new ArrayCollection();
     }
 
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
     /**
      * @return string
      */
