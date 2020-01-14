@@ -26,7 +26,7 @@ use const Widmogrod\Useful\any;
 class EventsController extends Controller
 {
     /**
-     * @Route("/api/events/post",name="post-events",methods={"POST"})
+     * @Route("/api/events",name="post-events",methods={"POST"})
      */
     public function postEventsAction(Request $request): JsonResponse
     {
@@ -61,7 +61,7 @@ class EventsController extends Controller
     }
 
     /**
-     * @Route("/api/events/get",name="get-events",methods={"GET"})
+     * @Route("/api/events",name="get-events",methods={"GET"})
      */
     public function getEventsAction(): JsonResponse
     {
@@ -72,7 +72,7 @@ class EventsController extends Controller
     }
 
     /**
-     * @Route("/api/events/{id}",name="put-events",methods={"PUT"})
+     * @Route("/api/events",name="put-events",methods={"PUT"})
      * @return JsonResponse
      */
     public function putEventsAction($id): JsonResponse
@@ -96,7 +96,7 @@ class EventsController extends Controller
     }
 
     /**
-     * @Route("/api/events/{event}",name="delete-events",methods={"DELETE"})
+     * @Route("/api/events",name="delete-events",methods={"DELETE"})
      * @return JsonResponse
      */
     public function deleteEventsAction(Event $event): JsonResponse
@@ -119,7 +119,7 @@ class EventsController extends Controller
     }
 
     /**
-     * @Route("/api/events/get/{id}",name="get-event",methods={"GET"})
+     * @Route("/api/events",name="get-event",methods={"GET"})
      * @return JsonResponse
      */
     public function getEventAction($id): JsonResponse
