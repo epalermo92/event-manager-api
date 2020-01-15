@@ -14,7 +14,9 @@ class ResponseLeftHandler
     {
         return match([
             FormNotValidException::class => static function() {
-                return JsonResponse::create([], JsonResponse::HTTP_BAD_REQUEST);
+                return JsonResponse::create([
+                    'Exception' => FormNotValidException::create()->getMessage()
+                ]);
             },
             any => reThrow
         ]);
