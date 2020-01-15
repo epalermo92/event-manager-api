@@ -19,7 +19,7 @@ use function Widmogrod\Monad\Either\right;
 class EventsController extends Controller
 {
     /**
-     * @Route("/api/events",name="post-events",methods={"POST"})
+     * @Route("/api/events/post",name="post-events")
      */
     public function postEventsAction(Request $request): JsonResponse
     {
