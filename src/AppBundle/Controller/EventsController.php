@@ -19,7 +19,7 @@ use function Widmogrod\Monad\Either\right;
 class EventsController extends Controller
 {
     /**
-     * @Route("/api/events/post",name="post-events")
+     * @Route("/api/events",name="post-events",methods={"POST"})
      */
     public function postEventsAction(Request $request): JsonResponse
     {
@@ -31,7 +31,6 @@ class EventsController extends Controller
             bind(
                 function (Event $event): Either {
                     $this->get('entity_persister')->save($event);
-
                     return right($event);
                 }
             )
