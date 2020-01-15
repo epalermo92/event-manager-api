@@ -4,14 +4,12 @@ namespace AppBundle\Controller;
 
 use AppBundle\Entity\AbstractIdentity;
 use AppBundle\Entity\LegalIdentity;
-use AppBundle\Exceptions\FormNotSubmittedException;
 use AppBundle\Routing\FormType\IdentityFormType;
 use AppBundle\Routing\ResponseLeftHandler;
 use AppBundle\Routing\Transformer\IdentityTransformer;
 use AppBundle\Service\EntityPersister;
 use Doctrine\ORM\EntityNotFoundException;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\Form\Exception\LogicException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -38,8 +36,34 @@ class IdentityController extends Controller
      */
     public function getIdentitiesAction():JsonResponse
     {
-        return JsonResponse::create(
-            $this->entityPersister->getRepository(AbstractIdentity::class)->findAll()
+        /** @var Either<\LogicException,JsonResponse> $result */
+        $result = pipeline(
+            function ($in){
+                return $in[0]->findAll();
+            },
+            function ($identities){
+                if (!$identities)
+                {
+                    return new Left(new EntityNotFoundException());
+                }
+
+                return new Right(JsonResponse::create(
+                    [
+                        $identities
+                    ]
+                ));
+            }
+        )(
+            [
+                $this->entityPersister->getRepository(AbstractIdentity::class)
+            ]
+        );
+
+        return $result->either(
+            ResponseLeftHandler::handle(),
+            static function (JsonResponse $response){
+                return $response;
+            }
         );
     }
 
