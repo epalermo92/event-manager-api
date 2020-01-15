@@ -5,9 +5,9 @@ namespace AppBundle\Controller;
 use AppBundle\Entity\AbstractIdentity;
 use AppBundle\Entity\LegalIdentity;
 use AppBundle\Routing\FormType\IdentityFormType;
+use AppBundle\Routing\ResponseLeftHandler;
 use AppBundle\Routing\Transformer\IdentityTransformer;
 use AppBundle\Service\EntityPersister;
-use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -61,7 +61,7 @@ class IdentityController extends Controller
     }
 
     /**
-     * @Route("/api/identities/pippo", name="post-identities")
+     * @Route("/api/identities", name="post-identities", methods={"POST"})
      * @param Request $request
      * @return JsonResponse
      */
@@ -96,13 +96,7 @@ class IdentityController extends Controller
         );
 
         return $result->either(
-            static function (Exception $exception) {
-                return JsonResponse::create(
-                    [
-                        'Exception' => $exception->getMessage(),
-                    ]
-                );
-            },
+            ResponseLeftHandler::handle(),
             static function (int $id) {
                 return JsonResponse::create(
                     [

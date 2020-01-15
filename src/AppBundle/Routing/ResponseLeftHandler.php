@@ -2,6 +2,7 @@
 
 namespace AppBundle\Routing;
 
+use AppBundle\Exceptions\FormNotSubmittedException;
 use AppBundle\Exceptions\FormNotValidException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use function Widmogrod\Useful\match;
@@ -16,6 +17,11 @@ class ResponseLeftHandler
             FormNotValidException::class => static function() {
                 return JsonResponse::create([
                     'Exception' => FormNotValidException::create()->getMessage()
+                ]);
+            },
+            FormNotSubmittedException::class => static function() {
+                return JsonResponse::create([
+                    'Exception' => FormNotSubmittedException::create()->getMessage()
                 ]);
             },
             any => reThrow

@@ -13,4 +13,9 @@ class FormNotSubmittedException extends LogicException
     {
         parent::__construct($message, $code, $previous);
     }
+
+    public static function create(): FormNotSubmittedException
+    {
+        return new self;
+    }
 }
