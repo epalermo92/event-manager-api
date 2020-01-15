@@ -4,6 +4,7 @@ namespace AppBundle\Routing;
 
 use AppBundle\Exceptions\FormNotSubmittedException;
 use AppBundle\Exceptions\FormNotValidException;
+use Doctrine\ORM\EntityNotFoundException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use function Widmogrod\Useful\match;
 use const Widmogrod\Functional\reThrow;
@@ -22,6 +23,11 @@ class ResponseLeftHandler
             FormNotSubmittedException::class => static function() {
                 return JsonResponse::create([
                     'Exception' => FormNotSubmittedException::create()->getMessage()
+                ]);
+            },
+            EntityNotFoundException::class => static function() {
+                return JsonResponse::create([
+                    'Exception' => (new EntityNotFoundException())->getMessage()
                 ]);
             },
             any => reThrow

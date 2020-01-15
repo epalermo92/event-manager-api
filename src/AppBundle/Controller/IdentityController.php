@@ -4,15 +4,20 @@ namespace AppBundle\Controller;
 
 use AppBundle\Entity\AbstractIdentity;
 use AppBundle\Entity\LegalIdentity;
+use AppBundle\Exceptions\FormNotSubmittedException;
 use AppBundle\Routing\FormType\IdentityFormType;
 use AppBundle\Routing\ResponseLeftHandler;
 use AppBundle\Routing\Transformer\IdentityTransformer;
 use AppBundle\Service\EntityPersister;
+use Doctrine\ORM\EntityNotFoundException;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\Config\Definition\Exception\Exception;
+use Symfony\Component\Form\Exception\LogicException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Widmogrod\Monad\Either\Either;
+use Widmogrod\Monad\Either\Left;
 use Widmogrod\Monad\Either\Right;
 use function Widmogrod\Functional\bind;
 use function Widmogrod\Functional\pipeline;
@@ -61,7 +66,7 @@ class IdentityController extends Controller
      */
     public function postIdentitiesAction(Request $request): JsonResponse
     {
-        /** @var Either $result */
+        /** @var Either<\LogicException,JsonResponse> $result */
         $result = pipeline(
             static function (array $in): Either {
                 return IdentityTransformer::create()->transform(...$in);
@@ -108,19 +113,40 @@ class IdentityController extends Controller
      */
     public function putIdentitiesAction(string $id): JsonResponse
     {
-        $identityToUpdate = $this->entityPersister->getRepository(AbstractIdentity::class)->find($id);
+        /** @var Either<LogicException,JsonResponse> $result */
+        $result = pipeline(
+            static function ($in){
+                if ($in[0])
+                {
+                    $in[0]->updateIdentity($in[1]);
+                    return new Right($in[0]);
+                }
+                return new Left(new EntityNotFoundException());
+            },
+            bind(
+                function (LegalIdentity $identity){
+                    $this->entityPersister->getManager()->flush();
+                    return new Right(JsonResponse::create(
+                        [
+                            'updated' => $identity
+                        ]
+                    ));
+                }
+            )
+        )
+        (
+            [
+                $this->entityPersister->getRepository(AbstractIdentity::class)->find($id),
+                new LegalIdentity('Facile.it', '350789989')
+            ]
+        );
 
-        $newIdentity = new LegalIdentity('Facile.it', '350789989');
-        if($identityToUpdate)
-        {
-            /** @var LegalIdentity $identityToUpdate */
-            $identityToUpdate->updateIdentity($newIdentity);
-}
-        $this->entityPersister->getManager()->flush();
-
-        return JsonResponse::create([
-            'entity updated' => true
-        ]);
+        return $result->either(
+            ResponseLeftHandler::handle(),
+            static function (JsonResponse $response){
+                return $response;
+            }
+        );
     }
 
     /**
