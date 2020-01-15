@@ -38,10 +38,10 @@ class IdentityController extends Controller
     {
         /** @var Either<\LogicException,JsonResponse> $result */
         $result = pipeline(
-            function ($in){
+            static function (array $in){
                 return $in[0]->findAll();
             },
-            function ($identities){
+            static function (array $identities){
                 if (!$identities)
                 {
                     return new Left(new EntityNotFoundException());
@@ -74,13 +74,37 @@ class IdentityController extends Controller
      */
     public function deleteIdentitiesAction($id): JsonResponse
     {
-        $identity = $this->entityPersister->getRepository(AbstractIdentity::class)->find($id);
+        /** @var Either<LogicException,JsonResponse> $result */
+        $result = pipeline(
+            static function (array $in){
+                return $in[0]->find($in[1]);
+            },
+            function (?object $identity){
+                if (!$identity)
+                {
+                    return new Left(new EntityNotFoundException());
+                }
 
-        $this->entityPersister->delete($identity);
+                $this->entityPersister->delete($identity);
+                return new Right(JsonResponse::create(
+                    [
+                        'deleted' => $identity
+                    ]
+                ));
+            }
+        )(
+            [
+                $this->entityPersister->getRepository(AbstractIdentity::class),
+                $id
+            ]
+        );
 
-        return JsonResponse::create([
-            'Deleted' => $identity
-        ]);
+        return $result->either(
+            ResponseLeftHandler::handle(),
+            static function (JsonResponse $response){
+                return $response;
+            }
+        );
     }
 
     /**
@@ -139,7 +163,7 @@ class IdentityController extends Controller
     {
         /** @var Either<LogicException,JsonResponse> $result */
         $result = pipeline(
-            static function ($in){
+            static function (array $in){
                 if ($in[0])
                 {
                     $in[0]->updateIdentity($in[1]);
@@ -157,8 +181,7 @@ class IdentityController extends Controller
                     ));
                 }
             )
-        )
-        (
+        )(
             [
                 $this->entityPersister->getRepository(AbstractIdentity::class)->find($id),
                 new LegalIdentity('Facile.it', '350789989')
