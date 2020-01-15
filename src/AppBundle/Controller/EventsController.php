@@ -29,15 +29,27 @@ class EventsController extends Controller
                 return EventTransformer::create()->transform(...$in);
             },
             bind(
-                static function (Event $event) : Either {
+                function (Event $event): Either {
                     $this->get('entity_persister')->save($event);
+
                     return right($event);
                 }
             )
         )(
             [
-                $this->createForm(EventFormType::class, null, ['method' => Request::METHOD_POST]),
-                $request
+                $this->createForm(
+                    EventFormType::class,
+                    [
+                        'name' => 'Christmas Party',
+                        'description' => 'Festa di Natale',
+                        'place' => 'Burigozzo 1',
+                        'num_max_participants' => 300,
+                        'organizer' => 1,
+                        'participants' => 2,
+                    ],
+                    ['method' => Request::METHOD_POST]
+                ),
+                $request,
             ]
         );
 
@@ -76,17 +88,26 @@ class EventsController extends Controller
         $event = $em->getRepository(Event::class)->find($id);
 
         if (!$event) {
-            return JsonResponse::create([
-                'result' => false
-            ]);
+            return JsonResponse::create(
+                [
+                    'result' => false,
+                ]
+            );
         }
 
-        $event->updateEntity($event->getPlace(), $event->getName(), $event->getNumMaxParticipants(), $event->getDescription());
+        $event->updateEntity(
+            $event->getPlace(),
+            $event->getName(),
+            $event->getNumMaxParticipants(),
+            $event->getDescription()
+        );
         $em->flush();
 
-        return JsonResponse::create([
-            'result' => true
-        ]);
+        return JsonResponse::create(
+            [
+                'result' => true,
+            ]
+        );
     }
 
     /**
@@ -99,17 +120,21 @@ class EventsController extends Controller
         $event = $em->getRepository(Event::class)->find($id);
 
         if (!$event) {
-            return JsonResponse::create([
-                'result' => false
-            ]);
+            return JsonResponse::create(
+                [
+                    'result' => false,
+                ]
+            );
         }
 
         $em->remove($event);
         $em->flush();
 
-        return JsonResponse::create([
-            'result' => true
-        ]);
+        return JsonResponse::create(
+            [
+                'result' => true,
+            ]
+        );
     }
 
     /**
@@ -121,13 +146,17 @@ class EventsController extends Controller
         $event = $this->getDoctrine()->getRepository(Event::class)->find($id);
 
         if (!$event) {
-            return JsonResponse::create([
-                'result' => false
-            ]);
+            return JsonResponse::create(
+                [
+                    'result' => false,
+                ]
+            );
         }
 
-        return JsonResponse::create([
-           'result' => true
-        ]);
+        return JsonResponse::create(
+            [
+                'result' => true,
+            ]
+        );
     }
 }
