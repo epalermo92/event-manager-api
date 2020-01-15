@@ -14,6 +14,11 @@ class EntityPersister
         $this->entityManager = $entityManager;
     }
 
+    public function getManager():EntityManagerInterface
+    {
+        return $this->entityManager;
+    }
+
     public function save(object $object): void
     {
         $this->entityManager->persist($object);

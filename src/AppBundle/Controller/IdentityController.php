@@ -50,7 +50,7 @@ class IdentityController extends Controller
         $this->entityPersister->delete($identity);
 
         return JsonResponse::create([
-            'result' => true
+            'Deleted' => $identity
         ]);
     }
 
@@ -110,19 +110,16 @@ class IdentityController extends Controller
     {
         $identityToUpdate = $this->entityPersister->getRepository(AbstractIdentity::class)->find($id);
 
-        if (!$identityToUpdate) {
-            return JsonResponse::create([
-                'result' => false
-            ]);
-        }
-
         $newIdentity = new LegalIdentity('Facile.it', '350789989');
-        /** @var LegalIdentity $identityToUpdate */
-        $identityToUpdate->updateIdentity($newIdentity);
-        $entityManager->flush();
+        if($identityToUpdate)
+        {
+            /** @var LegalIdentity $identityToUpdate */
+            $identityToUpdate->updateIdentity($newIdentity);
+}
+        $this->entityPersister->getManager()->flush();
 
         return JsonResponse::create([
-            'result' => true
+            'entity updated' => true
         ]);
     }
 
@@ -133,16 +130,7 @@ class IdentityController extends Controller
      */
     public function getIdentityAction($id): JsonResponse
     {
-        $entityManager = $this->getDoctrine()->getManager();
-        $identitiesRepository = $entityManager->getRepository(AbstractIdentity::class);
-        $identity = $entityManager->getRepository(AbstractIdentity::class)->find($id);
-
-        if (!$identity)
-        {
-            return JsonResponse::create([
-                'result' => false
-            ]);
-        }
+        $identity = $this->entityPersister->getRepository(AbstractIdentity::class)->find($id);
 
         return JsonResponse::create([
             'result' => $identity
