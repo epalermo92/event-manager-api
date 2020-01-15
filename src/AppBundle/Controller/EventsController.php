@@ -79,13 +79,13 @@ class EventsController extends Controller
     }
 
     /**
-     * @Route("/api/events/put/{id}",name="put-events")
+     * @Route("/api/events/{id}",name="put-events")
      */
     public function putEventsAction(Request $request, $id)
     {
-        /** @var Either $r */
+        /** @var Either<\Exception, Event> $r */
         $r = pipeline(
-            function (array $in) use ($id) {
+            function (array $in) use ($id): Either{
                 /** @var FormInterface $form */
                 $form = $in[0];
                 /** @var Event $event */
@@ -97,10 +97,10 @@ class EventsController extends Controller
                     $form->get('description')->getData()
                 );
 
-                return $event;
+                return right($event);
             },
             bind(
-                function (Event $event) {
+                function (Either $event) {
                     $this->get('entity_persister')->getManager()->flush();
 
                     return right($event);
