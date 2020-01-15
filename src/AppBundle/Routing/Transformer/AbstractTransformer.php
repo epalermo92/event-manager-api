@@ -2,6 +2,7 @@
 
 namespace AppBundle\Routing\Transformer;
 
+use AppBundle\Exceptions\FormNotSubmittedException;
 use AppBundle\Exceptions\FormNotValidException;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -25,9 +26,14 @@ abstract class AbstractTransformer
     {
         $form->handleRequest($request);
 
-//        if(!$form->isSubmitted() || !$form->isValid()) {
-//            return left(new FormNotValidException());
-//        }
+        if(!$form->isSubmitted()) {
+            return left(new FormNotSubmittedException());
+        }
+
+        if(!$form->isValid()) {
+            return left(new FormNotValidException());
+        }
+        
         // TODO How do we validate and submit the form!?!?!?
 
         return $this->doTransform($form);
