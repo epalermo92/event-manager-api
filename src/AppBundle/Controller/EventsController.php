@@ -101,7 +101,7 @@ class EventsController extends Controller
                 return right($event);
             },
             bind(
-                function (Event $event) {
+                function (Event $event): Either {
                     $this->get('entity_persister')->getManager()->flush();
 
                     return right($event);
@@ -166,25 +166,23 @@ class EventsController extends Controller
     }
 
     /**
-     * @Route("/api/events/{event}",name="get-event",methods={"GET"})
-     * @return JsonResponse
+     * @Route("/api/events/{id}",name="get-event",methods={"GET"})
      */
-    public function getEventAction($id): JsonResponse
+    public function getEventAction($id)
     {
-        $event = $this->getDoctrine()->getRepository(Event::class)->find($id);
+        /** @var Either<\Exception, Event> $r */
+        $r = $this->get('entity_persister')->getRepository(Event::class)->find($id);
 
-        if (!$event) {
-            return JsonResponse::create(
-                [
-                    'result' => false,
-                ]
-            );
-        }
-
-        return JsonResponse::create(
-            [
-                'result' => true,
-            ]
+        return $r->either(
+            ResponseLeftHandler::handle(),
+            static function (Event $event) {
+                return JsonResponse::create(
+                    [
+                        'id' => $event->getId(),
+                    ],
+                    JsonResponse::HTTP_OK
+                );
+            }
         );
     }
 }
