@@ -20,7 +20,7 @@ class EntityPersister
         $this->entityManager->flush();
     }
 
-    public function delete(object $object): void
+    public function delete(?object $object): void
     {
         $this->entityManager->remove($object);
         $this->entityManager->flush();

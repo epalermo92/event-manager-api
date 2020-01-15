@@ -40,20 +40,14 @@ class IdentityController extends Controller
 
     /**
      * @Route("/api/identities/{id}", name="delete-identities", methods={"DELETE"})
+     * @param $id
+     * @return JsonResponse
      */
     public function deleteIdentitiesAction($id): JsonResponse
     {
         $identity = $this->entityPersister->getRepository(AbstractIdentity::class)->find($id);
 
-        if (!$identity)
-        {
-            return JsonResponse::create([
-                'result' => 'Identity not found in database'
-            ]);
-        }
-
-        $entityManager->remove($identity);
-        $entityManager->flush();
+        $this->entityPersister->delete($identity);
 
         return JsonResponse::create([
             'result' => true
@@ -109,6 +103,8 @@ class IdentityController extends Controller
 
     /**
      * @Route("/api/identities/{id}", name="put-identities", methods={"PUT"})
+     * @param string $id
+     * @return JsonResponse
      */
     public function putIdentitiesAction(string $id): JsonResponse
     {
@@ -132,8 +128,10 @@ class IdentityController extends Controller
 
     /**
      * @Route("/api/identities/{id}", name="get-identity", methods={"GET"})
+     * @param $id
+     * @return JsonResponse
      */
-    public function getIdentityAction($id)
+    public function getIdentityAction($id): JsonResponse
     {
         $entityManager = $this->getDoctrine()->getManager();
         $identitiesRepository = $entityManager->getRepository(AbstractIdentity::class);
