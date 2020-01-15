@@ -56,10 +56,10 @@ class EventsController extends Controller
 
         return $r->either(
             ResponseLeftHandler::handle(),
-            static function (Either $event) {
+            static function (Event $event) {
                 return JsonResponse::create(
                     [
-                        'id' => $event->extract()->getId(),
+                        'id' => $event->getId(),
                     ],
                     JsonResponse::HTTP_CREATED
                 );
@@ -80,12 +80,13 @@ class EventsController extends Controller
 
     /**
      * @Route("/api/events/{id}",name="put-events")
+     * @return JsonResponse
      */
-    public function putEventsAction(Request $request, $id)
+    public function putEventsAction(Request $request, $id): JsonResponse
     {
         /** @var Either<\Exception, Event> $r */
         $r = pipeline(
-            function (array $in) use ($id): Either{
+            function (array $in) use ($id): Either {
                 /** @var FormInterface $form */
                 $form = $in[0];
                 /** @var Event $event */
@@ -100,7 +101,7 @@ class EventsController extends Controller
                 return right($event);
             },
             bind(
-                function (Either $event) {
+                function (Event $event) {
                     $this->get('entity_persister')->getManager()->flush();
 
                     return right($event);
@@ -124,18 +125,17 @@ class EventsController extends Controller
             ]
         );
 
-        $r->either(
+        return $r->either(
             ResponseLeftHandler::handle(),
-            static function (Either $event) {
+            static function (Event $event) {
                 return JsonResponse::create(
                     [
-                        'id' => $event->extract()->getId(),
+                        'id' => $event->getId(),
                     ],
                     JsonResponse::HTTP_OK
                 );
             }
         );
-
     }
 
     /**
