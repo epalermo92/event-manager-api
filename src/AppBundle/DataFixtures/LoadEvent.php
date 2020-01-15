@@ -16,9 +16,9 @@ class LoadEvent extends Fixture implements DependentFixtureInterface
     public function load(ObjectManager $manager)
     {
         $organizer = $manager->getRepository(AbstractIdentity::class)->find(2);
-        $manager->persist(new Event('Santiago Bernabeu', new DateTime(), 'Finale Champions League', 100000, 'description', $organizer, 7));
+        $manager->persist(new Event('Santiago Bernabeu', new DateTime(), 'Finale Champions League', 100000, 'description', $organizer, $organizer));
         $organizer = $manager->getRepository(AbstractIdentity::class)->find(7);
-        $manager->persist(new Event('Santiago Bernabeu', new DateTime(), 'Finale Champions League', 100000, 'description', $organizer, 8));
+        $manager->persist(new Event('Santiago Bernabeu', new DateTime(), 'Finale Champions League', 100000, 'description', $organizer, $organizer));
 
         $manager->flush();
     }

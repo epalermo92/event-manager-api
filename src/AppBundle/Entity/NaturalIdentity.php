@@ -2,6 +2,7 @@
 
 namespace AppBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -19,6 +20,10 @@ class NaturalIdentity extends AbstractIdentity
      * @ORM\Column(name="codiceFiscale", type="string")
      */
     private $codiceFiscale;
+    /**
+     * @ORM\ManyToMany(targetEntity="AppBundle\Entity\Event",inversedBy="participants")
+     */
+    protected $events;
 
     public function __construct(string $name, string $surname, string $codiceFiscale)
     {
@@ -27,6 +32,7 @@ class NaturalIdentity extends AbstractIdentity
         $this->name = $name;
         $this->surname = $surname;
         $this->codiceFiscale = $codiceFiscale;
+        $this->events = new ArrayCollection();
     }
 
     public function getSurname(): string
@@ -46,6 +52,14 @@ class NaturalIdentity extends AbstractIdentity
     }
 
     /**
+     * @return ArrayCollection
+     */
+    public function getEvents(): ArrayCollection
+    {
+        return $this->events;
+    }
+
+    /**
      * @inheritDoc
      */
     public function jsonSerialize()
@@ -55,6 +69,7 @@ class NaturalIdentity extends AbstractIdentity
             'name' => $this->name,
             'surname' => $this->surname,
             'codiceFiscale' => $this->codiceFiscale,
+            'events' => $this->events
         ];
     }
 
