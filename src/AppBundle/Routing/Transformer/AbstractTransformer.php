@@ -25,9 +25,10 @@ abstract class AbstractTransformer
     {
         $form->handleRequest($request);
 
-        if(!$form->isSubmitted() || !$form->isValid()) {
-            return left(new FormNotValidException());
-        }
+//        if(!$form->isSubmitted() || !$form->isValid()) {
+//            return left(new FormNotValidException());
+//        }
+        // TODO How do we validate and submit the form!?!?!?
 
         return $this->doTransform($form);
     }

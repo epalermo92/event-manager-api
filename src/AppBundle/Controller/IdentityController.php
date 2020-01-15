@@ -7,6 +7,7 @@ use AppBundle\Entity\LegalIdentity;
 use AppBundle\Routing\FormType\IdentityFormType;
 use AppBundle\Routing\Transformer\IdentityTransformer;
 use AppBundle\Service\EntityPersister;
+use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -72,7 +73,7 @@ class IdentityController extends Controller
                 return IdentityTransformer::create()->transform(...$in);
             },
             bind(
-                static function (AbstractIdentity $identity): Either {
+                function (AbstractIdentity $identity): Either {
                     $this->entityPersister->save($identity);
 
                     return new Right($identity->getId());
@@ -95,16 +96,19 @@ class IdentityController extends Controller
         );
 
         return $result->either(
-            static function (\Exception $exception) {
-                return JsonResponse::create([
-                    'Exception' => $exception->getMessage() . 'Sei un Fallito'
-                ]);
+            static function (Exception $exception) {
+                return JsonResponse::create(
+                    [
+                        'Exception' => $exception->getMessage(),
+                    ]
+                );
             },
             static function (int $id) {
-                return JsonResponse::create([
-                    'id' => $id,
-                    'Ciao' => 'bello'
-                ]);
+                return JsonResponse::create(
+                    [
+                        'id' => $id,
+                    ]
+                );
             }
         );
     }
