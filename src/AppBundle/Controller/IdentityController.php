@@ -18,6 +18,7 @@ use Widmogrod\Monad\Either\Either;
 use Widmogrod\Monad\Either\Left;
 use Widmogrod\Monad\Either\Right;
 use function Widmogrod\Functional\bind;
+use function Widmogrod\Functional\map;
 use function Widmogrod\Functional\pipeline;
 
 class IdentityController extends Controller
@@ -38,21 +39,23 @@ class IdentityController extends Controller
         /** @var Either<\LogicException,JsonResponse> $result */
         $result = pipeline(
             static function (array $in) {
-                return $in[0]->findAll();
+                return new Right($in[0]->findAll());
             },
-            static function (array $identities) {
-                if (!$identities) {
-                    return new Left(new EntityNotFoundException());
-                }
+            bind(
+                static function (array $identities) {
+                    if (!$identities) {
+                        return new Left(new EntityNotFoundException());
+                    }
 
-                return new Right(
-                    JsonResponse::create(
-                        [
-                            $identities,
-                        ]
-                    )
-                );
-            }
+                    return new Right(
+                        JsonResponse::create(
+                            [
+                                $identities,
+                            ]
+                        )
+                    );
+                }
+            )
         )(
             [
                 $this->entityPersister->getRepository(AbstractIdentity::class),
@@ -77,23 +80,23 @@ class IdentityController extends Controller
         /** @var Either<LogicException,JsonResponse> $result */
         $result = pipeline(
             static function (array $in) {
-                return $in[0]->find($in[1]);
-            },
-            function (?object $identity) {
-                if (!$identity) {
+                if (!$in[0]->find($in[1])) {
                     return new Left(new EntityNotFoundException());
                 }
-
-                $this->entityPersister->delete($identity);
-
-                return new Right(
-                    JsonResponse::create(
-                        [
-                            'deleted' => $identity,
-                        ]
-                    )
-                );
-            }
+                return new Right($in[0]->find($in[1]));
+            },
+            map(
+                function (?object $identity) {
+                    $this->entityPersister->delete($identity);
+                    return new Right(
+                        JsonResponse::create(
+                            [
+                                'deleted' => $identity,
+                            ]
+                        )
+                    );
+                }
+            )
         )(
             [
                 $this->entityPersister->getRepository(AbstractIdentity::class),
@@ -103,10 +106,11 @@ class IdentityController extends Controller
 
         return $result->either(
             ResponseLeftHandler::handle(),
-            static function (JsonResponse $response) {
-                return $response;
+            static function (Either $either) {
+                return $either->extract();
             }
         );
+        //TODO Why do it returns property id: null???
     }
 
     /**
@@ -212,21 +216,23 @@ class IdentityController extends Controller
         /** @var Either<\LogicException,JsonResponse> $result */
         $result = pipeline(
             static function (array $in) {
-                return $in[0]->find($in[1]);
+                return new Right($in[0]->find($in[1]));
             },
-            static function (?object $identity) {
-                if (!$identity) {
-                    return new Left(new EntityNotFoundException());
-                }
+            bind(
+                static function (?object $identity) {
+                    if (!$identity) {
+                        return new Left(new EntityNotFoundException());
+                    }
 
-                return new Right(
-                    JsonResponse::create(
-                        [
-                            $identity,
-                        ]
-                    )
-                );
-            }
+                    return new Right(
+                        JsonResponse::create(
+                            [
+                                $identity,
+                            ]
+                        )
+                    );
+                }
+            )
         )(
             [
                 $this->entityPersister->getRepository(AbstractIdentity::class),
