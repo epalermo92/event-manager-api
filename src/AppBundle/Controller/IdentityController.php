@@ -26,42 +26,42 @@ class IdentityController extends Controller
 
     public function __construct(
         EntityPersister $entityPersister
-    )
-    {
+    ) {
         $this->entityPersister = $entityPersister;
     }
 
     /**
      * @Route("/api/identities", name="get-identities", methods={"GET"})
      */
-    public function getIdentitiesAction():JsonResponse
+    public function getIdentitiesAction(): JsonResponse
     {
         /** @var Either<\LogicException,JsonResponse> $result */
         $result = pipeline(
-            static function (array $in){
+            static function (array $in) {
                 return $in[0]->findAll();
             },
-            static function (array $identities){
-                if (!$identities)
-                {
+            static function (array $identities) {
+                if (!$identities) {
                     return new Left(new EntityNotFoundException());
                 }
 
-                return new Right(JsonResponse::create(
-                    [
-                        $identities
-                    ]
-                ));
+                return new Right(
+                    JsonResponse::create(
+                        [
+                            $identities,
+                        ]
+                    )
+                );
             }
         )(
             [
-                $this->entityPersister->getRepository(AbstractIdentity::class)
+                $this->entityPersister->getRepository(AbstractIdentity::class),
             ]
         );
 
         return $result->either(
             ResponseLeftHandler::handle(),
-            static function (JsonResponse $response){
+            static function (JsonResponse $response) {
                 return $response;
             }
         );
@@ -76,32 +76,34 @@ class IdentityController extends Controller
     {
         /** @var Either<LogicException,JsonResponse> $result */
         $result = pipeline(
-            static function (array $in){
+            static function (array $in) {
                 return $in[0]->find($in[1]);
             },
-            function (?object $identity){
-                if (!$identity)
-                {
+            function (?object $identity) {
+                if (!$identity) {
                     return new Left(new EntityNotFoundException());
                 }
 
                 $this->entityPersister->delete($identity);
-                return new Right(JsonResponse::create(
-                    [
-                        'deleted' => $identity
-                    ]
-                ));
+
+                return new Right(
+                    JsonResponse::create(
+                        [
+                            'deleted' => $identity,
+                        ]
+                    )
+                );
             }
         )(
             [
                 $this->entityPersister->getRepository(AbstractIdentity::class),
-                $id
+                $id,
             ]
         );
 
         return $result->either(
             ResponseLeftHandler::handle(),
-            static function (JsonResponse $response){
+            static function (JsonResponse $response) {
                 return $response;
             }
         );
@@ -163,34 +165,38 @@ class IdentityController extends Controller
     {
         /** @var Either<LogicException,JsonResponse> $result */
         $result = pipeline(
-            static function (array $in){
-                if ($in[0])
-                {
+            static function (array $in) {
+                if ($in[0]) {
                     $in[0]->updateIdentity($in[1]);
+
                     return new Right($in[0]);
                 }
+
                 return new Left(new EntityNotFoundException());
             },
             bind(
-                function (LegalIdentity $identity){
+                function (LegalIdentity $identity) {
                     $this->entityPersister->getManager()->flush();
-                    return new Right(JsonResponse::create(
-                        [
-                            'updated' => $identity
-                        ]
-                    ));
+
+                    return new Right(
+                        JsonResponse::create(
+                            [
+                                'updated' => $identity,
+                            ]
+                        )
+                    );
                 }
             )
         )(
             [
                 $this->entityPersister->getRepository(AbstractIdentity::class)->find($id),
-                new LegalIdentity('Facile.it', '350789989')
+                new LegalIdentity('Facile.it', '350789989'),
             ]
         );
 
         return $result->either(
             ResponseLeftHandler::handle(),
-            static function (JsonResponse $response){
+            static function (JsonResponse $response) {
                 return $response;
             }
         );
@@ -203,10 +209,36 @@ class IdentityController extends Controller
      */
     public function getIdentityAction($id): JsonResponse
     {
-        $identity = $this->entityPersister->getRepository(AbstractIdentity::class)->find($id);
+        /** @var Either<\LogicException,JsonResponse> $result */
+        $result = pipeline(
+            static function (array $in) {
+                return $in[0]->find($in[1]);
+            },
+            static function (?object $identity) {
+                if (!$identity) {
+                    return new Left(new EntityNotFoundException());
+                }
 
-        return JsonResponse::create([
-            'result' => $identity
-        ]);
+                return new Right(
+                    JsonResponse::create(
+                        [
+                            $identity,
+                        ]
+                    )
+                );
+            }
+        )(
+            [
+                $this->entityPersister->getRepository(AbstractIdentity::class),
+                $id,
+            ]
+        );
+
+        return $result->either(
+            ResponseLeftHandler::handle(),
+            static function (JsonResponse $response) {
+                return $response;
+            }
+        );
     }
 }
