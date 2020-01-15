@@ -7,6 +7,7 @@ use AppBundle\Routing\FormType\EventFormType;
 use AppBundle\Routing\ResponseLeftHandler;
 use AppBundle\Routing\Transformer\EventTransformer;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -19,7 +20,7 @@ use function Widmogrod\Monad\Either\right;
 class EventsController extends Controller
 {
     /**
-     * @Route("/api/events",name="post-events",methods={"POST"})
+     * @Route("/api/events/post",name="post-events")
      */
     public function postEventsAction(Request $request): JsonResponse
     {
@@ -31,6 +32,7 @@ class EventsController extends Controller
             bind(
                 function (Event $event): Either {
                     $this->get('entity_persister')->save($event);
+
                     return right($event);
                 }
             )
@@ -54,10 +56,10 @@ class EventsController extends Controller
 
         return $r->either(
             ResponseLeftHandler::handle(),
-            static function (Event $event) {
+            static function (Either $event) {
                 return JsonResponse::create(
                     [
-                        'id' => $event->getId(),
+                        'id' => $event->extract()->getId(),
                     ],
                     JsonResponse::HTTP_CREATED
                 );
@@ -77,36 +79,63 @@ class EventsController extends Controller
     }
 
     /**
-     * @Route("/api/events/{event}",name="put-events",methods={"PUT"})
-     * @return JsonResponse
+     * @Route("/api/events/put/{id}",name="put-events")
      */
-    public function putEventsAction($id): JsonResponse
+    public function putEventsAction(Request $request, $id)
     {
-        $em = $this->getDoctrine()->getManager();
-        /** @var Event $event */
-        $event = $em->getRepository(Event::class)->find($id);
+        /** @var Either $r */
+        $r = pipeline(
+            function (array $in) use ($id) {
+                /** @var FormInterface $form */
+                $form = $in[0];
+                /** @var Event $event */
+                $event = $this->get('entity_persister')->getManager()->getRepository(Event::class)->find($id);
+                $event->updateEntity(
+                    $form->get('place')->getData(),
+                    $form->get('name')->getData(),
+                    $form->get('num_max_participants')->getData(),
+                    $form->get('description')->getData()
+                );
 
-        if (!$event) {
-            return JsonResponse::create(
-                [
-                    'result' => false,
-                ]
-            );
-        }
+                return $event;
+            },
+            bind(
+                function (Event $event) {
+                    $this->get('entity_persister')->getManager()->flush();
 
-        $event->updateEntity(
-            $event->getPlace(),
-            $event->getName(),
-            $event->getNumMaxParticipants(),
-            $event->getDescription()
-        );
-        $em->flush();
-
-        return JsonResponse::create(
+                    return right($event);
+                }
+            )
+        )(
             [
-                'result' => true,
+                $this->createForm(
+                    EventFormType::class,
+                    [
+                        'name' => 'Super Party!',
+                        'description' => 'Festa di Natale',
+                        'place' => 'Burigozzo 1',
+                        'num_max_participants' => 300,
+                        'organizer' => 1,
+                        'participants' => 2,
+                    ],
+                    ['method' => Request::METHOD_PUT]
+                ),
+                $request,
             ]
         );
+
+        $r->either(
+            ResponseLeftHandler::handle(),
+            static function (Either $event) {
+                return JsonResponse::create(
+                    [
+                        'id' => $event->extract()->getId(),
+                    ],
+                    JsonResponse::HTTP_OK
+                );
+            }
+        );
+
     }
 
     /**
