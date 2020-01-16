@@ -21,7 +21,7 @@ use function Widmogrod\Monad\Either\right;
 class EventsController extends Controller
 {
     /**
-     * @Route("/api/events/post",name="post-events")
+     * @Route("/api/events",name="post-events")
      */
     public function postEventsAction(Request $request): JsonResponse
     {
@@ -140,28 +140,22 @@ class EventsController extends Controller
     }
 
     /**
-     * @Route("/api/events/{id}",name="delete-events",methods={"DELETE"})
-     * @return JsonResponse
+     * @Route("/api/events/{id}",name="delete-events")
      */
-    public function deleteEventsAction($id): JsonResponse
+    public function deleteEventsAction($id)
     {
-        $em = $this->getDoctrine()->getManager();
-        $event = $em->getRepository(Event::class)->find($id);
+        /** @var Event $event */
+        $event = $this->get('entity_persister')->getRepository(Event::class)->find($id);
 
-        if (!$event) {
-            return JsonResponse::create(
-                [
-                    'result' => false,
-                ]
-            );
+        if (!$event){
+            throw new EntityNotFoundException('Event not found');
         }
 
-        $em->remove($event);
-        $em->flush();
+        $this->get('entity_persister')->delete($event);
 
         return JsonResponse::create(
             [
-                'result' => true,
+                'event deleted' => $event
             ]
         );
     }
