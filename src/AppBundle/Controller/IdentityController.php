@@ -25,14 +25,6 @@ use function Widmogrod\Functional\pipeline;
 
 class IdentityController extends Controller
 {
-    private $entityPersister;
-
-    public function __construct(
-        EntityPersister $entityPersister
-    ) {
-        $this->entityPersister = $entityPersister;
-    }
-
     /**
      * @Route("/api/identities", name="get-identities", methods={"GET"})
      */
@@ -60,7 +52,7 @@ class IdentityController extends Controller
             )
         )(
             [
-                $this->entityPersister->getRepository(AbstractIdentity::class),
+                $this->get('entity_persister')->getRepository(AbstractIdentity::class),
             ]
         );
 
@@ -91,7 +83,7 @@ class IdentityController extends Controller
             map(
                 function (AbstractIdentity $identity) {
                     $id = $identity->getId();
-                    $this->entityPersister->delete($identity);
+                    $this->get('entity_persister')->delete($identity);
                     return new Right(
                         JsonResponse::create(
                             [
@@ -103,7 +95,7 @@ class IdentityController extends Controller
             )
         )(
             [
-                $this->entityPersister->getManager()->getRepository(AbstractIdentity::class),
+                $this->get('entity_persister')->getManager()->getRepository(AbstractIdentity::class),
                 $id
             ]
         );
@@ -130,7 +122,7 @@ class IdentityController extends Controller
             },
             bind(
                 function (AbstractIdentity $identity): Either {
-                    $this->entityPersister->save($identity);
+                    $this->get('entity_persister')->save($identity);
 
                     return new Right($identity->getId());
                 }
@@ -186,7 +178,7 @@ class IdentityController extends Controller
             },
             bind(
                 function (AbstractIdentity $identity) {
-                    $this->entityPersister->getManager()->flush();
+                    $this->get('entity_persister')->getManager()->flush();
                     return new Right(JsonResponse::create(
                         [
                             'updated' => $identity
@@ -208,7 +200,7 @@ class IdentityController extends Controller
                     ['method' => Request::METHOD_POST]
                 ),
                 $request,
-                $this->entityPersister->getManager()->getRepository(AbstractIdentity::class)->find($id)
+                $this->get('entity_persister')->getManager()->getRepository(AbstractIdentity::class)->find($id)
             ]
         );
         return $result->either(
@@ -248,7 +240,7 @@ class IdentityController extends Controller
             )
         )(
             [
-                $this->entityPersister->getRepository(AbstractIdentity::class),
+                $this->get('entity_persister')->getRepository(AbstractIdentity::class),
                 $id,
             ]
         );
