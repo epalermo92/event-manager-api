@@ -1,11 +1,9 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace AppBundle\DataFixtures;
 
 use AppBundle\Entity\AbstractIdentity;
 use AppBundle\Entity\Event;
-use AppBundle\Entity\LegalIdentity;
-use AppBundle\Entity\NaturalIdentity;
 use DateTime;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
@@ -15,12 +13,30 @@ class LoadEvent extends Fixture implements DependentFixtureInterface
 {
     public function load(ObjectManager $manager)
     {
-        $organizer = $manager->getRepository(AbstractIdentity::class)->find(2);
-        $event = new Event('Santiago Bernabeu', new DateTime(), 'Finale Champions League', 100000, 'description', $organizer, $organizer);
-        $organizer->addEventParticipant($event);
-        $manager->persist($event);
-        $organizer = $manager->getRepository(AbstractIdentity::class)->find(7);
-        $manager->persist(new Event('Santiago Bernabeu', new DateTime(), 'Finale Champions League', 100000, 'description', $organizer, $organizer));
+        $organizer1 = $manager->getRepository(AbstractIdentity::class)->find(2);
+        $event1 = new Event(
+            'Santiago Bernabeu',
+            new DateTime(),
+            'Finale Champions League',
+            100000,
+            'description',
+            $organizer1,
+            $organizer1
+        );
+        $organizer1->addEventParticipant($event1);
+        $manager->persist($event1);
+        $organizer2 = $manager->getRepository(AbstractIdentity::class)->find(7);
+        $event2 = new Event(
+            'Santiago Bernabeu',
+            new DateTime(),
+            'Finale Champions League',
+            100000,
+            'description',
+            $organizer2,
+            $organizer2
+        );
+        $organizer2->addEventParticipant($event2);
+        $manager->persist($event2);
 
         $manager->flush();
     }
