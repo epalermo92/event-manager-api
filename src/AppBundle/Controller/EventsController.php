@@ -36,14 +36,7 @@ class EventsController extends Controller
             [
                 $this->createForm(
                     EventFormType::class,
-                    [
-                        'name' => 'Christmas Party',
-                        'description' => 'Festa di Natale',
-                        'place' => 'Burigozzo 1',
-                        'num_max_participants' => 300,
-                        'organizer' => 1,
-                        'participants' => 2,
-                    ],
+                    null,
                     ['method' => Request::METHOD_POST]
                 ),
                 $request,
@@ -108,14 +101,7 @@ class EventsController extends Controller
             [
                 $this->createForm(
                     EventFormType::class,
-                    [
-                        'name' => 'Super Party!',
-                        'description' => 'Festa di Natale',
-                        'place' => 'Burigozzo 1',
-                        'num_max_participants' => 300,
-                        'organizer' => 1,
-                        'participants' => 2,
-                    ],
+                    null,
                     ['method' => Request::METHOD_PUT]
                 ),
                 $request,
