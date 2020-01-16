@@ -42,6 +42,11 @@ abstract class AbstractIdentity implements \JsonSerializable
      */
     protected $events;
 
+    public function addEventParticipant(Event $event): void
+    {
+        $this->events[] = $event;
+    }
+
     public function getId(): int
     {
         return $this->id;
