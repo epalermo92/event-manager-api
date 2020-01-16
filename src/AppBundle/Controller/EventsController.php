@@ -6,6 +6,7 @@ use AppBundle\Entity\Event;
 use AppBundle\Routing\FormType\EventFormType;
 use AppBundle\Routing\ResponseLeftHandler;
 use AppBundle\Routing\Transformer\EventTransformer;
+use Doctrine\ORM\EntityNotFoundException;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -139,10 +140,10 @@ class EventsController extends Controller
     }
 
     /**
-     * @Route("/api/events/{event}",name="delete-events",methods={"DELETE"})
+     * @Route("/api/events/{id}",name="delete-events",methods={"DELETE"})
      * @return JsonResponse
      */
-    public function deleteEventsAction(Event $event): JsonResponse
+    public function deleteEventsAction($id): JsonResponse
     {
         $em = $this->getDoctrine()->getManager();
         $event = $em->getRepository(Event::class)->find($id);
@@ -167,22 +168,21 @@ class EventsController extends Controller
 
     /**
      * @Route("/api/events/{id}",name="get-event",methods={"GET"})
+     * @return JsonResponse
      */
-    public function getEventAction($id)
+    public function getEventAction($id): JsonResponse
     {
-        /** @var Either<\Exception, Event> $r */
-        $r = $this->get('entity_persister')->getRepository(Event::class)->find($id);
+        /** @var Event $event */
+        $event = $this->get('entity_persister')->getRepository(Event::class)->find($id);
 
-        return $r->either(
-            ResponseLeftHandler::handle(),
-            static function (Event $event) {
-                return JsonResponse::create(
-                    [
-                        'id' => $event->getId(),
-                    ],
-                    JsonResponse::HTTP_OK
-                );
-            }
+        if (!$event){
+            throw new EntityNotFoundException('Event not found!');
+        }
+
+        return JsonResponse::create(
+            [
+                'Event Name' => $event->getName()
+            ]
         );
     }
 }
