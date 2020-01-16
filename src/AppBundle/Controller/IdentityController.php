@@ -3,14 +3,11 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Entity\AbstractIdentity;
-use AppBundle\Entity\LegalIdentity;
-use AppBundle\Entity\NaturalIdentity;
 use AppBundle\Exceptions\EntityNotBuiltException;
 use AppBundle\Exceptions\EntityNotFoundException;
 use AppBundle\Routing\FormType\IdentityFormType;
 use AppBundle\Routing\ResponseLeftHandler;
 use AppBundle\Routing\Transformer\IdentityTransformer;
-use AppBundle\Service\EntityPersister;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Form\Exception\LogicException;
 use Symfony\Component\HttpFoundation\Request;
@@ -52,7 +49,7 @@ class IdentityController extends Controller
             )
         )(
             [
-                $this->get('entity_persister')->getRepository(AbstractIdentity::class),
+                $this->get('entity_persister')->getManager()->getRepository(AbstractIdentity::class),
             ]
         );
 
@@ -240,7 +237,7 @@ class IdentityController extends Controller
             )
         )(
             [
-                $this->get('entity_persister')->getRepository(AbstractIdentity::class),
+                $this->get('entity_persister')->getManager()->getRepository(AbstractIdentity::class),
                 $id,
             ]
         );

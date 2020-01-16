@@ -30,9 +30,4 @@ class EntityPersister
         $this->entityManager->remove($object);
         $this->entityManager->flush();
     }
-
-    public function getRepository(string $class): ObjectRepository
-    {
-        return $this->entityManager->getRepository($class);
-    }
 }
