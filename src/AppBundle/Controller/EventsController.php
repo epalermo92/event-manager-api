@@ -140,7 +140,7 @@ class EventsController extends Controller
     }
 
     /**
-     * @Route("/api/events/delete/{id}",name="delete-events")
+     * @Route("/api/events/{id}",name="delete-events")
      * @return JsonResponse
      */
     public function deleteEventsAction($id): JsonResponse
@@ -172,7 +172,7 @@ class EventsController extends Controller
             function (Event $event) {
                 return JsonResponse::create(
                     [
-                        'event delete' => $event
+                        'event delete' => $event,
                     ]
                 );
             }
@@ -185,17 +185,35 @@ class EventsController extends Controller
      */
     public function getEventAction($id): JsonResponse
     {
-        /** @var Event $event */
-        $event = $this->get('entity_persister')->getRepository(Event::class)->find($id);
+        /** @var Either<\Exception, Either> $r */
+        $r = pipeline(
+            function (array $in): Either {
+                if (!$in[0]) {
+                    return left(new \AppBundle\Exceptions\EntityNotFoundException());
+                }
 
-        if (!$event) {
-            throw new EntityNotFoundException('Event not found!');
-        }
-
-        return JsonResponse::create(
+                return right($in[0]);
+            },
+            bind(
+                function (Event $event): Either {
+                    return right($event);
+                }
+            )
+        )(
             [
-                'Event Name' => $event->getName(),
+                $this->get('entity_persister')->getManager()->getRepository(Event::class)->find($id),
             ]
+        );
+
+        return $r->either(
+            ResponseLeftHandler::handle(),
+            function (Event $event) {
+                return JsonResponse::create(
+                    [
+                        'event' => $event,
+                    ]
+                );
+            }
         );
     }
 }
