@@ -36,14 +36,7 @@ class EventsController extends Controller
             [
                 $this->createForm(
                     EventFormType::class,
-                    [
-                        'name' => 'Christmas Party',
-                        'description' => 'Festa di Natale',
-                        'place' => 'Burigozzo 1',
-                        'num_max_participants' => 300,
-                        'organizer' => 1,
-                        'participants' => 2,
-                    ],
+                    null,
                     ['method' => Request::METHOD_POST]
                 ),
                 $request,
@@ -88,12 +81,7 @@ class EventsController extends Controller
                 /** @var FormInterface $form */
                 $form = $in[0];
 
-                $event->updateEntity(
-                    $form->get('place')->getData(),
-                    $form->get('name')->getData(),
-                    $form->get('num_max_participants')->getData(),
-                    $form->get('description')->getData()
-                );
+                $event->updateEntity($event);
 
                 return right($event);
             },
@@ -108,14 +96,7 @@ class EventsController extends Controller
             [
                 $this->createForm(
                     EventFormType::class,
-                    [
-                        'name' => 'Super Party!',
-                        'description' => 'Festa di Natale',
-                        'place' => 'Burigozzo 1',
-                        'num_max_participants' => 300,
-                        'organizer' => 1,
-                        'participants' => 2,
-                    ],
+                    null,
                     ['method' => Request::METHOD_PUT]
                 ),
                 $request,
