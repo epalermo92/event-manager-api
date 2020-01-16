@@ -73,9 +73,7 @@ class EventsController extends Controller
      */
     public function getEventsAction(): JsonResponse
     {
-        $eventRepository = $this->getDoctrine()->getRepository(Event::class);
-        $events = $eventRepository->findAll();
-
+        $events = $this->get('entity_persister')->getManager()->getRepository(Event::class)->findAll();
         return JsonResponse::create($events);
     }
 
@@ -145,9 +143,9 @@ class EventsController extends Controller
     public function deleteEventsAction($id)
     {
         /** @var Event $event */
-        $event = $this->get('entity_persister')->getRepository(Event::class)->find($id);
+        $event = $this->get('entity_persister')->getManager()->getRepository(Event::class)->find($id);
 
-        if (!$event){
+        if (!$event) {
             throw new EntityNotFoundException('Event not found');
         }
 
@@ -155,7 +153,7 @@ class EventsController extends Controller
 
         return JsonResponse::create(
             [
-                'event deleted' => $event
+                'event deleted' => $event,
             ]
         );
     }
@@ -169,13 +167,13 @@ class EventsController extends Controller
         /** @var Event $event */
         $event = $this->get('entity_persister')->getRepository(Event::class)->find($id);
 
-        if (!$event){
+        if (!$event) {
             throw new EntityNotFoundException('Event not found!');
         }
 
         return JsonResponse::create(
             [
-                'Event Name' => $event->getName()
+                'Event Name' => $event->getName(),
             ]
         );
     }
