@@ -5,12 +5,12 @@ namespace AppBundle\Controller;
 use AppBundle\Entity\AbstractIdentity;
 use AppBundle\Entity\LegalIdentity;
 use AppBundle\Entity\NaturalIdentity;
-use AppBundle\Exceptions\FormNotSubmittedException;
+use AppBundle\Exceptions\EntityNotBuiltException;
+use AppBundle\Exceptions\EntityNotFoundException;
 use AppBundle\Routing\FormType\IdentityFormType;
 use AppBundle\Routing\ResponseLeftHandler;
 use AppBundle\Routing\Transformer\IdentityTransformer;
 use AppBundle\Service\EntityPersister;
-use Doctrine\ORM\EntityNotFoundException;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Form\Exception\LogicException;
 use Symfony\Component\HttpFoundation\Request;
@@ -82,18 +82,20 @@ class IdentityController extends Controller
         /** @var Either<LogicException,JsonResponse> $result */
         $result = pipeline(
             static function (array $in) {
-                if (!$in[0]->find($in[1])) {
+                $identity = $in[0]->find($in[1]);
+                if (!$identity) {
                     return new Left(new EntityNotFoundException());
                 }
-                return new Right($in[0]->find($in[1]));
+                return new Right($identity);
             },
             map(
-                function (?object $identity) {
+                function (AbstractIdentity $identity) {
+                    $id = $identity->getId();
                     $this->entityPersister->delete($identity);
                     return new Right(
                         JsonResponse::create(
                             [
-                                'deleted' => $identity,
+                                'deleted' => 'Person with code ' . $id
                             ]
                         )
                     );
@@ -101,8 +103,8 @@ class IdentityController extends Controller
             )
         )(
             [
-                $this->entityPersister->getRepository(AbstractIdentity::class),
-                $id,
+                $this->entityPersister->getManager()->getRepository(AbstractIdentity::class),
+                $id
             ]
         );
 
@@ -112,7 +114,6 @@ class IdentityController extends Controller
                 return $either->extract();
             }
         );
-        //TODO Why do it returns property id: null???
     }
 
     /**
@@ -163,7 +164,7 @@ class IdentityController extends Controller
     }
 
     /**
-     * @Route("/api/identities/put/{id}", name="put-identities")
+     * @Route("/api/identities/{id}", name="put-identities", methods={"PUT"})
      * @param Request $request
      * @return JsonResponse
      */
@@ -172,32 +173,23 @@ class IdentityController extends Controller
         /** @var Either<LogicException,JsonResponse> $result */
         $result = pipeline(
             static function (array $in): Either {
-                $identityToUpdate = $in[2]->find($in[3]);
-                if (!$identityToUpdate) {
-                    return new Left(EntityNotFoundException::class);
-                }
-
                 $identity = IdentityTransformer::create()->transform($in[0], $in[1]);
 
-                if ($identity instanceof Left){
-                    return new Left(FormNotSubmittedException::create());
+                if (!$in[2]) {
+                    return new Left(EntityNotFoundException::create());
                 }
-
-                return new Right([
-                    $identityToUpdate,
-                    $identity,
-                ]);
+                if ($identity instanceof Left) {
+                    return new Left(EntityNotBuiltException::create());
+                }
+                $in[2]->updateIdentity($identity->extract());
+                return new Right($in[2]);
             },
             bind(
-                function (array $in) {
-                    /** @var NaturalIdentity $identityToUpdate */
-                    $identityToUpdate = $in[0];
-                    $identity = $in[1];
-                    $identityToUpdate->updateIdentity($identity->extract());
+                function (AbstractIdentity $identity) {
                     $this->entityPersister->getManager()->flush();
                     return new Right(JsonResponse::create(
                         [
-                            'updated' => $identityToUpdate
+                            'updated' => $identity
                         ]
                     ));
 
@@ -216,8 +208,7 @@ class IdentityController extends Controller
                     ['method' => Request::METHOD_POST]
                 ),
                 $request,
-                $this->entityPersister->getManager()->getRepository(AbstractIdentity::class),
-                $id
+                $this->entityPersister->getManager()->getRepository(AbstractIdentity::class)->find($id)
             ]
         );
         return $result->either(

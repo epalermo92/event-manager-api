@@ -2,9 +2,10 @@
 
 namespace AppBundle\Routing;
 
+use AppBundle\Exceptions\EntityNotBuiltException;
+use AppBundle\Exceptions\EntityNotFoundException;
 use AppBundle\Exceptions\FormNotSubmittedException;
 use AppBundle\Exceptions\FormNotValidException;
-use Doctrine\ORM\EntityNotFoundException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use function Widmogrod\Useful\match;
 use const Widmogrod\Functional\reThrow;
@@ -27,7 +28,12 @@ class ResponseLeftHandler
             },
             EntityNotFoundException::class => static function() {
                 return JsonResponse::create([
-                    'Exception' => 'Entity not found in Database'
+                    'Exception' => EntityNotFoundException::create()->getMessage()
+                ]);
+            },
+            EntityNotBuiltException::class => static function() {
+                return JsonResponse::create([
+                    'Exception' => EntityNotBuiltException::create()->getMessage()
                 ]);
             },
             any => reThrow
