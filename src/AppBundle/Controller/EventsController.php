@@ -15,6 +15,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Widmogrod\Monad\Either\Either;
 use function Widmogrod\Functional\bind;
 use function Widmogrod\Functional\pipeline;
+use function Widmogrod\Monad\Either\left;
 use function Widmogrod\Monad\Either\right;
 
 
@@ -74,6 +75,7 @@ class EventsController extends Controller
     public function getEventsAction(): JsonResponse
     {
         $events = $this->get('entity_persister')->getManager()->getRepository(Event::class)->findAll();
+
         return JsonResponse::create($events);
     }
 
@@ -138,23 +140,42 @@ class EventsController extends Controller
     }
 
     /**
-     * @Route("/api/events/{id}",name="delete-events")
+     * @Route("/api/events/delete/{id}",name="delete-events")
+     * @return JsonResponse
      */
-    public function deleteEventsAction($id)
+    public function deleteEventsAction($id): JsonResponse
     {
-        /** @var Event $event */
-        $event = $this->get('entity_persister')->getManager()->getRepository(Event::class)->find($id);
+        /** @var Either<\Exception, Event> $r */
+        $r = pipeline(
+            function (array $in): Either {
+                if (!$in[0]) {
+                    return left(new \AppBundle\Exceptions\EntityNotFoundException());
+                }
 
-        if (!$event) {
-            throw new EntityNotFoundException('Event not found');
-        }
+                return right($in[0]);
+            },
+            bind(
+                function (Event $event): Either {
+                    $this->get('entity_persister')->delete($event);
 
-        $this->get('entity_persister')->delete($event);
-
-        return JsonResponse::create(
+                    return right($event);
+                }
+            )
+        )(
             [
-                'event deleted' => $event,
+                $this->get('entity_persister')->getManager()->getRepository(Event::class)->find($id),
             ]
+        );
+
+        return $r->either(
+            ResponseLeftHandler::handle(),
+            function (Event $event) {
+                return JsonResponse::create(
+                    [
+                        'event delete' => $event
+                    ]
+                );
+            }
         );
     }
 
