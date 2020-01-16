@@ -13,4 +13,3 @@
 !var/SymfonyRequirements.php
 /vendor/
 .idea/
-docker/000-default.conf
