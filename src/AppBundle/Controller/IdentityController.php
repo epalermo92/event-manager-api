@@ -3,6 +3,8 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Entity\AbstractIdentity;
+use AppBundle\Entity\LegalIdentity;
+use AppBundle\Entity\NaturalIdentity;
 use AppBundle\Exceptions\EntityNotBuiltException;
 use AppBundle\Exceptions\EntityNotFoundException;
 use AppBundle\Routing\FormType\IdentityFormType;
@@ -19,6 +21,7 @@ use Widmogrod\Monad\Either\Right;
 use function Widmogrod\Functional\bind;
 use function Widmogrod\Functional\map;
 use function Widmogrod\Functional\pipeline;
+use function Widmogrod\Useful\match;
 
 class IdentityController extends Controller
 {
@@ -88,7 +91,7 @@ class IdentityController extends Controller
                         ->getId();
                     $this
                         ->get('entity_persister')
-                        ->delete($identity);
+                        ->buildDelete($identity);
 
                     return new Right(
                         JsonResponse::create(
@@ -128,29 +131,15 @@ class IdentityController extends Controller
         /** @var Either<\LogicException,JsonResponse> $result */
         $result = pipeline(
             static function (array $in): Either {
-                return IdentityTransformer::create()
-                    ->transform(...$in);
+                return IdentityTransformer::create()->transform(...$in);
             },
-            bind(
-                function (AbstractIdentity $identity): Either {
-                    $this
-                        ->get('entity_persister')
-                        ->save($identity);
-
-                    return new Right($identity->getId());
-                }
-            )
+            bind($this->get('entity_persister')->buildSave())
         )(
             [
                 $form = $this
                     ->createForm(
                         IdentityFormType::class,
-                        [
-                            'name' => 'Pippo',
-                            'surname' => 'Topolino',
-                            'codice' => 'PPPTLN33T13D122F',
-                            'type' => 'natural',
-                        ],
+                        null,
                         ['method' => Request::METHOD_POST]
                     ),
                 $request,
@@ -171,80 +160,52 @@ class IdentityController extends Controller
     }
 
     /**
-     * @Route("/api/identities/{id}", name="put-identities", methods={"PUT"})
+     * @Route("/api/identities/{identity}", name="put-identities", methods={"PUT"})
      * @param $id
      * @param Request $request
      * @return JsonResponse
      */
-    public function putIdentitiesAction($id, Request $request): JsonResponse
+    public function putIdentitiesAction(AbstractIdentity $identity, Request $request): JsonResponse
     {
         /** @var Either<LogicException,JsonResponse> $result */
         $result = pipeline(
             static function (array $in): Either {
-                return IdentityTransformer::create()
-                    ->transform($in[0], $in[1])
-                    ->either(
-                        static function () {
-                            return new Left(EntityNotBuiltException::create());
-                        },
-                        static function (AbstractIdentity $identity) use ($in) {
-                            if (!$in[2]) {
-                                return new Left(EntityNotFoundException::create());
-                            }
-
-                            $in[2]
-                                ->updateIdentity($identity);
-
-                            return new Right($in[2]);
-                        }
-                    );
+                return IdentityTransformer::create()->transform(...$in);
             },
-            bind(
-                function (AbstractIdentity $identity) {
-                    $this
-                        ->get('entity_persister')
-                        ->getManager()
-                        ->flush();
-
-                    return new Right(
-                        JsonResponse::create(
-                            [
-                                'updated' => $identity,
-                            ]
-                        )
+            map(
+                static function (AbstractIdentity $identityNew) use ($identity): AbstractIdentity {
+                    return match(
+                        [
+                            LegalIdentity::class => function (LegalIdentity $identityNew) use ($identity) {
+                                return $identity->updateIdentity($identityNew);
+                            },
+                            NaturalIdentity::class => function (NaturalIdentity $identityNew) use ($identity) {
+                                return $identity->updateIdentity($identityNew);
+                            },
+                        ],
+                        $identityNew
                     );
-
                 }
-            )
+            ),
+            bind($this->get('entity_persister')->buildUpdate())
         )(
             [
                 $this
                     ->createForm(
                         IdentityFormType::class,
-                        [
-                            'name' => 'Cristiano',
-                            'surname' => 'Ronaldo',
-                            'type' => 'natural',
-                            'codice' => 'CTNRND88R24D352F',
-                        ],
+                        null,
                         ['method' => Request::METHOD_PUT]
                     ),
-                $request,
-                $this
-                    ->get('entity_persister')
-                    ->getManager()
-                    ->getRepository(AbstractIdentity::class)
-                    ->find($id),
+                $request
             ]
         );
 
-        return $result
-            ->either(
-                ResponseLeftHandler::handle(),
-                static function (JsonResponse $response) {
-                    return $response;
-                }
-            );
+        return $result->either(
+            ResponseLeftHandler::handle(),
+            static function (AbstractIdentity $identity): JsonResponse {
+                return JsonResponse::create(['updated' => $identity]);
+            }
+        );
     }
 
     /**

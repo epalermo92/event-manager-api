@@ -1,12 +1,15 @@
 <?php declare(strict_types=1);
 
-
 namespace AppBundle\Routing\FormType;
 
+use AppBundle\Entity\AbstractIdentity;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\NotBlank;
 
 class IdentityFormType extends AbstractType
 {
@@ -16,8 +19,10 @@ class IdentityFormType extends AbstractType
             'name',
             TextType::class,
             [
-                'label' => 'name',
                 'required' => true,
+                'constraints' => [
+                    new NotBlank()
+                ]
             ]
         );
 
@@ -25,17 +30,32 @@ class IdentityFormType extends AbstractType
             'surname',
             TextType::class,
             [
-                'label' => 'surname',
                 'required' => true,
+                'constraints' => [
+                    new NotBlank(['groups' => ['isNatural']])
+                ]
             ]
         );
 
         $builder->add(
-            'codice',
+            'cf',
             TextType::class,
             [
-                'label' => 'codice',
                 'required' => true,
+                'constraints' => [
+                    new NotBlank(['groups' => ['isNatural']])
+                ]
+            ]
+        );
+
+        $builder->add(
+            'pi',
+            TextType::class,
+            [
+                'required' => true,
+                'constraints' => [
+                    new NotBlank(['groups' => ['isLegal']])
+                ]
             ]
         );
 
@@ -43,13 +63,31 @@ class IdentityFormType extends AbstractType
             'type',
             ChoiceType::class,
             [
-                'label' => 'Persona',
                 'choices' => [
-                    'Natural' => 'natural',
-                    'Legal' => 'legal',
+                    AbstractIdentity::LEGAL,
+                    AbstractIdentity::NATURAL,
                 ],
-                'placeholder' => 'Add type',
                 'required' => true,
+                'constraints' => [
+                    new NotBlank()
+                ]
+            ]
+        );
+    }
+
+    public function configureOptions(OptionsResolver $resolver): void
+    {
+        parent::configureOptions($resolver);
+
+        $resolver->setDefaults(
+            [
+                'validation_groups' => static function (FormInterface $form) {
+                    switch ($form->get('type')->getData()) {
+                        case AbstractIdentity::LEGAL: return ['Default', 'isLegal'];
+                        case AbstractIdentity::NATURAL: return ['Default', 'isNatural'];
+                        default: throw new \RuntimeException('type not found');
+                    }
+                },
             ]
         );
     }

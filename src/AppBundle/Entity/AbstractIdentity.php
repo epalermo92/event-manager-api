@@ -14,9 +14,8 @@ use Doctrine\ORM\Mapping as ORM;
  */
 abstract class AbstractIdentity implements \JsonSerializable
 {
-    protected const LEGAL = 'legal';
-
-    protected const NATURAL = 'natural';
+    public const LEGAL = 'legal';
+    public const NATURAL = 'natural';
 
     public function __construct()
     {

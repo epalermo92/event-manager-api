@@ -15,10 +15,10 @@ class IdentityBuilder
 
     public static function build($data): Either
     {
-
         if (!is_string($data['name'])) {
             return left(new RuntimeException($data['name'] . 'must be instance of string, ' . gettype($data['name']) . ' given.'));
         }
+
         if (!is_string($data['surname'])) {
             if ($data['surname'] !== null)
             {
@@ -43,6 +43,7 @@ class IdentityBuilder
         if (strtoupper($data['type']) === 'NATURAL') {
             return right(new NaturalIdentity($data['name'], $data['surname'], $data['codice']));
         }
+
         return left(new RuntimeException('Invalid person type.'));
     }
 }

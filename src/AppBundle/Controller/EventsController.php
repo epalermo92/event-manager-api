@@ -31,13 +31,7 @@ class EventsController extends Controller
             static function (array $in): Either {
                 return EventTransformer::create()->transform(...$in);
             },
-            bind(
-                function (Event $event): Either {
-                    $this->get('entity_persister')->save($event);
-
-                    return right($event);
-                }
-            )
+            bind($this->get('entity_persister')->buildSave())
         )(
             [
                 $this->createForm(
@@ -74,24 +68,26 @@ class EventsController extends Controller
      */
     public function getEventsAction(): JsonResponse
     {
-        $events = $this->get('entity_persister')->getManager()->getRepository(Event::class)->findAll();
+        $events = $this
+            ->get('doctrine.orm.default_entity_manager')
+            ->getRepository(Event::class)
+            ->findAll();
 
         return JsonResponse::create($events);
     }
 
     /**
-     * @Route("/api/events/{id}",name="put-events")
+     * @Route("/api/events/{event}",name="put-events")
      * @return JsonResponse
      */
-    public function putEventsAction(Request $request, $id): JsonResponse
+    public function putEventsAction(Request $request, Event $event): JsonResponse
     {
         /** @var Either<\Exception, Event> $r */
         $r = pipeline(
-            function (array $in) use ($id): Either {
+            function (array $in) use ($event): Either {
                 /** @var FormInterface $form */
                 $form = $in[0];
-                /** @var Event $event */
-                $event = $this->get('entity_persister')->getManager()->getRepository(Event::class)->find($id);
+
                 $event->updateEntity(
                     $form->get('place')->getData(),
                     $form->get('name')->getData(),
@@ -156,7 +152,7 @@ class EventsController extends Controller
             },
             bind(
                 function (Event $event): Either {
-                    $this->get('entity_persister')->delete($event);
+                    $this->get('entity_persister')->buildDelete($event);
 
                     return right($event);
                 }

@@ -44,10 +44,12 @@ class LegalIdentity extends AbstractIdentity
         ];
     }
 
-    public function updateIdentity(LegalIdentity $newIdentity):void
+    public function updateIdentity(LegalIdentity $newIdentity) : self
     {
         $this->name = $newIdentity->getName();
         $this->partitaIva = $newIdentity->getPartitaIva();
+
+        return $this;
     }
 }
 

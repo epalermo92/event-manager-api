@@ -3,7 +3,8 @@
 namespace AppBundle\Service;
 
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\Persistence\ObjectRepository;
+use function Widmogrod\Monad\Either\tryCatch;
+use const Widmogrod\Functional\identity;
 
 class EntityPersister
 {
@@ -14,20 +15,35 @@ class EntityPersister
         $this->entityManager = $entityManager;
     }
 
-    public function getManager():EntityManagerInterface
+    public function buildSave(): callable
     {
-        return $this->entityManager;
+        return tryCatch(
+            function (object $object) {
+                $this->entityManager->persist($object);
+                $this->entityManager->flush();
+            },
+            identity
+        );
     }
 
-    public function save(object $object): void
+    public function buildUpdate(): callable
     {
-        $this->entityManager->persist($object);
-        $this->entityManager->flush();
+        return tryCatch(
+            function (object $object) {
+                $this->entityManager->flush();
+            },
+            identity
+        );
     }
 
-    public function delete(?object $object): void
+    public function buildDelete(): callable
     {
-        $this->entityManager->remove($object);
-        $this->entityManager->flush();
+        return tryCatch(
+            function (object $object) {
+                $this->entityManager->remove($object);
+                $this->entityManager->flush();
+            },
+            identity
+        );
     }
 }
