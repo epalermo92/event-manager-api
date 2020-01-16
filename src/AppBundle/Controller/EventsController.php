@@ -81,12 +81,7 @@ class EventsController extends Controller
                 /** @var FormInterface $form */
                 $form = $in[0];
 
-                $event->updateEntity(
-                    $form->get('place')->getData(),
-                    $form->get('name')->getData(),
-                    $form->get('num_max_participants')->getData(),
-                    $form->get('description')->getData()
-                );
+                $event->updateEntity($event);
 
                 return right($event);
             },

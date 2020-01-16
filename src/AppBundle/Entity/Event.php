@@ -131,12 +131,14 @@ class Event implements \JsonSerializable
         return $this->participants;
     }
 
-    public function updateEntity(string $place, string $name, int $numMaxParticipants, string $description): void
+    public function updateEntity(Event $newEvent): self
     {
-        $this->place = $place;
-        $this->name = $name;
-        $this->numMaxParticipants = $numMaxParticipants;
-        $this->description = $description;
+        $this->place = $newEvent->getPlace();
+        $this->name = $newEvent->getName();
+        $this->numMaxParticipants = $newEvent->getNumMaxParticipants();
+        $this->description = $newEvent->getDescription();
+
+        return $this;
     }
 
     /**
