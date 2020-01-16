@@ -27,7 +27,7 @@ class ResponseLeftHandler
             },
             EntityNotFoundException::class => static function() {
                 return JsonResponse::create([
-                    'Exception' => (new EntityNotFoundException())->getMessage()
+                    'Exception' => 'Entity not found in Database'
                 ]);
             },
             any => reThrow

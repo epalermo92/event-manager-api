@@ -4,6 +4,8 @@ namespace AppBundle\Controller;
 
 use AppBundle\Entity\AbstractIdentity;
 use AppBundle\Entity\LegalIdentity;
+use AppBundle\Entity\NaturalIdentity;
+use AppBundle\Exceptions\FormNotSubmittedException;
 use AppBundle\Routing\FormType\IdentityFormType;
 use AppBundle\Routing\ResponseLeftHandler;
 use AppBundle\Routing\Transformer\IdentityTransformer;
@@ -161,43 +163,63 @@ class IdentityController extends Controller
     }
 
     /**
-     * @Route("/api/identities/{id}", name="put-identities", methods={"PUT"})
-     * @param string $id
+     * @Route("/api/identities/put/{id}", name="put-identities")
+     * @param Request $request
      * @return JsonResponse
      */
-    public function putIdentitiesAction(string $id): JsonResponse
+    public function putIdentitiesAction($id, Request $request): JsonResponse
     {
         /** @var Either<LogicException,JsonResponse> $result */
         $result = pipeline(
-            static function (array $in) {
-                if ($in[0]) {
-                    $in[0]->updateIdentity($in[1]);
-
-                    return new Right($in[0]);
+            static function (array $in): Either {
+                $identityToUpdate = $in[2]->find($in[3]);
+                if (!$identityToUpdate) {
+                    return new Left(EntityNotFoundException::class);
                 }
 
-                return new Left(new EntityNotFoundException());
+                $identity = IdentityTransformer::create()->transform($in[0], $in[1]);
+
+                if ($identity instanceof Left){
+                    return new Left(FormNotSubmittedException::create());
+                }
+
+                return new Right([
+                    $identityToUpdate,
+                    $identity,
+                ]);
             },
             bind(
-                function (LegalIdentity $identity) {
+                function (array $in) {
+                    /** @var NaturalIdentity $identityToUpdate */
+                    $identityToUpdate = $in[0];
+                    $identity = $in[1];
+                    $identityToUpdate->updateIdentity($identity->extract());
                     $this->entityPersister->getManager()->flush();
+                    return new Right(JsonResponse::create(
+                        [
+                            'updated' => $identityToUpdate
+                        ]
+                    ));
 
-                    return new Right(
-                        JsonResponse::create(
-                            [
-                                'updated' => $identity,
-                            ]
-                        )
-                    );
                 }
             )
         )(
             [
-                $this->entityPersister->getRepository(AbstractIdentity::class)->find($id),
-                new LegalIdentity('Facile.it', '350789989'),
+                $this->createForm(
+                    IdentityFormType::class,
+                    [
+                        'name' => 'Cristiano',
+                        'surname' => 'Ronaldo',
+                        'type' => 'natural',
+                        'codice' => 'CTNRND88R24D352F',
+                    ],
+                    ['method' => Request::METHOD_POST]
+                ),
+                $request,
+                $this->entityPersister->getManager()->getRepository(AbstractIdentity::class),
+                $id
             ]
         );
-
         return $result->either(
             ResponseLeftHandler::handle(),
             static function (JsonResponse $response) {
