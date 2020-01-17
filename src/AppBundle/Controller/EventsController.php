@@ -22,7 +22,7 @@ use function Widmogrod\Monad\Either\right;
 class EventsController extends Controller
 {
     /**
-     * @Route("/api/events",name="post-events")
+     * @Route("/api/events",name="post-events",methods={"POST"})
      */
     public function postEventsAction(Request $request): JsonResponse
     {
@@ -74,7 +74,7 @@ class EventsController extends Controller
     }
 
     /**
-     * @Route("/api/events/{event}",name="put-events")
+     * @Route("/api/events/{event}",name="put-events",methods={"PUT"})
      * @return JsonResponse
      */
     public function putEventsAction(Request $request, Event $event): JsonResponse
@@ -121,10 +121,10 @@ class EventsController extends Controller
     }
 
     /**
-     * @Route("/api/events/{id}",name="delete-events")
+     * @Route("/api/events/{event}",name="delete-events",methods={"DELETE"})
      * @return JsonResponse
      */
-    public function deleteEventsAction($id): JsonResponse
+    public function deleteEventsAction(Event $event): JsonResponse
     {
         /** @var Either<\Exception, Event> $r */
         $r = pipeline(
@@ -161,7 +161,7 @@ class EventsController extends Controller
     }
 
     /**
-     * @Route("/api/events/get/{event}",name="get-event",methods={"GET"})
+     * @Route("/api/events/{event}",name="get-event",methods={"GET"})
      * @return JsonResponse
      */
     public function getEventAction(Event $event): JsonResponse
