@@ -34,6 +34,7 @@ class EventsController extends Controller
             bind(
                 function (Event $event): Either {
                     $this->get('entity_persister')->buildSave($event);
+
                     return right($event);
                 }
             )
@@ -122,41 +123,13 @@ class EventsController extends Controller
      */
     public function deleteEventsAction(Event $event): JsonResponse
     {
-        /** @var Either<\Exception, Event> $r */
-        $r = pipeline(
-            function (array $in): Either {
-                if (!$in[0]) {
-                    return left(new \AppBundle\Exceptions\EntityNotFoundException());
+        return ($this->get('entity_persister')->buildDelete()($event))
+            ->either(
+                ResponseLeftHandler::handle(),
+                static function () {
+                    return JsonResponse::create();
                 }
-
-                return right($in[0]);
-            },
-            bind(
-                function (Event $event): Either {
-                    $this->get('entity_persister')->buildDelete($event);
-
-                    return right($event);
-                }
-            )
-        )(
-            [
-                $this
-                    ->get('doctrine.orm.default_entity_manager')
-                    ->getRepository(Event::class)
-                    ->find($event),
-            ]
-        );
-
-        return $r->either(
-            ResponseLeftHandler::handle(),
-            function (Event $event) {
-                return JsonResponse::create(
-                    [
-                        'event delete' => $event,
-                    ]
-                );
-            }
-        );
+            );
     }
 
     /**
