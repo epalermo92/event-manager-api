@@ -41,7 +41,7 @@ class IdentityController extends Controller
             },
             map(
                 static function (array $identities) {
-                    return new Right(JsonResponse::create($identities));
+                    return new Right($identities);
                 }
             )
         )(
@@ -76,13 +76,11 @@ class IdentityController extends Controller
         /** @var Either<LogicException,JsonResponse> $result */
         $result = pipeline(
             function (array $in){
-                $id = $in[0]->getId();
-                $this->get('entity_persister')->buildDelete($in[0]);
-                return new Right($id);
+                return new Right($this->get('entity_persister')->buildDelete($in[0]));
             },
             map(
-                function (int $id) {
-                    return new Right($id);
+                static function (callable $func) {
+                    return new Right($func());
                 }
             )
         )(
@@ -116,7 +114,11 @@ class IdentityController extends Controller
             static function (array $in): Either {
                 return IdentityTransformer::create()->transform(...$in);
             },
-            bind($this->get('entity_persister')->buildSave())
+            bind(
+                static function (AbstractIdentity $identity) {
+                    return new Right($this->get('entity_persister')->buildSave($identity));
+                }
+            )
         )(
             [
                 $form = $this
@@ -132,10 +134,10 @@ class IdentityController extends Controller
         return $result
             ->either(
                 ResponseLeftHandler::handle(),
-                static function (int $id) {
+                static function (callable $func) {
                     return JsonResponse::create(
                         [
-                            'id' => $id,
+                            'posted' => $func(),
                         ]
                     );
                 }
@@ -144,7 +146,7 @@ class IdentityController extends Controller
 
     /**
      * @Route("/api/identities/{identity}", name="put-identities", methods={"PUT"})
-     * @param $id
+     * @param AbstractIdentity $identity
      * @param Request $request
      * @return JsonResponse
      */
@@ -156,21 +158,25 @@ class IdentityController extends Controller
                 return IdentityTransformer::create()->transform(...$in);
             },
             map(
-                static function (AbstractIdentity $identityNew) use ($identity): AbstractIdentity {
+                static function (AbstractIdentity $identityUpdated) use ($identity): AbstractIdentity {
                     return match(
                         [
-                            LegalIdentity::class => function (LegalIdentity $identityNew) use ($identity) {
-                                return $identity->updateIdentity($identityNew);
+                            LegalIdentity::class => static function (LegalIdentity $identityUpdated) use ($identity) {
+                                return $identity->updateIdentity($identityUpdated);
                             },
-                            NaturalIdentity::class => function (NaturalIdentity $identityNew) use ($identity) {
-                                return $identity->updateIdentity($identityNew);
+                            NaturalIdentity::class => static function (NaturalIdentity $identityUpdated) use ($identity) {
+                                return $identity->updateIdentity($identityUpdated);
                             },
                         ],
-                        $identityNew
+                        $identityUpdated
                     );
                 }
             ),
-            bind($this->get('entity_persister')->buildUpdate())
+            bind(
+                static function (AbstractIdentity $identity) {
+                    return new Right($this->get('entity_persister')->buildUpdate($identity));
+                }
+            )
         )(
             [
                 $this
@@ -185,18 +191,22 @@ class IdentityController extends Controller
 
         return $result->either(
             ResponseLeftHandler::handle(),
-            static function (AbstractIdentity $identity): JsonResponse {
-                return JsonResponse::create(['updated' => $identity]);
+            static function (Either $either): JsonResponse {
+                return JsonResponse::create(
+                    [
+                        'updated' => $either->extract()()
+                    ]
+                );
             }
         );
     }
 
     /**
-     * @Route("/api/identities/{id}", name="get-identity", methods={"GET"})
-     * @param $id
+     * @Route("/api/identities/{identity}", name="get-identity", methods={"GET"})
+     * @param AbstractIdentity $identity
      * @return JsonResponse
      */
-    public function getIdentityAction($id): JsonResponse
+    public function getIdentityAction(AbstractIdentity $identity): JsonResponse
     {
         /** @var Either<\LogicException,JsonResponse> $result */
         $result = pipeline(
@@ -209,13 +219,7 @@ class IdentityController extends Controller
             },
             map(
                 static function (object $identity) {
-                    return new Right(
-                        JsonResponse::create(
-                            [
-                                $identity,
-                            ]
-                        )
-                    );
+                    return new Right($identity);
                 }
             )
         )(
@@ -224,7 +228,7 @@ class IdentityController extends Controller
                     ->get('entity_persister')
                     ->getManager()
                     ->getRepository(AbstractIdentity::class)
-                    ->find($id),
+                    ->find($identity),
             ]
         );
 
@@ -232,7 +236,11 @@ class IdentityController extends Controller
             ->either(
                 ResponseLeftHandler::handle(),
                 static function (Either $either) {
-                    return $either->extract();
+                    return JsonResponse::create(
+                        [
+                            $either->extract()
+                        ]
+                    );
                 }
             );
     }
