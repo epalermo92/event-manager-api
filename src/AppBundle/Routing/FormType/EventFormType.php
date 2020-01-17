@@ -12,7 +12,7 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 
 class EventFormType extends AbstractRequestType
 {
-    
+
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder->add(
@@ -71,7 +71,7 @@ class EventFormType extends AbstractRequestType
                 'label' => 'organizer',
                 'required' => true,
                 'constraints' => [
-                    new  NotBlank(),
+                    new NotBlank(),
                 ],
             ]
         );

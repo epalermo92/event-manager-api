@@ -32,8 +32,9 @@ class EventsController extends Controller
                 return EventTransformer::create()->transform(...$in);
             },
             bind(
-                function (Event $event): callable {
-                    return $this->get('entity_persister')->buildSave($event);
+                function (Event $event): Either {
+                    $this->get('entity_persister')->buildSave($event);
+                    return right($event);
                 }
             )
         )(
@@ -49,10 +50,10 @@ class EventsController extends Controller
 
         return $r->either(
             ResponseLeftHandler::handle(),
-            static function (callable $func) {
+            static function (Event $event) {
                 return JsonResponse::create(
                     [
-                        'event' => $func(),
+                        'event' => $event->getId(),
                     ],
                     JsonResponse::HTTP_CREATED
                 );
