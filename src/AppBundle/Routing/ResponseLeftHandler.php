@@ -7,6 +7,7 @@ use AppBundle\Exceptions\EntityNotBuiltException;
 use AppBundle\Exceptions\EntityNotFoundException;
 use AppBundle\Exceptions\FormNotSubmittedException;
 use AppBundle\Exceptions\FormNotValidException;
+use AppBundle\Exceptions\NotOfTheSameTypeException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use function Widmogrod\Useful\match;
 use const Widmogrod\Functional\reThrow;
@@ -40,6 +41,11 @@ class ResponseLeftHandler
             CannotDeleteIdentityException::class => static function() {
                 return JsonResponse::create([
                     'Exception' => CannotDeleteIdentityException::create()->getMessage()
+                ]);
+            },
+            NotOfTheSameTypeException::class => static function() {
+                return JsonResponse::create([
+                    'Exception' => NotOfTheSameTypeException::create()->getMessage()
                 ]);
             },
             any => reThrow

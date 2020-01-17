@@ -5,6 +5,7 @@ namespace AppBundle\Controller;
 use AppBundle\Entity\AbstractIdentity;
 use AppBundle\Entity\LegalIdentity;
 use AppBundle\Entity\NaturalIdentity;
+use AppBundle\Exceptions\NotOfTheSameTypeException;
 use AppBundle\RequestConverter\JsonStringConverter;
 use AppBundle\RequestConverter\EventSubscriber;
 use AppBundle\Exceptions\CannotDeleteIdentityException;
@@ -127,7 +128,7 @@ class IdentityController extends Controller
             bind(
                 function (AbstractIdentity $identity) {
                     $this->entityPersister->buildSave()($identity);
-                    return $identity;
+                    return new Right($identity);
                 }
             )
         )(
@@ -145,10 +146,10 @@ class IdentityController extends Controller
         return $result
             ->either(
                 ResponseLeftHandler::handle(),
-                static function (Either $either) {
+                static function (AbstractIdentity $identity) {
                     return JsonResponse::create(
                         [
-                            'posted' => $either->extract(),
+                            'posted' => $identity
                         ]
                     );
                 }
@@ -163,29 +164,41 @@ class IdentityController extends Controller
      */
     public function putIdentitiesAction(AbstractIdentity $identity, Request $request): JsonResponse
     {
+        JsonStringConverter::convertJsonStringToArray($request);
+
         /** @var Either<LogicException,JsonResponse> $result */
         $result = pipeline(
             static function (array $in): Either {
                 return IdentityTransformer::create()->transform(...$in);
             },
-            map(
-                static function (AbstractIdentity $identityUpdated) use ($identity): AbstractIdentity {
-                    return match(
-                        [
-                            LegalIdentity::class => static function (LegalIdentity $identityUpdated) use ($identity) {
-                                return $identity->updateIdentity($identityUpdated);
-                            },
-                            NaturalIdentity::class => static function (NaturalIdentity $identityUpdated) use ($identity) {
-                                return $identity->updateIdentity($identityUpdated);
-                            },
-                        ],
-                        $identityUpdated
+            bind(
+                static function (AbstractIdentity $identityUpdated) use ($identity): Either {
+                    if (get_class($identityUpdated) !== get_class($identity)) {
+                        return new Left(NotOfTheSameTypeException::create());
+                    }
+
+                    return new Right(
+                        match(
+                            [
+                                LegalIdentity::class => static function (LegalIdentity $identityUpdated) use ($identity
+                                ) {
+                                    return $identity->updateIdentity($identityUpdated);
+                                },
+                                NaturalIdentity::class => static function (NaturalIdentity $identityUpdated) use (
+                                    $identity
+                                ) {
+                                    return $identity->updateIdentity($identityUpdated);
+                                },
+                            ],
+                            $identityUpdated
+                        )
                     );
                 }
             ),
             bind(
-                static function (AbstractIdentity $identity) {
-                    return new Right($this->entityPersister->buildUpdate());
+                function (AbstractIdentity $identity) {
+                    $this->entityPersister->buildUpdate()($identity);
+                    return new Right('Identity updated');
                 }
             )
         )(
@@ -202,10 +215,10 @@ class IdentityController extends Controller
 
         return $result->either(
             ResponseLeftHandler::handle(),
-            static function (Either $either): JsonResponse {
+            static function (string $message): JsonResponse {
                 return JsonResponse::create(
                     [
-                        'updated' => $either->extract()()
+                        $message
                     ]
                 );
             }
