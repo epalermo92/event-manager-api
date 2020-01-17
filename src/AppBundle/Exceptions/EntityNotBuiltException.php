@@ -13,7 +13,7 @@ class EntityNotBuiltException extends \LogicException
         parent::__construct($message, $code, $previous);
     }
 
-    public static function create(): EntityNotBuiltException
+    public static function create(): self
     {
         return new self();
     }

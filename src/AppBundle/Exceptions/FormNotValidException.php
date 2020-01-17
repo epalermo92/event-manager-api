@@ -11,7 +11,7 @@ class FormNotValidException extends \LogicException
         parent::__construct($message, $code, $previous);
     }
 
-    public static function create(): FormNotValidException
+    public static function create(): self
     {
         return new self();
     }

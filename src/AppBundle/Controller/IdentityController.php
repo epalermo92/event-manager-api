@@ -5,11 +5,14 @@ namespace AppBundle\Controller;
 use AppBundle\Entity\AbstractIdentity;
 use AppBundle\Entity\LegalIdentity;
 use AppBundle\Entity\NaturalIdentity;
+use AppBundle\Exceptions\CannotDeleteIdentityException;
 use AppBundle\Exceptions\EntityNotBuiltException;
 use AppBundle\Exceptions\EntityNotFoundException;
 use AppBundle\Routing\FormType\IdentityFormType;
 use AppBundle\Routing\ResponseLeftHandler;
 use AppBundle\Routing\Transformer\IdentityTransformer;
+use AppBundle\Service\EntityPersister;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Form\Exception\LogicException;
 use Symfony\Component\HttpFoundation\Request;
@@ -25,6 +28,22 @@ use function Widmogrod\Useful\match;
 
 class IdentityController extends Controller
 {
+
+    /**
+     * @var EntityPersister
+     */
+    private $entityPersister;
+
+    private $entityManager;
+
+    public function __construct(
+        EntityPersister $entityPersister,
+        EntityManagerInterface $entityManager
+    ) {
+        $this->entityPersister = $entityPersister;
+        $this->entityManager = $entityManager;
+    }
+
     /**
      * @Route("/api/identities", name="get-identities", methods={"GET"})
      */
@@ -32,12 +51,12 @@ class IdentityController extends Controller
     {
         /** @var Either<\LogicException,JsonResponse> $result */
         $result = pipeline(
-            static function (array $in) {
-                if (!$in[0]) {
+            static function (array $identities) {
+                if (!$identities) {
                     return new Left(new EntityNotFoundException());
                 }
 
-                return new Right($in[0]);
+                return new Right($identities);
             },
             map(
                 static function (array $identities) {
@@ -45,12 +64,10 @@ class IdentityController extends Controller
                 }
             )
         )(
-            [
-                $this
-                    ->get('doctrine.orm.default_entity_manager')
-                    ->getRepository(AbstractIdentity::class)
-                    ->findAll(),
-            ]
+            $this
+                ->entityManager
+                ->getRepository(AbstractIdentity::class)
+                ->findAll()
         );
 
         return $result
@@ -73,11 +90,21 @@ class IdentityController extends Controller
      */
     public function deleteIdentitiesAction(AbstractIdentity $identity): JsonResponse
     {
-        return ($this->get('entity_persister')->buildDelete()($identity))
+        /** @var Either $tryCatch */
+        $tryCatch = $this->entityPersister->buildDelete()($identity);
+        $result = $tryCatch->either(
+            static function () {
+                return new Left(CannotDeleteIdentityException::create());
+            },
+            static function () {
+                return new Right('Identity deleted. ');
+            }
+        );
+        return $result
             ->either(
                 ResponseLeftHandler::handle(),
-                static function () {
-                    return JsonResponse::create();
+                static function (string $message) {
+                    return JsonResponse::create($message);
                 }
             );
     }
@@ -92,11 +119,13 @@ class IdentityController extends Controller
         /** @var Either<\LogicException,JsonResponse> $result */
         $result = pipeline(
             static function (array $in): Either {
+//                dump($in[0]);
                 return IdentityTransformer::create()->transform(...$in);
             },
             bind(
                 static function (AbstractIdentity $identity) {
-                    return new Right($this->get('entity_persister')->buildSave($identity));
+                    $this->entityPersister->buildSave()($identity);
+                    return $identity;
                 }
             )
         )(
@@ -114,10 +143,10 @@ class IdentityController extends Controller
         return $result
             ->either(
                 ResponseLeftHandler::handle(),
-                static function (callable $func) {
+                static function (Either $either) {
                     return JsonResponse::create(
                         [
-                            'posted' => $func(),
+                            'posted' => $either->extract(),
                         ]
                     );
                 }
@@ -154,7 +183,7 @@ class IdentityController extends Controller
             ),
             bind(
                 static function (AbstractIdentity $identity) {
-                    return new Right($this->get('entity_persister')->buildUpdate($identity));
+                    return new Right($this->entityPersister->buildUpdate());
                 }
             )
         )(
@@ -205,7 +234,7 @@ class IdentityController extends Controller
         )(
             [
                 $this
-                    ->get('doctrine.orm.default_entity_manager')
+                    ->entityManager
                     ->getRepository(AbstractIdentity::class)
                     ->find($identity),
             ]

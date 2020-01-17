@@ -41,7 +41,4 @@ services:
 
     AppBundle\Service\EntityPersister:
         public: false
-    entity_persister:
-           alias: AppBundle\Service\EntityPersister
-           public: true
 

@@ -2,6 +2,7 @@
 
 namespace AppBundle\Routing;
 
+use AppBundle\Exceptions\CannotDeleteIdentityException;
 use AppBundle\Exceptions\EntityNotBuiltException;
 use AppBundle\Exceptions\EntityNotFoundException;
 use AppBundle\Exceptions\FormNotSubmittedException;
@@ -34,6 +35,11 @@ class ResponseLeftHandler
             EntityNotBuiltException::class => static function() {
                 return JsonResponse::create([
                     'Exception' => EntityNotBuiltException::create()->getMessage()
+                ]);
+            },
+            CannotDeleteIdentityException::class => static function() {
+                return JsonResponse::create([
+                    'Exception' => CannotDeleteIdentityException::create()->getMessage()
                 ]);
             },
             any => reThrow
