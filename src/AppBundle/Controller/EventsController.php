@@ -33,7 +33,7 @@ class EventsController extends Controller
             },
             bind(
                 function (Event $event): Either {
-                    $this->get('entity_persister')->buildSave($event);
+                    $this->get('entity_persister')->buildSave()($event);
 
                     return right($event);
                 }
@@ -88,7 +88,7 @@ class EventsController extends Controller
             },
             bind(
                 function (Event $event): Either {
-                    $this->get('entity_persister')->buildUpdate($event);
+                    $this->get('entity_persister')->buildUpdate()($event);
 
                     return right($event);
                 }
