@@ -6,6 +6,7 @@ use AppBundle\Entity\Event;
 use AppBundle\Routing\FormType\EventFormType;
 use AppBundle\Routing\ResponseLeftHandler;
 use AppBundle\Routing\Transformer\EventTransformer;
+use AppBundle\Service\EntityPersister;
 use Doctrine\ORM\EntityNotFoundException;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Form\FormInterface;
@@ -21,6 +22,14 @@ use function Widmogrod\Monad\Either\right;
 
 class EventsController extends Controller
 {
+    /** @var EntityPersister */
+    private $entityPersister;
+
+    public function __construct(EntityPersister $entityPersister)
+    {
+        $this->entityPersister = $entityPersister;
+    }
+
     /**
      * @Route("/api/events",name="post-events",methods={"POST"})
      */
@@ -33,7 +42,7 @@ class EventsController extends Controller
             },
             bind(
                 function (Event $event): Either {
-                    $this->get('entity_persister')->buildSave()($event);
+                    $this->entityPersister->buildSave()($event);
 
                     return right($event);
                 }
@@ -88,7 +97,7 @@ class EventsController extends Controller
             },
             bind(
                 function (Event $event): Either {
-                    $this->get('entity_persister')->buildUpdate()($event);
+                    $this->entityPersister->buildUpdate()($event);
 
                     return right($event);
                 }
@@ -123,7 +132,7 @@ class EventsController extends Controller
      */
     public function deleteEventsAction(Event $event): JsonResponse
     {
-        return ($this->get('entity_persister')->buildDelete()($event))
+        return ($this->entityPersister->buildDelete()($event))
             ->either(
                 ResponseLeftHandler::handle(),
                 static function () {
