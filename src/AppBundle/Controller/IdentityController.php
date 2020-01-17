@@ -5,8 +5,9 @@ namespace AppBundle\Controller;
 use AppBundle\Entity\AbstractIdentity;
 use AppBundle\Entity\LegalIdentity;
 use AppBundle\Entity\NaturalIdentity;
+use AppBundle\RequestConverter\JsonStringConverter;
+use AppBundle\RequestConverter\EventSubscriber;
 use AppBundle\Exceptions\CannotDeleteIdentityException;
-use AppBundle\Exceptions\EntityNotBuiltException;
 use AppBundle\Exceptions\EntityNotFoundException;
 use AppBundle\Routing\FormType\IdentityFormType;
 use AppBundle\Routing\ResponseLeftHandler;
@@ -116,14 +117,15 @@ class IdentityController extends Controller
      */
     public function postIdentitiesAction(Request $request): JsonResponse
     {
+        JsonStringConverter::convertJsonStringToArray($request);
+
         /** @var Either<\LogicException,JsonResponse> $result */
         $result = pipeline(
             static function (array $in): Either {
-//                dump($in[0]);
                 return IdentityTransformer::create()->transform(...$in);
             },
             bind(
-                static function (AbstractIdentity $identity) {
+                function (AbstractIdentity $identity) {
                     $this->entityPersister->buildSave()($identity);
                     return $identity;
                 }

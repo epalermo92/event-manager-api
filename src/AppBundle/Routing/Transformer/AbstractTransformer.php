@@ -26,6 +26,7 @@ abstract class AbstractTransformer
     {
         $form->handleRequest($request);
 
+
         if (!$form->isSubmitted()) {
             return left(new FormNotSubmittedException());
         }

@@ -17,7 +17,8 @@ class IdentityFormType extends AbstractRequestType
         parent::configureOptions($resolver);
 
         $resolver->setDefaults(
-            [
+            [ 'csrf_protection' => false,
+                'allow_extra_fields' => true,
                 'validation_groups' => static function (FormInterface $form) {
                     switch ($form->get('type')->getData()) {
                         case AbstractIdentity::LEGAL: return ['Default', 'isLegal'];
