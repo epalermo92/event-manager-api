@@ -22,7 +22,7 @@ use function Widmogrod\Monad\Either\right;
 class EventsController extends Controller
 {
     /**
-     * @Route("/api/events/post",name="post-events")
+     * @Route("/api/events",name="post-events")
      */
     public function postEventsAction(Request $request): JsonResponse
     {
@@ -32,7 +32,7 @@ class EventsController extends Controller
                 return EventTransformer::create()->transform(...$in);
             },
             bind(
-                function (Event $event) {
+                function (Event $event): callable {
                     return $this->get('entity_persister')->buildSave($event);
                 }
             )
@@ -91,7 +91,7 @@ class EventsController extends Controller
             },
             bind(
                 function (Event $event): Either {
-                    $this->get('entity_persister')->getManager()->flush();
+                    $this->get('doctrine.orm.default_entity_manager')->flush();
 
                     return right($event);
                 }
@@ -161,10 +161,10 @@ class EventsController extends Controller
     }
 
     /**
-     * @Route("/api/events/{id}",name="get-event",methods={"GET"})
+     * @Route("/api/events/get/{event}",name="get-event",methods={"GET"})
      * @return JsonResponse
      */
-    public function getEventAction($id): JsonResponse
+    public function getEventAction(Event $event): JsonResponse
     {
         /** @var Either<\Exception, Either> $r */
         $r = pipeline(
@@ -182,7 +182,7 @@ class EventsController extends Controller
             )
         )(
             [
-                $this->get('entity_persister')->getManager()->getRepository(Event::class)->find($id),
+                $this->get('doctrine.orm.default_entity_manager')->getRepository(Event::class)->find($event),
             ]
         );
 
