@@ -13,6 +13,23 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 
 class IdentityFormType extends AbstractType
 {
+    public function configureOptions(OptionsResolver $resolver): void
+    {
+        parent::configureOptions($resolver);
+
+        $resolver->setDefaults(
+            [
+                'validation_groups' => static function (FormInterface $form) {
+                    switch ($form->get('type')->getData()) {
+                        case AbstractIdentity::LEGAL: return ['Default', 'isLegal'];
+                        case AbstractIdentity::NATURAL: return ['Default', 'isNatural'];
+                        default: throw new \RuntimeException('type not found');
+                    }
+                },
+            ]
+        );
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder->add(
@@ -38,7 +55,7 @@ class IdentityFormType extends AbstractType
         );
 
         $builder->add(
-            'cf',
+            'codiceFiscale',
             TextType::class,
             [
                 'required' => true,
@@ -49,7 +66,7 @@ class IdentityFormType extends AbstractType
         );
 
         $builder->add(
-            'pi',
+            'partitaIva',
             TextType::class,
             [
                 'required' => true,
@@ -71,23 +88,6 @@ class IdentityFormType extends AbstractType
                 'constraints' => [
                     new NotBlank()
                 ]
-            ]
-        );
-    }
-
-    public function configureOptions(OptionsResolver $resolver): void
-    {
-        parent::configureOptions($resolver);
-
-        $resolver->setDefaults(
-            [
-                'validation_groups' => static function (FormInterface $form) {
-                    switch ($form->get('type')->getData()) {
-                        case AbstractIdentity::LEGAL: return ['Default', 'isLegal'];
-                        case AbstractIdentity::NATURAL: return ['Default', 'isNatural'];
-                        default: throw new \RuntimeException('type not found');
-                    }
-                },
             ]
         );
     }

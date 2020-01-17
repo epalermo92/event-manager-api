@@ -67,7 +67,7 @@ class IdentityController extends Controller
     }
 
     /**
-     * @Route("/api/identities/delete{identity}", name="delete-identities")
+     * @Route("/api/identities/{identity}", name="delete-identities", methods={"DELETE"})
      * @param AbstractIdentity $identity
      * @return JsonResponse
      */
@@ -112,6 +112,7 @@ class IdentityController extends Controller
         /** @var Either<\LogicException,JsonResponse> $result */
         $result = pipeline(
             static function (array $in): Either {
+                dump($in[0]->getData());
                 return IdentityTransformer::create()->transform(...$in);
             },
             bind(
@@ -121,7 +122,7 @@ class IdentityController extends Controller
             )
         )(
             [
-                $form = $this
+                $this
                     ->createForm(
                         IdentityFormType::class,
                         null,
@@ -225,8 +226,7 @@ class IdentityController extends Controller
         )(
             [
                 $this
-                    ->get('entity_persister')
-                    ->getManager()
+                    ->get('doctrine.orm.default_entity_manager')
                     ->getRepository(AbstractIdentity::class)
                     ->find($identity),
             ]
