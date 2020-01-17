@@ -81,17 +81,12 @@ class EventsController extends Controller
     {
         /** @var Either<\Exception, Event> $r */
         $r = pipeline(
-            function (array $in) use ($event): Either {
-                /** @var FormInterface $form */
-                $form = $in[0];
-
-                $event->updateEntity($event);
-
-                return right($event);
+            function (array $in): Either {
+                return EventTransformer::create()->transform(...$in);
             },
             bind(
                 function (Event $event): Either {
-                    $this->get('doctrine.orm.default_entity_manager')->flush();
+                    $this->get('entity_persister')->buildUpdate($event);
 
                     return right($event);
                 }
@@ -112,7 +107,7 @@ class EventsController extends Controller
             static function (Event $event) {
                 return JsonResponse::create(
                     [
-                        'id' => $event->getId(),
+                        'id event updated' => $event->getId(),
                     ],
                     JsonResponse::HTTP_OK
                 );
@@ -144,7 +139,10 @@ class EventsController extends Controller
             )
         )(
             [
-                $this->get('entity_persister')->getManager()->getRepository(Event::class)->find($id),
+                $this
+                    ->get('doctrine.orm.default_entity_manager')
+                    ->getRepository(Event::class)
+                    ->find($event),
             ]
         );
 
@@ -182,7 +180,10 @@ class EventsController extends Controller
             )
         )(
             [
-                $this->get('doctrine.orm.default_entity_manager')->getRepository(Event::class)->find($event),
+                $this
+                    ->get('doctrine.orm.default_entity_manager')
+                    ->getRepository(Event::class)
+                    ->find($event),
             ]
         );
 
