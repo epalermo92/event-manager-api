@@ -15,38 +15,37 @@ class EntityPersister
         $this->entityManager = $entityManager;
     }
 
-    public function buildSave(object $object): callable
+    public function buildSave(): callable
     {
         return tryCatch(
             function (object $object) {
                 $this->entityManager->persist($object);
                 $this->entityManager->flush();
             },
-            identity,
-            $object
+            identity
         );
     }
 
-    public function buildUpdate(object $object): callable
+    public function buildUpdate(): callable
     {
         return tryCatch(
             function (object $object) {
                 $this->entityManager->flush();
             },
-            identity,
-            $object
+            identity
         );
     }
 
-    public function buildDelete(object $object): callable
+    public function buildDelete(): callable
     {
         return tryCatch(
             function (object $object) {
                 $this->entityManager->remove($object);
                 $this->entityManager->flush();
+
+                return $object;
             },
-            identity,
-            $object
+            identity
         );
     }
 }

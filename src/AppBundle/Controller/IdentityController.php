@@ -73,31 +73,11 @@ class IdentityController extends Controller
      */
     public function deleteIdentitiesAction(AbstractIdentity $identity): JsonResponse
     {
-        /** @var Either<LogicException,JsonResponse> $result */
-        $result = pipeline(
-            function (array $in){
-                return new Right($this->get('entity_persister')->buildDelete($in[0]));
-            },
-            map(
-                static function (callable $func) {
-                    return new Right($func());
-                }
-            )
-        )(
-            [
-                $identity
-            ]
-        );
-
-        return $result
+        return ($this->get('entity_persister')->buildDelete()($identity))
             ->either(
                 ResponseLeftHandler::handle(),
-                static function (Either $either) {
-                    return JsonResponse::create(
-                        [
-                            'deleted' => $either->extract()
-                        ]
-                    );
+                static function () {
+                    return JsonResponse::create();
                 }
             );
     }
@@ -112,7 +92,6 @@ class IdentityController extends Controller
         /** @var Either<\LogicException,JsonResponse> $result */
         $result = pipeline(
             static function (array $in): Either {
-                dump($in[0]->getData());
                 return IdentityTransformer::create()->transform(...$in);
             },
             bind(
