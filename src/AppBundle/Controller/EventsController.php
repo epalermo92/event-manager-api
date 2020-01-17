@@ -22,7 +22,7 @@ use function Widmogrod\Monad\Either\right;
 class EventsController extends Controller
 {
     /**
-     * @Route("/api/events",name="post-events")
+     * @Route("/api/events/post",name="post-events")
      */
     public function postEventsAction(Request $request): JsonResponse
     {
@@ -31,7 +31,11 @@ class EventsController extends Controller
             static function (array $in): Either {
                 return EventTransformer::create()->transform(...$in);
             },
-            bind($this->get('entity_persister')->buildSave())
+            bind(
+                function (Event $event) {
+                    return $this->get('entity_persister')->buildSave($event);
+                }
+            )
         )(
             [
                 $this->createForm(
@@ -45,10 +49,10 @@ class EventsController extends Controller
 
         return $r->either(
             ResponseLeftHandler::handle(),
-            static function (Event $event) {
+            static function (callable $func) {
                 return JsonResponse::create(
                     [
-                        'id' => $event->getId(),
+                        'event' => $func(),
                     ],
                     JsonResponse::HTTP_CREATED
                 );

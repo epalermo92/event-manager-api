@@ -21,6 +21,7 @@ class EntityPersister
             function (object $object) {
                 $this->entityManager->persist($object);
                 $this->entityManager->flush();
+                return $object;
             },
             identity,
             $object
@@ -32,6 +33,7 @@ class EntityPersister
         return tryCatch(
             function (object $object) {
                 $this->entityManager->flush();
+                return $object;
             },
             identity,
             $object
@@ -44,6 +46,7 @@ class EntityPersister
             function (object $object) {
                 $this->entityManager->remove($object);
                 $this->entityManager->flush();
+                return $object;
             },
             identity,
             $object
