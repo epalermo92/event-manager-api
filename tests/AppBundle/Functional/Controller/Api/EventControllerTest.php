@@ -13,8 +13,17 @@ class EventControllerTest extends WebTestCase
         $client = self::createClient();
         $client->request('GET', '/api/events');
 
-        $this->assertSame(200, $client->getResponse()->getStatusCode());
-        $this->assertJson($client->getResponse()->getContent());
+        $this->assertSame(
+            200,
+            $client
+                ->getResponse()
+                ->getStatusCode()
+        );
+        $this->assertJson(
+            $client
+                ->getResponse()
+                ->getContent()
+        );
     }
 
     public function testPostEvent(): void
@@ -58,8 +67,77 @@ class EventControllerTest extends WebTestCase
         );
 
         $this->assertSame($oldEventsNumber + 1, $newEventsNumber);
-        $this->assertStringContainsString('', $client->getResponse()->getContent());
+        $this->assertStringContainsString(
+            '',
+            $client
+                ->getResponse()
+                ->getContent()
+        );
     }
+
+    public function testPutEvent(): void
+    {
+        $client = self::createClient();
+
+        $client
+            ->getContainer()
+            ->get('doctrine.orm.default_entity_manager')
+            ->getRepository(Event::class)
+            ->find(2);
+
+        $form = $client
+            ->getContainer()
+            ->get('form.factory')
+            ->create(EventFormType::class);
+
+        $client
+            ->request(
+                'PUT',
+                '/api/events/2',
+                [
+
+                    'name' => 'Super Party',
+                    'place' => 'Burigozzo 1',
+                    'description' => 'Festa di Natale',
+                    'num_max_participants' => 300,
+                ]
+            );
+        $form->handleRequest($client->getRequest());
+//        $this->assertTrue($form->isSubmitted());
+//        $this->assertTrue($form->isValid());
+//
+//        var_dump($client->getResponse()->getContent());
+//        $this->assertJson(
+//            $client
+//                ->getResponse()
+//                ->getContent()
+//        );
+        $this->assertStringContainsString(
+            'Event updated!',
+            $client
+                ->getResponse()
+                ->getContent()
+        );
+    }
+
+    public function testGetEvent(): void
+    {
+        $client = self::createClient();
+        $client->request('GET', '/api/events/1');
+
+        $this->assertSame(
+            200,
+            $client
+                ->getResponse()
+                ->getStatusCode()
+        );
+        $this->assertJson(
+            $client
+                ->getResponse()
+                ->getContent()
+        );
+    }
+
 
     public function testDeleteEvent(): void
     {
@@ -78,7 +156,7 @@ class EventControllerTest extends WebTestCase
         $client
             ->request(
                 'DELETE',
-                '/api/events/1'
+                '/api/events/2'
             );
 
         $newEventsNumber = count(
@@ -88,21 +166,11 @@ class EventControllerTest extends WebTestCase
         );
 
         $this->assertSame($oldEventsNumber - 1, $newEventsNumber);
-        $this->assertStringContainsString('', $client->getResponse()->getContent());
+        $this->assertStringContainsString(
+            '',
+            $client
+                ->getResponse()
+                ->getContent()
+        );
     }
-//
-//    public function testPutEvent(): void
-//    {
-//    }
-
-
-//    public function testGetEvent(): void
-//    {
-//        $client = self::createClient();
-//        $client->request('GET', '/api/events/1');
-//
-//        $this->assertSame(200, $client->getResponse()->getStatusCode());
-//        $this->assertJson($client->getResponse()->getContent());
-//        $this->assertS
-//    }
 }
