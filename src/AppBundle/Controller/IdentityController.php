@@ -7,7 +7,6 @@ use AppBundle\Entity\LegalIdentity;
 use AppBundle\Entity\NaturalIdentity;
 use AppBundle\Exceptions\NotOfTheSameTypeException;
 use AppBundle\RequestConverter\JsonStringConverter;
-use AppBundle\RequestConverter\EventSubscriber;
 use AppBundle\Exceptions\CannotDeleteIdentityException;
 use AppBundle\Exceptions\EntityNotFoundException;
 use AppBundle\Routing\FormType\IdentityFormType;
@@ -30,10 +29,6 @@ use function Widmogrod\Useful\match;
 
 class IdentityController extends Controller
 {
-
-    /**
-     * @var EntityPersister
-     */
     private $entityPersister;
 
     private $entityManager;
@@ -51,7 +46,6 @@ class IdentityController extends Controller
      */
     public function getIdentitiesAction(): JsonResponse
     {
-        /** @var Either<\LogicException,JsonResponse> $result */
         $result = pipeline(
             static function (array $identities) {
                 if (!$identities) {
@@ -102,6 +96,7 @@ class IdentityController extends Controller
                 return new Right('Identity deleted. ');
             }
         );
+
         return $result
             ->either(
                 ResponseLeftHandler::handle(),
@@ -120,14 +115,18 @@ class IdentityController extends Controller
     {
         JsonStringConverter::convertJsonStringToArray($request);
 
-        /** @var Either<\LogicException,JsonResponse> $result */
         $result = pipeline(
             static function (array $in): Either {
                 return IdentityTransformer::create()->transform(...$in);
             },
             bind(
                 function (AbstractIdentity $identity) {
-                    $this->entityPersister->buildSave()($identity);
+                    $this
+                        ->entityPersister
+                        ->buildSave()(
+                        $identity
+                    );
+
                     return new Right($identity);
                 }
             )
@@ -149,7 +148,7 @@ class IdentityController extends Controller
                 static function (AbstractIdentity $identity) {
                     return JsonResponse::create(
                         [
-                            'posted' => $identity
+                            'posted' => $identity,
                         ]
                     );
                 }
@@ -197,7 +196,12 @@ class IdentityController extends Controller
             ),
             bind(
                 function (AbstractIdentity $identity) {
-                    $this->entityPersister->buildUpdate()($identity);
+                    $this
+                        ->entityPersister
+                        ->buildUpdate()(
+                        $identity
+                    );
+
                     return new Right('Identity updated');
                 }
             )
@@ -209,7 +213,7 @@ class IdentityController extends Controller
                         null,
                         ['method' => Request::METHOD_PUT]
                     ),
-                $request
+                $request,
             ]
         );
 
@@ -218,7 +222,7 @@ class IdentityController extends Controller
             static function (string $message): JsonResponse {
                 return JsonResponse::create(
                     [
-                        $message
+                        $message,
                     ]
                 );
             }
@@ -234,12 +238,12 @@ class IdentityController extends Controller
     {
         /** @var Either<\LogicException,JsonResponse> $result */
         $result = pipeline(
-            static function (array $in) {
-                if (!$in[0]) {
+            static function (array $identity) {
+                if (!$identity) {
                     return new Left(EntityNotFoundException::create());
                 }
 
-                return new Right($in[0]);
+                return new Right($identity);
             },
             map(
                 static function (object $identity) {
@@ -247,12 +251,10 @@ class IdentityController extends Controller
                 }
             )
         )(
-            [
-                $this
-                    ->entityManager
-                    ->getRepository(AbstractIdentity::class)
-                    ->find($identity),
-            ]
+            $this
+                ->entityManager
+                ->getRepository(AbstractIdentity::class)
+                ->find($identity)
         );
 
         return $result
@@ -261,7 +263,7 @@ class IdentityController extends Controller
                 static function (Either $either) {
                     return JsonResponse::create(
                         [
-                            $either->extract()
+                            $either->extract(),
                         ]
                     );
                 }
