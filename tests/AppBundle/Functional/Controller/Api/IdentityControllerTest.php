@@ -10,6 +10,30 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class IdentityControllerTest extends WebTestCase
 {
+    public function testGetIdentitiesAction(): void
+    {
+        $client = self::createClient();
+
+        $client
+            ->request(
+                'GET',
+                'api/identities'
+            );
+
+        $this->assertSame(
+            200,
+            $client
+                ->getResponse()
+                ->getStatusCode()
+        );
+
+        $this->assertJson(
+            $client
+                ->getResponse()
+                ->getContent()
+        );
+    }
+
     public function testPostIdentityAction(): void
     {
         $client = self::createClient();
@@ -52,5 +76,6 @@ class IdentityControllerTest extends WebTestCase
         );
 
         $this->assertSame($oldIdentitiesNumber + 1, $newIdentitiesNumber);
-        $this->assertStringContainsString('', $client->getResponse()->getContent());
+        $this->assertStringContainsString('posted', $client->getResponse()->getContent());
+    }
 }
