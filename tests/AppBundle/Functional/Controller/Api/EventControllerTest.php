@@ -9,8 +9,9 @@ class EventControllerTest extends WebTestCase
     public function testGetAllEvents():void
     {
         $client = self::createClient();
-        $crawler = $client->request('GET','/api/events');
-        
-        var_dump($crawler->text());
+        $client->request('GET','/api/events');
+
+        $this->assertSame(200,$client->getResponse()->getStatusCode());
+        $this->assertJson($client->getResponse()->getContent());
     }
 }
