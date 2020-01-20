@@ -34,6 +34,39 @@ class IdentityControllerTest extends WebTestCase
         );
     }
 
+    public function testDeleteIdentitiesAction():void {
+        $client = self::createClient();
+
+        $client
+            ->request(
+                'DELETE',
+                'api/identities/1'
+            );
+
+        $this
+            ->assertSame(
+                200,
+                $client
+                ->getResponse()
+                ->getStatusCode()
+            );
+
+        $this
+            ->assertJson(
+                $client
+                ->getResponse()
+                ->getContent()
+            );
+
+        $this
+            ->assertStringContainsString(
+                'deleted',
+                $client
+                ->getResponse()
+                ->getContent()
+            );
+    }
+
     public function testPutIdentitiesAction(): void
     {
         $client = self::createClient();
