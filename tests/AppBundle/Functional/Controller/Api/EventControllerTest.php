@@ -60,4 +60,49 @@ class EventControllerTest extends WebTestCase
         $this->assertSame($oldEventsNumber + 1, $newEventsNumber);
         $this->assertStringContainsString('', $client->getResponse()->getContent());
     }
+
+    public function testDeleteEvent(): void
+    {
+        $client = self::createClient();
+
+        $entityManager = $client
+            ->getContainer()
+            ->get('doctrine.orm.default_entity_manager');
+
+        $oldEventsNumber = count(
+            $entityManager
+                ->getRepository(Event::class)
+                ->findAll()
+        );
+
+        $client
+            ->request(
+                'DELETE',
+                '/api/events/1'
+            );
+
+        $newEventsNumber = count(
+            $entityManager
+                ->getRepository(Event::class)
+                ->findAll()
+        );
+
+        $this->assertSame($oldEventsNumber - 1, $newEventsNumber);
+        $this->assertStringContainsString('', $client->getResponse()->getContent());
+    }
+//
+//    public function testPutEvent(): void
+//    {
+//    }
+
+
+//    public function testGetEvent(): void
+//    {
+//        $client = self::createClient();
+//        $client->request('GET', '/api/events/1');
+//
+//        $this->assertSame(200, $client->getResponse()->getStatusCode());
+//        $this->assertJson($client->getResponse()->getContent());
+//        $this->assertS
+//    }
 }
