@@ -13,4 +13,3 @@
 !var/SymfonyRequirements.php
 /vendor/
 .idea/
-.phpunit.result.cache
