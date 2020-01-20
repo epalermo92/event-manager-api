@@ -34,40 +34,26 @@ class IdentityControllerTest extends WebTestCase
         );
     }
 
-    public function testDeleteIdentitiesAction():void {
-        $client = self::createClient();
-
-        $client
-            ->request(
-                'DELETE',
-                'api/identities/1'
-            );
-
-        $this
-            ->assertSame(
-                200,
-                $client
-                ->getResponse()
-                ->getStatusCode()
-            );
-
-        $this
-            ->assertJson(
-                $client
-                ->getResponse()
-                ->getContent()
-            );
-
-        $this
-            ->assertStringContainsString(
-                'deleted',
-                $client
-                ->getResponse()
-                ->getContent()
-            );
+    public function identitiesDataProvider(): array
+    {
+        return [
+            [
+                ['name' => 'Pippo', 'surname' => 'Pluto', 'codiceFiscale' => 'PPOPLT23R19D245G', 'type' => 'natural'],
+                'Identity updated',
+            ],
+            [
+                ['name' => 'Pippo', 'partitaIva' => 'PPOPLT23R19D245G', 'type' => 'legal'],
+                'Trying to update a Natural\/Legal Identity but sending Legal\/Natural Identity data',
+            ],
+        ];
     }
 
-    public function testPutIdentitiesAction(): void
+    /**
+     * @dataProvider identitiesDataProvider
+     * @param array $data
+     * @param string $message
+     */
+    public function testPutIdentitiesAction(array $data, string $message): void
     {
         $client = self::createClient();
 
@@ -86,13 +72,7 @@ class IdentityControllerTest extends WebTestCase
             ->request(
                 'PUT',
                 '/api/identities/5',
-                [
-
-                    'name' => 'Pippo',
-                    'surname' => 'Pluto',
-                    'codiceFiscale' => 'PPOPLT23R19D245G',
-                    'type' => 'natural',
-                ]
+                $data
             );
         $form->handleRequest($client->getRequest());
 //        $this->assertTrue($form->isSubmitted());
@@ -105,7 +85,7 @@ class IdentityControllerTest extends WebTestCase
                 ->getContent()
         );
         $this->assertStringContainsString(
-            'Identity updated',
+            $message,
             $client
                 ->getResponse()
                 ->getContent()
@@ -155,5 +135,39 @@ class IdentityControllerTest extends WebTestCase
 
         $this->assertSame($oldIdentitiesNumber + 1, $newIdentitiesNumber);
         $this->assertStringContainsString('posted', $client->getResponse()->getContent());
+    }
+
+    public function testDeleteIdentitiesAction(): void
+    {
+        $client = self::createClient();
+
+        $client
+            ->request(
+                'DELETE',
+                'api/identities/1'
+            );
+
+        $this
+            ->assertSame(
+                200,
+                $client
+                    ->getResponse()
+                    ->getStatusCode()
+            );
+
+        $this
+            ->assertJson(
+                $client
+                    ->getResponse()
+                    ->getContent()
+            );
+
+        $this
+            ->assertStringContainsString(
+                'deleted',
+                $client
+                    ->getResponse()
+                    ->getContent()
+            );
     }
 }
