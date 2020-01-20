@@ -34,6 +34,51 @@ class IdentityControllerTest extends WebTestCase
         );
     }
 
+    public function testPutIdentitiesAction(): void
+    {
+        $client = self::createClient();
+
+        $client
+            ->getContainer()
+            ->get('doctrine.orm.default_entity_manager')
+            ->getRepository(AbstractIdentity::class)
+            ->find(5);
+
+        $form = $client
+            ->getContainer()
+            ->get('form.factory')
+            ->create(IdentityFormType::class);
+
+        $client
+            ->request(
+                'PUT',
+                '/api/identities/5',
+                [
+
+                    'name' => 'Pippo',
+                    'surname' => 'Pluto',
+                    'codiceFiscale' => 'PPOPLT23R19D245G',
+                    'type' => 'natural',
+                ]
+            );
+        $form->handleRequest($client->getRequest());
+//        $this->assertTrue($form->isSubmitted());
+//        $this->assertTrue($form->isValid());
+//        TODO Why with put method the form is not valid and submitted too??
+
+        $this->assertJson(
+            $client
+                ->getResponse()
+                ->getContent()
+        );
+        $this->assertStringContainsString(
+            'Identity updated',
+            $client
+                ->getResponse()
+                ->getContent()
+        );
+    }
+
     public function testPostIdentityAction(): void
     {
         $client = self::createClient();

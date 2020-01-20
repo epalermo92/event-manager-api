@@ -22,8 +22,8 @@ class IdentityBuilderTest extends TestCase
             'type' => 'natural',
         ]);
 
-        $this->assertSame(get_class($legalIdentity), Right::class);
-        $this->assertSame(get_class($legalIdentity->extract()), NaturalIdentity::class);
+        $this->assertSame(Right::class, get_class($legalIdentity));
+        $this->assertSame(NaturalIdentity::class, get_class($legalIdentity->extract()));
     }
 
     public function testBuildNatural(): void
@@ -34,8 +34,8 @@ class IdentityBuilderTest extends TestCase
             'type' => 'legal',
         ]);
 
-        $this->assertSame(get_class($legalIdentity), Right::class);
-        $this->assertSame(get_class($legalIdentity->extract()), LegalIdentity::class);
+        $this->assertSame(Right::class, get_class($legalIdentity));
+        $this->assertSame(LegalIdentity::class, get_class($legalIdentity->extract()));
     }
 
     public function testWrongData(): void
@@ -47,6 +47,6 @@ class IdentityBuilderTest extends TestCase
             'type' => 'naturale',
         ]);
 
-        $this->assertSame(get_class($legalIdentity), Left::class);
+        $this->assertSame(Left::class, get_class($legalIdentity));
     }
 }
