@@ -135,7 +135,7 @@ class Event implements \JsonSerializable
     {
         $this->place = $newEvent->getPlace();
         $this->name = $newEvent->getName();
-        $this->numMaxParticipants = $newEvent->getNumMaxParticipants();
+//        $this->numMaxParticipants = $newEvent->getNumMaxParticipants();
         $this->description = $newEvent->getDescription();
 
         return $this;
@@ -150,6 +150,7 @@ class Event implements \JsonSerializable
             'id' => $this->id,
             'name' => $this->name,
             'description' => $this->description,
+            'num_max_participants' => $this->numMaxParticipants,
             'participants' => $this->participants,
             'place' => $this->place,
             'date' => $this->date,

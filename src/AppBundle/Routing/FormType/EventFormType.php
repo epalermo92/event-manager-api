@@ -55,11 +55,8 @@ class EventFormType extends AbstractRequestType
             'num_max_participants',
             NumberType::class,
             [
-                'label' => 'Num max participanti',
-                'required' => true,
-                'constraints' => [
-                    new NotBlank(),
-                ],
+                'label' => 'Num max partecipanti',
+                'required' => true
             ]
         );
 
@@ -69,10 +66,7 @@ class EventFormType extends AbstractRequestType
             [
                 'class' => AbstractIdentity::class,
                 'label' => 'organizer',
-                'required' => true,
-                'constraints' => [
-                    new NotBlank(),
-                ],
+                'required' => false
             ]
         );
 
@@ -81,11 +75,8 @@ class EventFormType extends AbstractRequestType
             EntityType::class,
             [
                 'class' => NaturalIdentity::class,
-                'label' => 'Num max participanti',
-                'required' => true,
-                'constraints' => [
-                    new NotBlank(),
-                ],
+                'label' => 'Partecipanti',
+                'required' => false
             ]
         );
     }
