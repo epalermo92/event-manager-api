@@ -3,6 +3,7 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Entity\Event;
+use AppBundle\RequestConverter\JsonStringConverter;
 use AppBundle\Routing\FormType\EventFormType;
 use AppBundle\Routing\ResponseLeftHandler;
 use AppBundle\Routing\Transformer\EventTransformer;
@@ -35,6 +36,9 @@ class EventsController extends Controller
      */
     public function postEventsAction(Request $request): JsonResponse
     {
+
+        JsonStringConverter::convertJsonStringToArray($request);
+
         /** @var Either<\Exception, Event> $r */
         $r = pipeline(
             static function (array $in): Either {
@@ -90,16 +94,24 @@ class EventsController extends Controller
      */
     public function putEventsAction(Request $request, Event $event): JsonResponse
     {
+        JsonStringConverter::convertJsonStringToArray($request);
+
         /** @var Either<\Exception, Event> $r */
         $r = pipeline(
             function (array $in): Either {
                 return EventTransformer::create()->transform(...$in);
             },
             bind(
-                function (Event $event): Either {
-                    $this->entityPersister->buildUpdate()($event);
+                function (Event $eventUpdated) use ($event): Either {
+                    $event->updateEntity($eventUpdated);
 
                     return right($event);
+                }
+            ),
+            bind(
+                function (Event $event) {
+                    $this->entityPersister->buildUpdate()($event);
+                    return right('Event updated!');
                 }
             )
         )(
@@ -115,10 +127,10 @@ class EventsController extends Controller
 
         return $r->either(
             ResponseLeftHandler::handle(),
-            static function (Event $event) {
+            static function (string $resultMessage) {
                 return JsonResponse::create(
                     [
-                        'id event updated' => $event->getId(),
+                        $resultMessage
                     ],
                     JsonResponse::HTTP_OK
                 );
