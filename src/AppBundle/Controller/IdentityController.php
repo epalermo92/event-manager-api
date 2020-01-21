@@ -80,12 +80,7 @@ class IdentityController extends AbstractController
     {
         $result = pipeline(
             IdentityTransformer::create()->transformLazy(),
-            bind(
-                function (AbstractIdentity $identity) {
-                    $this->entityPersister->buildSave()($identity);
-                    return right($identity);
-                }
-            )
+            bind($this->entityPersister->buildSave()())
         )(
             $this->sendForm($request, IdentityFormType::class, Request::METHOD_POST)
         );

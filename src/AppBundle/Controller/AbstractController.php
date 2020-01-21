@@ -19,13 +19,11 @@ class AbstractController extends Controller
      */
     protected static function buildResponse($responseData): JsonResponse
     {
-        return !$responseData
-            ? JsonResponse::create()
-            :JsonResponse::create(
-                [
-                    $responseData
-                ]
-            );
+        return JsonResponse::create(
+            [
+                $responseData,
+            ]
+        );
     }
 
     protected static function handleEither(Either $r): JsonResponse
