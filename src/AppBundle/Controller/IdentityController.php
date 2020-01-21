@@ -102,13 +102,17 @@ class IdentityController extends AbstractController
             bind(
                 static function (AbstractIdentity $identityUpdated) use ($identity): Either {
                     return $identityUpdated->getType() !== $identity->getType()
-                        ? left(NotOfTheSameTypeException::create())
+                        ? left(
+                            NotOfTheSameTypeException::create(
+                                'Trying to update a '.$identityUpdated->getType().' identity with '.$identity->getType().' identity data'
+                            )
+                        )
                         : right($identity->updateIdentity($identityUpdated));
                 }
             ),
             bind($this->entityPersister->buildUpdate())
         )(
-                $this->sendForm($request, IdentityFormType::class, Request::METHOD_PUT)
+            $this->sendForm($request, IdentityFormType::class, Request::METHOD_PUT)
         );
 
         return self::handleEither($result);

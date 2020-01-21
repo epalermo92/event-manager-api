@@ -8,13 +8,13 @@ use Throwable;
 
 class NotOfTheSameTypeException extends \LogicException
 {
-    public function __construct($message = 'Trying to update a Natural/Legal Identity but sending Legal/Natural Identity data', $code = 400, Throwable $previous = null)
+    public function __construct($message , $code = 400, Throwable $previous = null)
     {
         parent::__construct($message, $code, $previous);
     }
 
-    public static function create(): self
+    public static function create(string $message): self
     {
-        return new self();
+        return new self($message);
     }
 }
