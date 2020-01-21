@@ -6,7 +6,6 @@ use AppBundle\Entity\AbstractIdentity;
 use AppBundle\Exceptions\NotOfTheSameTypeException;
 use AppBundle\RequestConverter\JsonStringConverter;
 use AppBundle\Exceptions\CannotDeleteIdentityException;
-use AppBundle\Exceptions\EntityNotFoundException;
 use AppBundle\Routing\FormType\IdentityFormType;
 use AppBundle\Routing\ResponseLeftHandler;
 use AppBundle\Routing\Transformer\IdentityTransformer;
