@@ -37,8 +37,6 @@ class EventsController extends Controller
     public function postEventsAction(Request $request): JsonResponse
     {
 
-        JsonStringConverter::convertJsonStringToArray($request);
-
         /** @var Either<\Exception, Event> $r */
         $r = pipeline(
             EventTransformer::create()->transformLazy(),
@@ -84,7 +82,6 @@ class EventsController extends Controller
      */
     public function putEventsAction(Request $request, Event $event): JsonResponse
     {
-        JsonStringConverter::convertJsonStringToArray($request);
 
         /** @var Either<\Exception, Event> $r */
         $r = pipeline(
