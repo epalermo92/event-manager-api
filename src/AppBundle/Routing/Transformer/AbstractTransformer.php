@@ -36,4 +36,11 @@ abstract class AbstractTransformer
 
         return $this->doTransform($form);
     }
+
+    public function transformLazy(): callable
+    {
+        return function (array $in): Either {
+            return $this->transform(...$in);
+        };
+    }
 }

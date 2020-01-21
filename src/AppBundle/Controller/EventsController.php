@@ -16,10 +16,10 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Widmogrod\Monad\Either\Either;
 use function Widmogrod\Functional\bind;
+use function Widmogrod\Functional\map;
 use function Widmogrod\Functional\pipeline;
 use function Widmogrod\Monad\Either\left;
 use function Widmogrod\Monad\Either\right;
-
 
 class EventsController extends Controller
 {
@@ -41,16 +41,8 @@ class EventsController extends Controller
 
         /** @var Either<\Exception, Event> $r */
         $r = pipeline(
-            static function (array $in): Either {
-                return EventTransformer::create()->transform(...$in);
-            },
-            bind(
-                function (Event $event): Either {
-                    $this->entityPersister->buildSave()($event);
-
-                    return right($event);
-                }
-            )
+            EventTransformer::create()->transformLazy(),
+            bind($this->entityPersister->buildSave())
         )(
             [
                 $this->createForm(
@@ -66,9 +58,7 @@ class EventsController extends Controller
             ResponseLeftHandler::handle(),
             static function (Event $event) {
                 return JsonResponse::create(
-                    [
-                        'event' => $event->getId(),
-                    ],
+                    $event,
                     JsonResponse::HTTP_CREATED
                 );
             }
@@ -80,12 +70,12 @@ class EventsController extends Controller
      */
     public function getEventsAction(): JsonResponse
     {
-        $events = $this
-            ->get('doctrine.orm.default_entity_manager')
-            ->getRepository(Event::class)
-            ->findAll();
-
-        return JsonResponse::create($events);
+        return JsonResponse::create(
+            $this
+                ->get('doctrine.orm.default_entity_manager')
+                ->getRepository(Event::class)
+                ->findAll()
+        );
     }
 
     /**
@@ -98,22 +88,9 @@ class EventsController extends Controller
 
         /** @var Either<\Exception, Event> $r */
         $r = pipeline(
-            function (array $in): Either {
-                return EventTransformer::create()->transform(...$in);
-            },
-            bind(
-                function (Event $eventUpdated) use ($event): Either {
-                    $event->updateEntity($eventUpdated);
-
-                    return right($event);
-                }
-            ),
-            bind(
-                function (Event $event) {
-                    $this->entityPersister->buildUpdate()($event);
-                    return right('Event updated!');
-                }
-            )
+            EventTransformer::create()->transformLazy(),
+            map([$event, 'updateEntity']),
+            bind($this->entityPersister->buildUpdate())
         )(
             [
                 $this->createForm(
@@ -127,12 +104,10 @@ class EventsController extends Controller
 
         return $r->either(
             ResponseLeftHandler::handle(),
-            static function (string $resultMessage) {
+            static function (Event $event) {
                 return JsonResponse::create(
-                    [
-                        $resultMessage
-                    ],
-                    JsonResponse::HTTP_OK
+                    $event,
+                    JsonResponse::HTTP_ACCEPTED
                 );
             }
         );
@@ -155,42 +130,11 @@ class EventsController extends Controller
 
     /**
      * @Route("/api/events/{event}",name="get-event",methods={"GET"})
+     *
      * @return JsonResponse
      */
     public function getEventAction(Event $event): JsonResponse
     {
-        /** @var Either<\Exception, Either> $r */
-        $r = pipeline(
-            function (array $in): Either {
-                if (!$in[0]) {
-                    return left(new \AppBundle\Exceptions\EntityNotFoundException());
-                }
-
-                return right($in[0]);
-            },
-            bind(
-                function (Event $event): Either {
-                    return right($event);
-                }
-            )
-        )(
-            [
-                $this
-                    ->get('doctrine.orm.default_entity_manager')
-                    ->getRepository(Event::class)
-                    ->find($event),
-            ]
-        );
-
-        return $r->either(
-            ResponseLeftHandler::handle(),
-            function (Event $event) {
-                return JsonResponse::create(
-                    [
-                        'event' => $event,
-                    ]
-                );
-            }
-        );
+        return JsonResponse::create(['event' => $event]);
     }
 }

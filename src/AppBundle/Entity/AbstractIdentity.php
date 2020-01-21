@@ -57,4 +57,6 @@ abstract class AbstractIdentity implements \JsonSerializable
     }
 
     abstract public function getType(): string;
+
+    abstract public function updateIdentity(AbstractIdentity $newIdentity): AbstractIdentity;
 }

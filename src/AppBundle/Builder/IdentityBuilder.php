@@ -22,7 +22,7 @@ class IdentityBuilder
                 return right(new NaturalIdentity($data['name'], $data['surname'], $data['codiceFiscale']));
                 break;
             default:
-                return left(new EntityNotBuiltException());
+                throw new \LogicException();
         }
     }
 }

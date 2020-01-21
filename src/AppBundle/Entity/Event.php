@@ -14,6 +14,7 @@ class Event implements \JsonSerializable
 {
     /**
      * @var integer
+     *
      * @ORM\Id()
      * @ORM\Column(name="id", type="integer")
      * @ORM\GeneratedValue(strategy="AUTO")
@@ -22,18 +23,21 @@ class Event implements \JsonSerializable
 
     /**
      * @var string
+     *
      * @ORM\Column(name="place", type="string")
      */
     private $place;
 
     /**
      * @var DateTime
+     *
      * @ORM\Column(name="date", type="datetime")
      */
     private $date;
 
     /**
      * @var string
+     *
      * @ORM\Column(name="name", type="string")
      */
     private $name;
@@ -45,16 +49,21 @@ class Event implements \JsonSerializable
 
     /**
      * @var string
+     *
      * @ORM\Column(name="description", type="string")
      */
     private $description;
 
     /**
+     * @var AbstractIdentity
+     *
      * @ORM\OneToOne(targetEntity="AbstractIdentity",cascade={"persist"})
      */
     private $organizer;
 
     /**
+     * @var ArrayCollection
+     *
      * @ORM\ManyToMany(targetEntity="NaturalIdentity",mappedBy="events")
      */
     private $participants;
@@ -75,25 +84,16 @@ class Event implements \JsonSerializable
         return $this->id;
     }
 
-    /**
-     * @return string
-     */
     public function getPlace(): string
     {
         return $this->place;
     }
 
-    /**
-     * @return DateTime
-     */
     public function getDate(): DateTime
     {
         return $this->date;
     }
 
-    /**
-     * @return string
-     */
     public function getName(): string
     {
         return $this->name;
@@ -150,7 +150,7 @@ class Event implements \JsonSerializable
             'name' => $this->name,
             'description' => $this->description,
             'num_max_participants' => $this->numMaxParticipants,
-            'participants' => $this->participants,
+            'participants' => $this->participants->toArray(),
             'place' => $this->place,
             'date' => $this->date,
             'organizer' => $this->organizer

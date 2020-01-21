@@ -15,40 +15,40 @@ use const Widmogrod\Useful\any;
 
 class ResponseLeftHandler
 {
+    private static function buildCreateJsonResponse(): callable
+    {
+        return static function (\Exception $exception): JsonResponse {
+            return JsonResponse::create(
+                [
+                    'error' => $exception->getMessage(),
+                ],
+                JsonResponse::HTTP_BAD_REQUEST
+            );
+        };
+    }
+
+    private const badExceptionMap = [
+        FormNotValidException::class,
+        FormNotSubmittedException::class,
+        EntityNotFoundException::class,
+        EntityNotBuiltException::class,
+        CannotDeleteIdentityException::class,
+        NotOfTheSameTypeException::class
+    ];
+
     public static function handle(): callable
     {
-        return match([
-            FormNotValidException::class => static function() {
-                return JsonResponse::create([
-                    'Exception' => FormNotValidException::create()->getMessage()
-                ]);
-            },
-            FormNotSubmittedException::class => static function() {
-                return JsonResponse::create([
-                    'Exception' => FormNotSubmittedException::create()->getMessage()
-                ]);
-            },
-            EntityNotFoundException::class => static function() {
-                return JsonResponse::create([
-                    'Exception' => EntityNotFoundException::create()->getMessage()
-                ]);
-            },
-            EntityNotBuiltException::class => static function() {
-                return JsonResponse::create([
-                    'Exception' => EntityNotBuiltException::create()->getMessage()
-                ]);
-            },
-            CannotDeleteIdentityException::class => static function() {
-                return JsonResponse::create([
-                    'Exception' => CannotDeleteIdentityException::create()->getMessage()
-                ]);
-            },
-            NotOfTheSameTypeException::class => static function() {
-                return JsonResponse::create([
-                    'Exception' => NotOfTheSameTypeException::create()->getMessage()
-                ]);
-            },
-            any => reThrow
-        ]);
+        return match(
+            array_merge(
+                array_reduce(
+                    self::badExceptionMap,
+                    static function (array $carry, string $eClass): array {
+                        return array_merge($carry, [$eClass => self::buildCreateJsonResponse()]);
+                    },
+                    []
+                ),
+                [any => reThrow]
+            )
+        );
     }
 }

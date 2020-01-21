@@ -8,6 +8,7 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Validator\Constraints\GreaterThanOrEqual;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
 class EventFormType extends AbstractRequestType
@@ -56,7 +57,12 @@ class EventFormType extends AbstractRequestType
             NumberType::class,
             [
                 'label' => 'Num max partecipanti',
-                'required' => true
+                'required' => true,
+                'constraints' => [
+                    new NotBlank(),
+                    new GreaterThanOrEqual(['value' => 1])
+                ],
+
             ]
         );
 
@@ -66,7 +72,10 @@ class EventFormType extends AbstractRequestType
             [
                 'class' => AbstractIdentity::class,
                 'label' => 'organizer',
-                'required' => false
+                'required' => true,
+                'constraints' => [
+                    new NotBlank(),
+                ],
             ]
         );
 
@@ -76,7 +85,10 @@ class EventFormType extends AbstractRequestType
             [
                 'class' => NaturalIdentity::class,
                 'label' => 'Partecipanti',
-                'required' => false
+                'required' => true,
+                'constraints' => [
+                    new NotBlank(),
+                ],
             ]
         );
     }

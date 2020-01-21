@@ -3,8 +3,6 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Entity\AbstractIdentity;
-use AppBundle\Entity\LegalIdentity;
-use AppBundle\Entity\NaturalIdentity;
 use AppBundle\Exceptions\NotOfTheSameTypeException;
 use AppBundle\RequestConverter\JsonStringConverter;
 use AppBundle\Exceptions\CannotDeleteIdentityException;
@@ -20,12 +18,11 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Widmogrod\Monad\Either\Either;
-use Widmogrod\Monad\Either\Left;
-use Widmogrod\Monad\Either\Right;
 use function Widmogrod\Functional\bind;
 use function Widmogrod\Functional\map;
 use function Widmogrod\Functional\pipeline;
-use function Widmogrod\Useful\match;
+use function Widmogrod\Monad\Either\left;
+use function Widmogrod\Monad\Either\right;
 
 class IdentityController extends Controller
 {
@@ -146,11 +143,7 @@ class IdentityController extends Controller
             ->either(
                 ResponseLeftHandler::handle(),
                 static function (AbstractIdentity $identity) {
-                    return JsonResponse::create(
-                        [
-                            'posted' => $identity,
-                        ]
-                    );
+                    return JsonResponse::create($identity);
                 }
             );
     }
@@ -167,44 +160,15 @@ class IdentityController extends Controller
 
         /** @var Either<LogicException,JsonResponse> $result */
         $result = pipeline(
-            static function (array $in): Either {
-                return IdentityTransformer::create()->transform(...$in);
-            },
+            IdentityTransformer::create()->transformLazy(),
             bind(
                 static function (AbstractIdentity $identityUpdated) use ($identity): Either {
-                    if (get_class($identityUpdated) !== get_class($identity)) {
-                        return new Left(NotOfTheSameTypeException::create());
-                    }
-
-                    return new Right(
-                        match(
-                            [
-                                LegalIdentity::class => static function (LegalIdentity $identityUpdated) use ($identity
-                                ) {
-                                    return $identity->updateIdentity($identityUpdated);
-                                },
-                                NaturalIdentity::class => static function (NaturalIdentity $identityUpdated) use (
-                                    $identity
-                                ) {
-                                    return $identity->updateIdentity($identityUpdated);
-                                },
-                            ],
-                            $identityUpdated
-                        )
-                    );
+                    return $identityUpdated->getType() !== $identity->getType()
+                        ? left(NotOfTheSameTypeException::create())
+                        : right($identity->updateIdentity($identityUpdated));
                 }
             ),
-            bind(
-                function (AbstractIdentity $identity) {
-                    $this
-                        ->entityPersister
-                        ->buildUpdate()(
-                        $identity
-                    );
-
-                    return new Right('Identity updated');
-                }
-            )
+            bind($this->entityPersister->buildUpdate())
         )(
             [
                 $this
