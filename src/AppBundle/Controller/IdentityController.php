@@ -68,22 +68,7 @@ class IdentityController extends AbstractController
     {
         /** @var Either $tryCatch */
         $tryCatch = $this->entityPersister->buildDelete()($identity);
-        $result = $tryCatch->either(
-            static function () {
-                return left(CannotDeleteIdentityException::create());
-            },
-            static function () {
-                return right('Identity deleted. ');
-            }
-        );
-
-        return $result
-            ->either(
-                ResponseLeftHandler::handle(),
-                static function (string $message) {
-                    return JsonResponse::create($message);
-                }
-            );
+        return self::handleEither($tryCatch);
     }
 
     /**
@@ -122,13 +107,7 @@ class IdentityController extends AbstractController
             ]
         );
 
-        return $result
-            ->either(
-                ResponseLeftHandler::handle(),
-                static function (AbstractIdentity $identity) {
-                    return JsonResponse::create($identity);
-                }
-            );
+        return self::handleEither($result);
     }
 
     /**
@@ -164,15 +143,6 @@ class IdentityController extends AbstractController
             ]
         );
 
-        return $result->either(
-            ResponseLeftHandler::handle(),
-            static function (string $message): JsonResponse {
-                return JsonResponse::create(
-                    [
-                        $message,
-                    ]
-                );
-            }
-        );
+        return self::handleEither($result);
     }
 }

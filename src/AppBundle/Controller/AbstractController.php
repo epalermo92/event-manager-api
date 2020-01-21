@@ -14,23 +14,25 @@ use Widmogrod\Monad\Either\Either;
 class AbstractController extends Controller
 {
     /**
-     * @param object<Event,AbstractIdentity> $object
+     * @param object<Event,AbstractIdentity> $responseData
      * @return JsonResponse
      */
-    protected static function buildResponse(object $object): JsonResponse
+    protected static function buildResponse($responseData): JsonResponse
     {
-        return JsonResponse::create(
-            [
-                $object,
-            ]
-        );
+        return !$responseData
+            ? JsonResponse::create()
+            :JsonResponse::create(
+                [
+                    $responseData
+                ]
+            );
     }
 
     protected static function handleEither(Either $r): JsonResponse
     {
         return $r->either(
             ResponseLeftHandler::handle(),
-            static function (object $object) {
+            static function ($object) {
                 return self::buildResponse($object);
             }
         );
