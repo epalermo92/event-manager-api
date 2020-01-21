@@ -3,6 +3,7 @@
 namespace AppBundle\Routing\FormType;
 
 use AppBundle\Entity\AbstractIdentity;
+use AppBundle\Entity\NaturalIdentity;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;

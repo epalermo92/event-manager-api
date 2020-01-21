@@ -13,7 +13,7 @@ class LoadEvent extends Fixture implements DependentFixtureInterface
 {
     public function load(ObjectManager $manager)
     {
-        $organizer1 = $manager->getRepository(AbstractIdentity::class)->find(2);
+        $organizer1 = $manager->getRepository(AbstractIdentity::class)->find(5);
         $event1 = new Event(
             'Santiago Bernabeu',
             new DateTime(),
