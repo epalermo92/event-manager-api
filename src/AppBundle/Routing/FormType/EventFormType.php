@@ -5,6 +5,7 @@ namespace AppBundle\Routing\FormType;
 use AppBundle\Entity\AbstractIdentity;
 use AppBundle\Entity\NaturalIdentity;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -81,9 +82,9 @@ class EventFormType extends AbstractRequestType
 
         $builder->add(
             'participants',
-            EntityType::class,
+            CollectionType::class,
             [
-                'class' => NaturalIdentity::class,
+                'entry_type' => NaturalIdentity::class,
                 'label' => 'Partecipanti',
                 'required' => true,
                 'constraints' => [
