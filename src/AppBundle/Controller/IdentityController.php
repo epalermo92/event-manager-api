@@ -23,7 +23,7 @@ use function Widmogrod\Functional\pipeline;
 use function Widmogrod\Monad\Either\left;
 use function Widmogrod\Monad\Either\right;
 
-class IdentityController extends Controller
+class IdentityController extends AbstractController
 {
     private $entityPersister;
 
@@ -42,14 +42,11 @@ class IdentityController extends Controller
      */
     public function getIdentitiesAction(): JsonResponse
     {
-        return JsonResponse::create(
-            [
-                $this
+        return self::buildResponse(
+            $this
                 ->entityManager
                 ->getRepository(AbstractIdentity::class)
-                ->findAll()
-            ]
-        );
+                ->findAll());
     }
 
     /**
@@ -59,11 +56,7 @@ class IdentityController extends Controller
      */
     public function getIdentityAction(AbstractIdentity $identity): JsonResponse
     {
-        return JsonResponse::create(
-            [
-                $identity
-            ]
-        );
+        return self::buildResponse($identity);
     }
 
     /**
