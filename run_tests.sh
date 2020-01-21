@@ -1,6 +1,2 @@
-docker exec -ti event-manager-app_php_1  php bin/console doctrine:database:drop --force
-docker exec -ti event-manager-app_php_1  php bin/console doctrine:database:create
-docker exec -ti event-manager-app_php_1  php bin/console doctrine:schema:validate
-docker exec -ti event-manager-app_php_1  php bin/console doctrine:schema:update --force --complete --dump-sql
-docker exec -ti event-manager-app_php_1  php bin/console doctrine:fixtures:load --no-interaction
+source db_setup.sh
 docker exec event-manager-app_php_1 vendor/bin/phpunit --colors=always --do-not-cache-result tests/
