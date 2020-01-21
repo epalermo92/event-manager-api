@@ -4,6 +4,7 @@ namespace AppBundle\Routing\Transformer;
 
 use AppBundle\Exceptions\FormNotSubmittedException;
 use AppBundle\Exceptions\FormNotValidException;
+use AppBundle\RequestConverter\JsonStringConverter;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Widmogrod\Monad\Either\Either;
@@ -24,6 +25,8 @@ abstract class AbstractTransformer
 
     public function transform(FormInterface $form, Request $request): Either
     {
+        JsonStringConverter::convertJsonStringToArray($request);
+
         $form->handleRequest($request);
 
         if (!$form->isSubmitted()) {

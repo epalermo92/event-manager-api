@@ -78,8 +78,6 @@ class IdentityController extends AbstractController
      */
     public function postIdentitiesAction(Request $request): JsonResponse
     {
-        JsonStringConverter::convertJsonStringToArray($request);
-
         $result = pipeline(
             static function (array $in): Either {
                 return IdentityTransformer::create()->transform(...$in);
@@ -118,8 +116,6 @@ class IdentityController extends AbstractController
      */
     public function putIdentitiesAction(AbstractIdentity $identity, Request $request): JsonResponse
     {
-        JsonStringConverter::convertJsonStringToArray($request);
-
         /** @var Either<LogicException,JsonResponse> $result */
         $result = pipeline(
             IdentityTransformer::create()->transformLazy(),
