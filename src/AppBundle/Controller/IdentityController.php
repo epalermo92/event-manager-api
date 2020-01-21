@@ -43,37 +43,28 @@ class IdentityController extends Controller
      */
     public function getIdentitiesAction(): JsonResponse
     {
-        $result = pipeline(
-            static function (array $identities) {
-                if (!$identities) {
-                    return new Left(new EntityNotFoundException());
-                }
-
-                return new Right($identities);
-            },
-            map(
-                static function (array $identities) {
-                    return new Right($identities);
-                }
-            )
-        )(
-            $this
+        return JsonResponse::create(
+            [
+                $this
                 ->entityManager
                 ->getRepository(AbstractIdentity::class)
                 ->findAll()
+            ]
         );
+    }
 
-        return $result
-            ->either(
-                ResponseLeftHandler::handle(),
-                static function (Either $either) {
-                    return JsonResponse::create(
-                        [
-                            $either->extract(),
-                        ]
-                    );
-                }
-            );
+    /**
+     * @Route("/api/identities/{identity}", name="get-identity", methods={"GET"})
+     * @param AbstractIdentity $identity
+     * @return JsonResponse
+     */
+    public function getIdentityAction(AbstractIdentity $identity): JsonResponse
+    {
+        return JsonResponse::create(
+            [
+                $identity
+            ]
+        );
     }
 
     /**
@@ -87,10 +78,10 @@ class IdentityController extends Controller
         $tryCatch = $this->entityPersister->buildDelete()($identity);
         $result = $tryCatch->either(
             static function () {
-                return new Left(CannotDeleteIdentityException::create());
+                return left(CannotDeleteIdentityException::create());
             },
             static function () {
-                return new Right('Identity deleted. ');
+                return right('Identity deleted. ');
             }
         );
 
@@ -124,7 +115,7 @@ class IdentityController extends Controller
                         $identity
                     );
 
-                    return new Right($identity);
+                    return right($identity);
                 }
             )
         )(
@@ -191,46 +182,5 @@ class IdentityController extends Controller
                 );
             }
         );
-    }
-
-    /**
-     * @Route("/api/identities/{identity}", name="get-identity", methods={"GET"})
-     * @param AbstractIdentity $identity
-     * @return JsonResponse
-     */
-    public function getIdentityAction(AbstractIdentity $identity): JsonResponse
-    {
-        /** @var Either<\LogicException,JsonResponse> $result */
-        $result = pipeline(
-            static function (array $identity) {
-                if (!$identity) {
-                    return new Left(EntityNotFoundException::create());
-                }
-
-                return new Right($identity);
-            },
-            map(
-                static function (object $identity) {
-                    return new Right($identity);
-                }
-            )
-        )(
-            $this
-                ->entityManager
-                ->getRepository(AbstractIdentity::class)
-                ->find($identity)
-        );
-
-        return $result
-            ->either(
-                ResponseLeftHandler::handle(),
-                static function (Either $either) {
-                    return JsonResponse::create(
-                        [
-                            $either->extract(),
-                        ]
-                    );
-                }
-            );
     }
 }
