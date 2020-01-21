@@ -79,30 +79,15 @@ class IdentityController extends AbstractController
     public function postIdentitiesAction(Request $request): JsonResponse
     {
         $result = pipeline(
-            static function (array $in): Either {
-                return IdentityTransformer::create()->transform(...$in);
-            },
+            IdentityTransformer::create()->transformLazy(),
             bind(
                 function (AbstractIdentity $identity) {
-                    $this
-                        ->entityPersister
-                        ->buildSave()(
-                        $identity
-                    );
-
+                    $this->entityPersister->buildSave()($identity);
                     return right($identity);
                 }
             )
         )(
-            [
-                $this
-                    ->createForm(
-                        IdentityFormType::class,
-                        null,
-                        ['method' => Request::METHOD_POST]
-                    ),
-                $request,
-            ]
+            $this->sendForm($request, IdentityFormType::class, Request::METHOD_POST)
         );
 
         return self::handleEither($result);
@@ -128,15 +113,7 @@ class IdentityController extends AbstractController
             ),
             bind($this->entityPersister->buildUpdate())
         )(
-            [
-                $this
-                    ->createForm(
-                        IdentityFormType::class,
-                        null,
-                        ['method' => Request::METHOD_PUT]
-                    ),
-                $request,
-            ]
+                $this->sendForm($request, IdentityFormType::class, Request::METHOD_PUT)
         );
 
         return self::handleEither($result);

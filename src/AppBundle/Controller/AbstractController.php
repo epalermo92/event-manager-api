@@ -4,9 +4,11 @@ namespace AppBundle\Controller;
 
 use AppBundle\Entity\AbstractIdentity;
 use AppBundle\Entity\Event;
+use AppBundle\Routing\FormType\IdentityFormType;
 use AppBundle\Routing\ResponseLeftHandler;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Widmogrod\Monad\Either\Either;
 
 class AbstractController extends Controller
@@ -34,5 +36,18 @@ class AbstractController extends Controller
                 return self::buildResponse($object);
             }
         );
+    }
+
+    protected function sendForm(Request $request, string $class, string $method): array
+    {
+        return [
+            $this
+                ->createForm(
+                    $class,
+                    null,
+                    ['method' => $method]
+                ),
+            $request,
+        ];
     }
 }
