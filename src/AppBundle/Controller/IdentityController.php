@@ -52,7 +52,6 @@ class IdentityController extends AbstractController
     /**
      * @Route("/api/identities/{identity}", name="get-identity", methods={"GET"})
      * @param AbstractIdentity $identity
-     * @return JsonResponse
      */
     public function getIdentityAction(AbstractIdentity $identity): JsonResponse
     {
@@ -62,59 +61,55 @@ class IdentityController extends AbstractController
     /**
      * @Route("/api/identities/{identity}", name="delete-identities", methods={"DELETE"})
      * @param AbstractIdentity $identity
-     * @return JsonResponse
      */
     public function deleteIdentitiesAction(AbstractIdentity $identity): JsonResponse
     {
-        /** @var Either $tryCatch */
-        $tryCatch = $this->entityPersister->buildDelete()($identity);
-        return self::handleEither($tryCatch);
+        return self::handleEither(
+            $this->entityPersister->buildDelete()($identity)
+        );
     }
 
     /**
      * @Route("/api/identities", name="post-identities", methods={"POST"})
      * @param Request $request
-     * @return JsonResponse
      */
     public function postIdentitiesAction(Request $request): JsonResponse
     {
-        $result = pipeline(
-            IdentityTransformer::create()->transformLazy(),
-            bind($this->entityPersister->buildSave()())
-        )(
-            $this->sendForm($request, IdentityFormType::class, Request::METHOD_POST)
+        return self::handleEither(
+            pipeline(
+                IdentityTransformer::create()->transformLazy(),
+                bind($this->entityPersister->buildSave()())
+            )(
+                $this->sendForm($request, IdentityFormType::class, Request::METHOD_POST)
+            )
         );
-
-        return self::handleEither($result);
     }
 
     /**
      * @Route("/api/identities/{identity}", name="put-identities", methods={"PUT"})
      * @param AbstractIdentity $identity
      * @param Request $request
-     * @return JsonResponse
      */
     public function putIdentitiesAction(AbstractIdentity $identity, Request $request): JsonResponse
     {
-        /** @var Either<LogicException,JsonResponse> $result */
-        $result = pipeline(
-            IdentityTransformer::create()->transformLazy(),
-            bind(
-                static function (AbstractIdentity $identityUpdated) use ($identity): Either {
-                    return $identityUpdated->getType() !== $identity->getType()
-                        ? left(
-                            NotOfTheSameTypeException::create(
-                                'Trying to update a '.$identityUpdated->getType().' identity with '.$identity->getType().' identity data'
+        return self::handleEither(
+            pipeline(
+                IdentityTransformer::create()->transformLazy(),
+                bind(
+                    static function (AbstractIdentity $identityUpdated) use ($identity): Either {
+                        return $identityUpdated->getType() !== $identity->getType()
+                            ? left(
+                                NotOfTheSameTypeException::create(
+                                    'Trying to update a '.$identityUpdated->getType().' identity with '.$identity->getType().' identity data'
+                                )
                             )
-                        )
-                        : right($identity->updateIdentity($identityUpdated));
-                }
-            ),
-            bind($this->entityPersister->buildUpdate())
-        )(
-            $this->sendForm($request, IdentityFormType::class, Request::METHOD_PUT)
+                            : right($identity->updateIdentity($identityUpdated));
+                    }
+                ),
+                bind($this->entityPersister->buildUpdate())
+            )(
+                $this->sendForm($request, IdentityFormType::class, Request::METHOD_PUT)
+            )
         );
-
-        return self::handleEither($result);
     }
 }
