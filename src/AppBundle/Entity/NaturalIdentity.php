@@ -73,7 +73,12 @@ class NaturalIdentity extends AbstractIdentity
         ];
     }
 
-    public function updateIdentity(NaturalIdentity $newIdentity) : self
+    /**
+     * @param NaturalIdentity $newIdentity
+     *
+     * @return AbstractIdentity
+     */
+    public function updateIdentity(AbstractIdentity $newIdentity): AbstractIdentity
     {
         $this->name = $newIdentity->getName();
         $this->surname = $newIdentity->getSurname();

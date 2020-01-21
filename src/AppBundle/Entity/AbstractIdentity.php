@@ -15,6 +15,7 @@ use Doctrine\ORM\Mapping as ORM;
 abstract class AbstractIdentity implements \JsonSerializable
 {
     public const LEGAL = 'legal';
+
     public const NATURAL = 'natural';
 
     public function __construct()
@@ -23,6 +24,8 @@ abstract class AbstractIdentity implements \JsonSerializable
     }
 
     /**
+     * @var int
+     *
      * @ORM\Id()
      * @ORM\Column(name="id", type="integer")
      * @ORM\GeneratedValue(strategy="AUTO")
@@ -31,11 +34,14 @@ abstract class AbstractIdentity implements \JsonSerializable
 
     /**
      * @var string
+     *
      * @ORM\Column(name="name", type="string")
      */
     protected $name;
 
     /**
+     * @var Event
+     *
      * @ORM\ManyToMany(targetEntity="Event",inversedBy="participants")
      * @ORM\JoinTable(name="event_participants")
      */
