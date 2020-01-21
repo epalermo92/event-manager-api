@@ -43,6 +43,8 @@ class Event implements \JsonSerializable
     private $name;
 
     /**
+     * @var integer
+     *
      * @ORM\Column(name="num_max_participants", type="integer")
      */
     private $numMaxParticipants;
@@ -99,33 +101,21 @@ class Event implements \JsonSerializable
         return $this->name;
     }
 
-    /**
-     * @return int
-     */
     public function getNumMaxParticipants(): int
     {
         return $this->numMaxParticipants;
     }
 
-    /**
-     * @return string
-     */
     public function getDescription(): string
     {
         return $this->description;
     }
 
-    /**
-     * @return AbstractIdentity
-     */
     public function getOrganizer(): AbstractIdentity
     {
         return $this->organizer;
     }
 
-    /**
-     * @return ArrayCollection
-     */
     public function getParticipants(): ArrayCollection
     {
         return $this->participants;
@@ -138,7 +128,7 @@ class Event implements \JsonSerializable
         $this->description = $newEvent->getDescription();
         $this->numMaxParticipants = $newEvent->getNumMaxParticipants();
         $this->organizer = $newEvent->getOrganizer();
-        $this->participants = $newEvent->getParticipants();
+//        $this->participants = $newEvent->getParticipants();
 
         return $this;
     }
