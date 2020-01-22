@@ -3,24 +3,18 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Entity\Event;
-use AppBundle\RequestConverter\JsonStringConverter;
 use AppBundle\Routing\FormType\EventFormType;
-use AppBundle\Routing\ResponseLeftHandler;
 use AppBundle\Routing\Transformer\EventTransformer;
 use AppBundle\Service\EntityPersister;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\EntityNotFoundException;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Widmogrod\Monad\Either\Either;
 use function Widmogrod\Functional\bind;
 use function Widmogrod\Functional\map;
 use function Widmogrod\Functional\pipeline;
-use function Widmogrod\Monad\Either\left;
-use function Widmogrod\Monad\Either\right;
 
 class EventsController extends AbstractController
 {
@@ -58,13 +52,13 @@ class EventsController extends AbstractController
             $this
                 ->entityManager
                 ->getRepository(Event::class)
-                ->findAll()
+                ->findAll(),
+            Response::HTTP_OK
         );
     }
 
     /**
      * @Route("/api/events/{event}",name="put-events",methods={"PUT"})
-     * @return JsonResponse
      */
     public function putEventsAction(Request $request, Event $event): JsonResponse
     {
@@ -75,30 +69,14 @@ class EventsController extends AbstractController
             map([$event, 'updateEntity']),
             bind($this->entityPersister->buildUpdate())
         )(
-            [
-                $this->createForm(
-                    EventFormType::class,
-                    null,
-                    ['method' => Request::METHOD_PUT]
-                ),
-                $request,
-            ]
+            $this->sendForm($request, EventFormType::class, Request::METHOD_PUT)
         );
 
-        return $r->either(
-            ResponseLeftHandler::handle(),
-            static function (Event $event) {
-                return JsonResponse::create(
-                    $event,
-                    JsonResponse::HTTP_ACCEPTED
-                );
-            }
-        );
+        return self::handleEither($r);
     }
 
     /**
      * @Route("/api/events/{event}",name="delete-events",methods={"DELETE"})
-     * @return JsonResponse
      */
     public function deleteEventsAction(Event $event): JsonResponse
     {
@@ -109,11 +87,9 @@ class EventsController extends AbstractController
 
     /**
      * @Route("/api/events/{event}",name="get-event",methods={"GET"})
-     *
-     * @return JsonResponse
      */
     public function getEventAction(Event $event): JsonResponse
     {
-        return JsonResponse::create(['event' => $event]);
+        return self::buildResponse($event, Response::HTTP_OK);
     }
 }
