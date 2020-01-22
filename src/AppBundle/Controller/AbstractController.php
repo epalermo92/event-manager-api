@@ -4,7 +4,6 @@ namespace AppBundle\Controller;
 
 use AppBundle\Entity\AbstractIdentity;
 use AppBundle\Entity\Event;
-use AppBundle\Routing\FormType\IdentityFormType;
 use AppBundle\Routing\ResponseLeftHandler;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;

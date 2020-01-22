@@ -26,7 +26,6 @@ abstract class AbstractTransformer
     public function transform(FormInterface $form, Request $request): Either
     {
         JsonStringConverter::convertJsonStringToArray($request);
-        var_dump($request->request->all());
         $form->handleRequest($request);
 
         if (!$form->isSubmitted()) {
