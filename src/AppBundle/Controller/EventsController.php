@@ -8,6 +8,7 @@ use AppBundle\Routing\FormType\EventFormType;
 use AppBundle\Routing\ResponseLeftHandler;
 use AppBundle\Routing\Transformer\EventTransformer;
 use AppBundle\Service\EntityPersister;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Form\FormInterface;
@@ -21,14 +22,16 @@ use function Widmogrod\Functional\pipeline;
 use function Widmogrod\Monad\Either\left;
 use function Widmogrod\Monad\Either\right;
 
-class EventsController extends Controller
+class EventsController extends AbstractController
 {
-    /** @var EntityPersister */
     private $entityPersister;
 
-    public function __construct(EntityPersister $entityPersister)
+    private $entityManager;
+
+    public function __construct(EntityPersister $entityPersister, EntityManagerInterface $entityManager)
     {
         $this->entityPersister = $entityPersister;
+        $this->entityManager = $entityManager;
     }
 
     /**
@@ -36,30 +39,13 @@ class EventsController extends Controller
      */
     public function postEventsAction(Request $request): JsonResponse
     {
-
-        /** @var Either<\Exception, Event> $r */
-        $r = pipeline(
-            EventTransformer::create()->transformLazy(),
-            bind($this->entityPersister->buildSave())
-        )(
-            [
-                $this->createForm(
-                    EventFormType::class,
-                    null,
-                    ['method' => Request::METHOD_POST]
-                ),
-                $request,
-            ]
-        );
-
-        return $r->either(
-            ResponseLeftHandler::handle(),
-            static function (Event $event) {
-                return JsonResponse::create(
-                    $event,
-                    JsonResponse::HTTP_CREATED
-                );
-            }
+        return self::handleEither(
+            pipeline(
+                EventTransformer::create()->transformLazy(),
+                bind($this->entityPersister->buildSave())
+            )(
+                $this->sendForm($request, EventFormType::class, Request::METHOD_POST)
+            )
         );
     }
 
@@ -68,9 +54,9 @@ class EventsController extends Controller
      */
     public function getEventsAction(): JsonResponse
     {
-        return JsonResponse::create(
+        return self::buildResponse(
             $this
-                ->get('doctrine.orm.default_entity_manager')
+                ->entityManager
                 ->getRepository(Event::class)
                 ->findAll()
         );
@@ -116,13 +102,9 @@ class EventsController extends Controller
      */
     public function deleteEventsAction(Event $event): JsonResponse
     {
-        return ($this->entityPersister->buildDelete()($event))
-            ->either(
-                ResponseLeftHandler::handle(),
-                static function () {
-                    return JsonResponse::create();
-                }
-            );
+        return self::handleEither(
+            $this->entityPersister->buildDelete()($event)
+        );
     }
 
     /**
