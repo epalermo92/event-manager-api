@@ -35,6 +35,12 @@ class NaturalIdentity extends AbstractIdentity
         $this->events = new ArrayCollection();
     }
 
+    public function addEventParticipant(Event $event): void
+    {
+        $this->events->add($event);
+    }
+
+
     public function getSurname(): string
     {
         return $this->surname;
@@ -69,7 +75,6 @@ class NaturalIdentity extends AbstractIdentity
             'name' => $this->name,
             'surname' => $this->surname,
             'codiceFiscale' => $this->codiceFiscale,
-            'events' => $this->events
         ];
     }
 

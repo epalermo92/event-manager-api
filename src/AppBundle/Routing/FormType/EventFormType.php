@@ -5,6 +5,7 @@ namespace AppBundle\Routing\FormType;
 use AppBundle\Entity\AbstractIdentity;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -53,7 +54,7 @@ class EventFormType extends AbstractRequestType
 
         $builder->add(
             'num_max_participants',
-            NumberType::class,
+            IntegerType::class,
             [
                 'label' => 'Num max partecipanti',
                 'required' => true,
@@ -82,8 +83,8 @@ class EventFormType extends AbstractRequestType
             'participants',
             CollectionType::class,
             [
-                'entry_type' => NumberType::class,
-                'allow_add' => true,
+                'entry_type' => IntegerType::class,
+                'allow_add' => false,
                 'required' => true,
                 'constraints' => [
                     new NotBlank(),

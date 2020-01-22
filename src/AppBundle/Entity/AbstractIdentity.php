@@ -46,12 +46,7 @@ abstract class AbstractIdentity implements \JsonSerializable
      * @ORM\JoinTable(name="event_participants")
      */
     protected $events;
-
-    public function addEventParticipant(Event $event): void
-    {
-        $this->events[] = $event;
-    }
-
+    
     public function getId(): int
     {
         return $this->id;

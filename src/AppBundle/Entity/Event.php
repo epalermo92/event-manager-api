@@ -79,11 +79,7 @@ class Event implements \JsonSerializable
         $this->description = $description;
         $this->organizer = $organizer;
         $this->participants = new ArrayCollection();
-    }
-
-    public function addParticipant(NaturalIdentity $participant): void
-    {
-        $this->participants[] = $participant;
+        $this->participants->add($participants);
     }
 
     public function getId(): ?int
