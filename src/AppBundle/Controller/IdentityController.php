@@ -46,7 +46,9 @@ class IdentityController extends AbstractController
             $this
                 ->entityManager
                 ->getRepository(AbstractIdentity::class)
-                ->findAll());
+                ->findAll(),
+            200
+            );
     }
 
     /**
@@ -55,7 +57,10 @@ class IdentityController extends AbstractController
      */
     public function getIdentityAction(AbstractIdentity $identity): JsonResponse
     {
-        return self::buildResponse($identity);
+        return self::buildResponse(
+            $identity,
+            200
+        );
     }
 
     /**

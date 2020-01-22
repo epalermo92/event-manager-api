@@ -15,13 +15,15 @@ class AbstractController extends Controller
 {
     /**
      * @param object<Event,AbstractIdentity> $responseData
+     * @param $status
      * @return JsonResponse
      */
-    protected static function buildResponse($responseData): JsonResponse
+    protected static function buildResponse($responseData, $status): JsonResponse
     {
         return JsonResponse::create(
             [
                 $responseData,
+                $status
             ]
         );
     }
@@ -31,7 +33,10 @@ class AbstractController extends Controller
         return $r->either(
             ResponseLeftHandler::handle(),
             static function ($object) {
-                return self::buildResponse($object);
+                return self::buildResponse(
+                    $object,
+                    200
+                );
             }
         );
     }
