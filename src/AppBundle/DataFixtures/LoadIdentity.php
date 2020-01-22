@@ -5,7 +5,6 @@ namespace AppBundle\DataFixtures;
 use AppBundle\Entity\LegalIdentity;
 use AppBundle\Entity\NaturalIdentity;
 use Doctrine\Bundle\FixturesBundle\Fixture;
-use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
 
 class LoadIdentity extends Fixture

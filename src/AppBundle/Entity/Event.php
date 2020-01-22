@@ -64,9 +64,9 @@ class Event implements \JsonSerializable
     private $organizer;
 
     /**
-     * @var ArrayCollection
+     * @var ArrayCollection<AbstractIdentity>
      *
-     * @ORM\ManyToMany(targetEntity="NaturalIdentity",mappedBy="events")
+     * @ORM\ManyToMany(targetEntity="AbstractIdentity",mappedBy="events")
      */
     private $participants;
 

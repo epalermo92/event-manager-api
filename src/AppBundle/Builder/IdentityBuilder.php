@@ -5,9 +5,7 @@ namespace AppBundle\Builder;
 use AppBundle\Entity\AbstractIdentity;
 use AppBundle\Entity\LegalIdentity;
 use AppBundle\Entity\NaturalIdentity;
-use AppBundle\Exceptions\EntityNotBuiltException;
 use Widmogrod\Monad\Either\Either;
-use function Widmogrod\Monad\Either\left;
 use function Widmogrod\Monad\Either\right;
 
 class IdentityBuilder

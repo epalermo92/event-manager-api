@@ -6,7 +6,6 @@ use AppBundle\Entity\AbstractIdentity;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
-use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Validator\Constraints\GreaterThanOrEqual;
@@ -84,11 +83,8 @@ class EventFormType extends AbstractRequestType
             CollectionType::class,
             [
                 'entry_type' => IntegerType::class,
-                'allow_add' => false,
-                'required' => true,
-                'constraints' => [
-                    new NotBlank(),
-                ],
+                'allow_add' => true,
+                'required' => true
             ]
         );
     }

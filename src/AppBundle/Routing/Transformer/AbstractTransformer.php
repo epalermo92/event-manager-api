@@ -32,6 +32,10 @@ abstract class AbstractTransformer
             return left(new FormNotSubmittedException());
         }
 
+        foreach ($form->getErrors() as $error) {
+            var_dump($error->getMessage());
+        }
+
         if (!$form->isValid()) {
             return left(new FormNotValidException());
         }
