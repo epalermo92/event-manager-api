@@ -9,6 +9,7 @@ use AppBundle\Routing\ResponseLeftHandler;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Widmogrod\Monad\Either\Either;
 
 class AbstractController extends Controller
@@ -35,7 +36,7 @@ class AbstractController extends Controller
             static function ($object) {
                 return self::buildResponse(
                     $object,
-                    200
+                    Response::HTTP_OK
                 );
             }
         );

@@ -15,6 +15,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Form\Exception\LogicException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Widmogrod\Monad\Either\Either;
 use function Widmogrod\Functional\bind;
@@ -47,7 +48,7 @@ class IdentityController extends AbstractController
                 ->entityManager
                 ->getRepository(AbstractIdentity::class)
                 ->findAll(),
-            200
+            Response::HTTP_OK
             );
     }
 
@@ -59,7 +60,7 @@ class IdentityController extends AbstractController
     {
         return self::buildResponse(
             $identity,
-            200
+            Response::HTTP_OK
         );
     }
 
