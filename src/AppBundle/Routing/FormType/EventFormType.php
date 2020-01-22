@@ -3,7 +3,6 @@
 namespace AppBundle\Routing\FormType;
 
 use AppBundle\Entity\AbstractIdentity;
-use Doctrine\DBAL\Types\IntegerType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
@@ -61,7 +60,7 @@ class EventFormType extends AbstractRequestType
                 'required' => true,
                 'constraints' => [
                     new NotBlank(),
-                    new GreaterThanOrEqual(['value' => 1])
+                    new GreaterThanOrEqual(['value' => 1]),
                 ],
 
             ]
@@ -84,7 +83,7 @@ class EventFormType extends AbstractRequestType
             'participants',
             CollectionType::class,
             [
-                'entry_type' => IntegerType::class,
+                'entry_type' => NumberType::class,
                 'allow_add' => false,
                 'required' => true,
                 'constraints' => [

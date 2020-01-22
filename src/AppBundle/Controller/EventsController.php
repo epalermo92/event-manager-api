@@ -11,7 +11,6 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Widmogrod\Monad\Either\Either;
 use function Widmogrod\Functional\bind;
 use function Widmogrod\Functional\map;
 use function Widmogrod\Functional\pipeline;
@@ -62,17 +61,15 @@ class EventsController extends AbstractController
      */
     public function putEventsAction(Request $request, Event $event): JsonResponse
     {
-
-        /** @var Either<\Exception, Event> $r */
-        $r = pipeline(
-            EventTransformer::create()->transformLazy(),
-            map([$event, 'updateEntity']),
-            bind($this->entityPersister->buildUpdate())
-        )(
-            $this->sendForm($request, EventFormType::class, Request::METHOD_PUT)
+        return self::handleEither(
+            pipeline(
+                EventTransformer::create()->transformLazy(),
+                map([$event, 'updateEntity']),
+                bind($this->entityPersister->buildUpdate())
+            )(
+                $this->sendForm($request, EventFormType::class, Request::METHOD_PUT)
+            )
         );
-
-        return self::handleEither($r);
     }
 
     /**
