@@ -54,6 +54,8 @@ class EventControllerTest extends WebTestCase
                     'place' => 'Burigozzo 1',
                     'description' => 'Festa di Natale',
                     'num_max_participants' => 300,
+                    'organizer' => 1,
+                    'participants' => [6, 7],
                 ]
             );
         $form->handleRequest($client->getRequest());
@@ -100,20 +102,22 @@ class EventControllerTest extends WebTestCase
                     'place' => 'Burigozzo 1',
                     'description' => 'Festa di Natale',
                     'num_max_participants' => 300,
+                    'organizer' => 1,
+                    'participants' => [6,7]
                 ]
             );
         $form->handleRequest($client->getRequest());
 //        $this->assertTrue($form->isSubmitted());
 //        $this->assertTrue($form->isValid());
-//
-//        var_dump($client->getResponse()->getContent());
-//        $this->assertJson(
-//            $client
-//                ->getResponse()
-//                ->getContent()
-//        );
+
+        $this->assertJson(
+            $client
+                ->getResponse()
+                ->getContent()
+        );
+
         $this->assertStringContainsString(
-            'Event updated!',
+            '',
             $client
                 ->getResponse()
                 ->getContent()

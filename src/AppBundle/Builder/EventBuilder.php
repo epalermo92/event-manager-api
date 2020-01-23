@@ -5,13 +5,13 @@ namespace AppBundle\Builder;
 use AppBundle\Entity\Event;
 use DateTime;
 use Widmogrod\Monad\Either\Either;
-use Widmogrod\Monad\Either\Right;
+use function Widmogrod\Monad\Either\right;
 
 class EventBuilder
 {
     public static function build(array $params): Either
     {
-        return new right(
+        return right(
             new Event(
                 $params['place'],
                 new DateTime(),
