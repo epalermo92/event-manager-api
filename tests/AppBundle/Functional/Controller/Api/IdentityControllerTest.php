@@ -147,7 +147,7 @@ class IdentityControllerTest extends WebTestCase
         $client
             ->request(
                 'DELETE',
-                'api/identities/1'
+                'api/identities/2'
             );
 
         $this
@@ -167,7 +167,7 @@ class IdentityControllerTest extends WebTestCase
 
         $this
             ->assertStringContainsString(
-                '"name":"Juventus","partitaIva":"12345678912"',
+                '"name":"Real Madrid","partitaIva":"78945612378"',
                 $client
                     ->getResponse()
                     ->getContent()
