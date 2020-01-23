@@ -64,22 +64,28 @@ class Event implements \JsonSerializable
     private $organizer;
 
     /**
-     * @var ArrayCollection<AbstractIdentity>
+     * @var ArrayCollection<NaturalIdentity>
      *
-     * @ORM\ManyToMany(targetEntity="AbstractIdentity",mappedBy="events")
+     * @ORM\ManyToMany(targetEntity="AppBundle\Entity\NaturalIdentity",mappedBy="events")
      */
     private $participants;
 
-    public function __construct($place, $date, $name, $numMaxParticipants, $description, $organizer, $participants)
-    {
+    public function __construct(
+        string $place,
+        DateTime $date,
+        string  $name,
+        int $numMaxParticipants,
+        string $description,
+        AbstractIdentity $organizer,
+        $participants
+    ) {
         $this->place = $place;
         $this->date = $date;
         $this->name = $name;
         $this->numMaxParticipants = $numMaxParticipants;
         $this->description = $description;
         $this->organizer = $organizer;
-        $this->participants = new ArrayCollection();
-        $this->participants->add($participants);
+        $this->participants = new ArrayCollection($participants);
     }
 
     public function getId(): ?int
@@ -129,6 +135,7 @@ class Event implements \JsonSerializable
         $this->description = $newEvent->getDescription();
         $this->numMaxParticipants = $newEvent->getNumMaxParticipants();
         $this->organizer = $newEvent->getOrganizer();
+
 //        $this->participants = $newEvent->getParticipants();
 
         return $this;
@@ -147,7 +154,7 @@ class Event implements \JsonSerializable
             'participants' => $this->participants->toArray(),
             'place' => $this->place,
             'date' => $this->date,
-            'organizer' => $this->organizer
+            'organizer' => $this->organizer,
         ];
     }
 }

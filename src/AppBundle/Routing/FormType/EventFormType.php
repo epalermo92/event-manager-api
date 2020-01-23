@@ -83,8 +83,11 @@ class EventFormType extends AbstractRequestType
             CollectionType::class,
             [
                 'entry_type' => IntegerType::class,
-                'allow_add' => true,
-                'required' => true
+                'allow_add' => false,
+                'required' => true,
+                'constraints' => [
+                    new NotBlank(),
+                ]
             ]
         );
     }
