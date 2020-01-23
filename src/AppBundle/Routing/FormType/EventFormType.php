@@ -85,14 +85,14 @@ class EventFormType extends AbstractRequestType
             [
                 'entry_type' => EntityType::class,
                 'entry_options' => [
-                    'class' => NaturalIdentity::class
+                    'class' => NaturalIdentity::class,
                 ],
                 'allow_add' => true,
                 'allow_delete' => true,
                 'required' => true,
                 'constraints' => [
                     new NotBlank(),
-                ]
+                ],
             ]
         );
     }
