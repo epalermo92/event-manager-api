@@ -77,7 +77,7 @@ class Event implements \JsonSerializable
         int $numMaxParticipants,
         string $description,
         AbstractIdentity $organizer,
-        $participants
+        array $participants
     ) {
         $this->place = $place;
         $this->date = $date;

@@ -4,17 +4,9 @@ namespace AppBundle\RequestConverter;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Symfony\Component\HttpKernel\KernelEvents;
 
 class JsonStringConverter
 {
-    public static function getSubscribedEvents(): array
-    {
-        return [
-            KernelEvents::CONTROLLER => 'convertJsonStringToArray',
-        ];
-    }
-
     public static function convertJsonStringToArray(Request $request): void
     {
         if ($request->getContentType() !== 'json' || !$request->getContent()) {

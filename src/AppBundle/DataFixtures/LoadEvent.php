@@ -21,7 +21,7 @@ class LoadEvent extends Fixture implements DependentFixtureInterface
             100000,
             'description',
             $organizer1,
-            $organizer1
+            [$organizer1]
         );
         $organizer1->addEventParticipant($event1);
         $manager->persist($event1);
@@ -33,7 +33,7 @@ class LoadEvent extends Fixture implements DependentFixtureInterface
             100000,
             'description',
             $organizer2,
-            $organizer2
+            [$organizer2]
         );
         $organizer2->addEventParticipant($event2);
         $manager->persist($event2);
