@@ -39,11 +39,11 @@ class IdentityControllerTest extends WebTestCase
         return [
             [
                 ['name' => 'Pippo', 'surname' => 'Pluto', 'codiceFiscale' => 'PPOPLT23R19D245G', 'type' => 'natural'],
-                'Identity updated',
+                '"id":5,"name":"Pippo","surname":"Pluto","codiceFiscale":"PPOPLT23R19D245G"',
             ],
             [
                 ['name' => 'Pippo', 'partitaIva' => 'PPOPLT23R19D245G', 'type' => 'legal'],
-                'Trying to update a Natural\/Legal Identity but sending Legal\/Natural Identity data',
+                'Trying to update a legal identity with natural identity data',
             ],
         ];
     }
@@ -134,7 +134,10 @@ class IdentityControllerTest extends WebTestCase
         );
 
         $this->assertSame($oldIdentitiesNumber + 1, $newIdentitiesNumber);
-        $this->assertStringContainsString('posted', $client->getResponse()->getContent());
+        $this->assertStringContainsString(
+            '"id":9,"name":"Pippo","surname":"Pluto","codiceFiscale":"PPOPLT23R19D245G"',
+            $client->getResponse()->getContent()
+        );
     }
 
     public function testDeleteIdentitiesAction(): void
@@ -164,7 +167,7 @@ class IdentityControllerTest extends WebTestCase
 
         $this
             ->assertStringContainsString(
-                'deleted',
+                '"name":"Juventus","partitaIva":"12345678912"',
                 $client
                     ->getResponse()
                     ->getContent()

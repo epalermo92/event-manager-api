@@ -6,6 +6,7 @@ use AppBundle\Entity\AbstractIdentity;
 use AppBundle\Entity\LegalIdentity;
 use AppBundle\Entity\NaturalIdentity;
 use Widmogrod\Monad\Either\Either;
+use function Widmogrod\Monad\Either\left;
 use function Widmogrod\Monad\Either\right;
 
 class IdentityBuilder
@@ -20,7 +21,7 @@ class IdentityBuilder
                 return right(new NaturalIdentity($data['name'], $data['surname'], $data['codiceFiscale']));
                 break;
             default:
-                throw new \LogicException();
+                return left(new \LogicException('Error, wrong type given to the IdentityBuilder'));
         }
     }
 }
