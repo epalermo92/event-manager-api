@@ -4,7 +4,7 @@ services:
     build:
       context: .
       dockerfile: docker/Dockerfile
-    image: php-event-manager-app
+    image: php-event-manager-api
     ports:
       - '80:80'
     volumes:
