@@ -5,6 +5,9 @@ namespace AppBundle\Entity;
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\JoinTable;
+use Doctrine\ORM\Mapping\ManyToMany;
 
 /**
  * @ORM\Entity()
@@ -64,9 +67,11 @@ class Event implements \JsonSerializable
     private $organizer;
 
     /**
-     * @var ArrayCollection<NaturalIdentity>
-     *
-     * @ORM\ManyToMany(targetEntity="AppBundle\Entity\NaturalIdentity",mappedBy="events")
+     * @ManyToMany(targetEntity="AppBundle\Entity\NaturalIdentity")
+     * @JoinTable(name="event_participants",
+     *      joinColumns={@JoinColumn(name="event_id", referencedColumnName="id")},
+     *      inverseJoinColumns={@JoinColumn(name="participant_id", referencedColumnName="id")}
+     *      )
      */
     private $participants;
 

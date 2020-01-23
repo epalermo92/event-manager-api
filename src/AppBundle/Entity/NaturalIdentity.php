@@ -11,10 +11,6 @@ use Doctrine\ORM\Mapping as ORM;
 class NaturalIdentity extends AbstractIdentity
 {
     /**
-     * @ORM\ManyToMany(targetEntity="AppBundle\Entity\Event",inversedBy="participants")
-     */
-    protected $events;
-    /**
      * @var string
      * @ORM\Column(name="surname", type="string")
      */

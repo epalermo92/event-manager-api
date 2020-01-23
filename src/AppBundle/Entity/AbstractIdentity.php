@@ -39,14 +39,6 @@ abstract class AbstractIdentity implements \JsonSerializable
      */
     protected $name;
 
-    /**
-     * @var Event
-     *
-     * @ORM\ManyToMany(targetEntity="Event",inversedBy="participants")
-     * @ORM\JoinTable(name="event_participants")
-     */
-    protected $events;
-    
     public function getId(): int
     {
         return $this->id;
