@@ -8,6 +8,7 @@ use AppBundle\Exceptions\EntityNotFoundException;
 use AppBundle\Exceptions\FormNotSubmittedException;
 use AppBundle\Exceptions\FormNotValidException;
 use AppBundle\Exceptions\NotOfTheSameTypeException;
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use function Widmogrod\Useful\match;
 use const Widmogrod\Functional\reThrow;
@@ -33,7 +34,8 @@ class ResponseLeftHandler
         EntityNotFoundException::class,
         EntityNotBuiltException::class,
         CannotDeleteIdentityException::class,
-        NotOfTheSameTypeException::class
+        NotOfTheSameTypeException::class,
+        UniqueConstraintViolationException::class,
     ];
 
     public static function handle(): callable
