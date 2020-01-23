@@ -11,7 +11,7 @@ use Doctrine\Common\Persistence\ObjectManager;
 
 class LoadEvent extends Fixture implements DependentFixtureInterface
 {
-    public function load(ObjectManager $manager)
+    public function load(ObjectManager $manager):void
     {
         $organizer1 = $manager->getRepository(AbstractIdentity::class)->find(5);
         $event1 = new Event(
@@ -23,7 +23,6 @@ class LoadEvent extends Fixture implements DependentFixtureInterface
             $organizer1,
             [$organizer1]
         );
-        $organizer1->addEventParticipant($event1);
         $manager->persist($event1);
         $organizer2 = $manager->getRepository(AbstractIdentity::class)->find(7);
         $event2 = new Event(
@@ -33,9 +32,8 @@ class LoadEvent extends Fixture implements DependentFixtureInterface
             100000,
             'description',
             $organizer2,
-            [$organizer2]
+            [$organizer2, $organizer1]
         );
-        $organizer2->addEventParticipant($event2);
         $manager->persist($event2);
 
         $manager->flush();

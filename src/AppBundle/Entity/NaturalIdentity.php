@@ -11,19 +11,18 @@ use Doctrine\ORM\Mapping as ORM;
 class NaturalIdentity extends AbstractIdentity
 {
     /**
+     * @ORM\ManyToMany(targetEntity="AppBundle\Entity\Event",inversedBy="participants")
+     */
+    protected $events;
+    /**
      * @var string
      * @ORM\Column(name="surname", type="string")
      */
     private $surname;
-
     /**
      * @ORM\Column(name="codiceFiscale", type="string")
      */
     private $codiceFiscale;
-    /**
-     * @ORM\ManyToMany(targetEntity="AppBundle\Entity\Event",inversedBy="participants")
-     */
-    protected $events;
 
     public function __construct(string $name, string $surname, string $codiceFiscale)
     {
@@ -35,26 +34,9 @@ class NaturalIdentity extends AbstractIdentity
         $this->events = new ArrayCollection();
     }
 
-    public function addEventParticipant(Event $event): void
-    {
-        $this->events->add($event);
-    }
-
-
-    public function getSurname(): string
-    {
-        return $this->surname;
-    }
-
-
     public function getType(): string
     {
         return self::NATURAL;
-    }
-
-    public function getCodiceFiscale():string
-    {
-        return $this->codiceFiscale;
     }
 
     /**
@@ -90,5 +72,15 @@ class NaturalIdentity extends AbstractIdentity
         $this->codiceFiscale = $newIdentity->getCodiceFiscale();
 
         return $this;
+    }
+
+    public function getSurname(): string
+    {
+        return $this->surname;
+    }
+
+    public function getCodiceFiscale(): string
+    {
+        return $this->codiceFiscale;
     }
 }
