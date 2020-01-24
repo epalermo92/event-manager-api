@@ -6,6 +6,7 @@ use AppBundle\Entity\AbstractIdentity;
 use AppBundle\Entity\Event;
 use DateTime;
 use Doctrine\Bundle\FixturesBundle\Fixture;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
 
@@ -22,7 +23,7 @@ class LoadEvent extends Fixture implements DependentFixtureInterface
             100000,
             'description',
             $organizer1,
-            [$organizer1]
+            new ArrayCollection([$organizer1])
         );
         $manager->persist($event1);
 
@@ -35,7 +36,7 @@ class LoadEvent extends Fixture implements DependentFixtureInterface
             100000,
             'description',
             $organizer2,
-            [$organizer2, $organizer1]
+            new ArrayCollection([$organizer2, $organizer1])
         );
         $manager->persist($event2);
 

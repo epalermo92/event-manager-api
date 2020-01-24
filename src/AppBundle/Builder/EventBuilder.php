@@ -4,6 +4,7 @@ namespace AppBundle\Builder;
 
 use AppBundle\Entity\Event;
 use DateTime;
+use Doctrine\Common\Collections\ArrayCollection;
 use Widmogrod\Monad\Either\Either;
 use function Widmogrod\Monad\Either\right;
 
@@ -19,7 +20,7 @@ class EventBuilder
                 $params['num_max_participants'],
                 $params['description'],
                 $params['organizer'],
-                $params['participants']
+                new ArrayCollection($params['participants'])
             )
         );
     }

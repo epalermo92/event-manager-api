@@ -18,8 +18,6 @@ class LegalIdentity extends AbstractIdentity
 
     public function __construct(string $name, string $partitaIva)
     {
-        parent::__construct();
-
         $this->name = $name;
         $this->partitaIva = $partitaIva;
     }

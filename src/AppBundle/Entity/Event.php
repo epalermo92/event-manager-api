@@ -82,7 +82,7 @@ class Event implements \JsonSerializable
         int $numMaxParticipants,
         string $description,
         AbstractIdentity $organizer,
-        array $participants
+        ArrayCollection $participants
     ) {
         $this->place = $place;
         $this->date = $date;
@@ -90,7 +90,7 @@ class Event implements \JsonSerializable
         $this->numMaxParticipants = $numMaxParticipants;
         $this->description = $description;
         $this->organizer = $organizer;
-        $this->participants = new ArrayCollection($participants);
+        $this->participants = $participants;
     }
 
     public function getId(): ?int

@@ -22,12 +22,9 @@ class NaturalIdentity extends AbstractIdentity
 
     public function __construct(string $name, string $surname, string $codiceFiscale)
     {
-        parent::__construct();
-
         $this->name = $name;
         $this->surname = $surname;
         $this->codiceFiscale = $codiceFiscale;
-        $this->events = new ArrayCollection();
     }
 
     public function getType(): string
