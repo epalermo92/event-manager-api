@@ -18,11 +18,6 @@ abstract class AbstractIdentity implements \JsonSerializable
 
     public const NATURAL = 'natural';
 
-    public function __construct()
-    {
-        $this->events = new ArrayCollection();
-    }
-
     /**
      * @var int
      *

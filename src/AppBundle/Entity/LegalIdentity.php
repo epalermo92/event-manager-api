@@ -10,6 +10,8 @@ use Doctrine\ORM\Mapping as ORM;
 class LegalIdentity extends AbstractIdentity
 {
     /**
+     * @var string
+     *
      * @ORM\Column(name="partitaIva", type="string")
      */
     private $partitaIva;
@@ -38,6 +40,7 @@ class LegalIdentity extends AbstractIdentity
     public function jsonSerialize()
     {
         return [
+            'type' => self::LEGAL,
             'id' => $this->id ,
             'name' => $this->name ,
             'partitaIva' => $this->partitaIva ,

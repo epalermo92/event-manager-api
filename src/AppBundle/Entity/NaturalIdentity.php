@@ -36,19 +36,12 @@ class NaturalIdentity extends AbstractIdentity
     }
 
     /**
-     * @return ArrayCollection
-     */
-    public function getEvents(): ArrayCollection
-    {
-        return $this->events;
-    }
-
-    /**
      * @inheritDoc
      */
     public function jsonSerialize()
     {
         return [
+            'type' => self::NATURAL,
             'id' => $this->id,
             'name' => $this->name,
             'surname' => $this->surname,

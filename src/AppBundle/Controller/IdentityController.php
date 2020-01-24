@@ -48,7 +48,6 @@ class IdentityController extends AbstractController
 
     /**
      * @Route("/api/identities/{identity}", name="get-identity", methods={"GET"})
-     * @param AbstractIdentity $identity
      */
     public function getIdentityAction(AbstractIdentity $identity): JsonResponse
     {
@@ -60,7 +59,6 @@ class IdentityController extends AbstractController
 
     /**
      * @Route("/api/identities/{identity}", name="delete-identities", methods={"DELETE"})
-     * @param AbstractIdentity $identity
      */
     public function deleteIdentitiesAction(AbstractIdentity $identity): JsonResponse
     {
@@ -71,7 +69,6 @@ class IdentityController extends AbstractController
 
     /**
      * @Route("/api/identities", name="post-identities", methods={"POST"})
-     * @param Request $request
      */
     public function postIdentitiesAction(Request $request): JsonResponse
     {
@@ -87,8 +84,6 @@ class IdentityController extends AbstractController
 
     /**
      * @Route("/api/identities/{identity}", name="put-identities", methods={"PUT"})
-     * @param AbstractIdentity $identity
-     * @param Request $request
      */
     public function putIdentitiesAction(AbstractIdentity $identity, Request $request): JsonResponse
     {

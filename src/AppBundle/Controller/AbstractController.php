@@ -21,10 +21,8 @@ class AbstractController extends Controller
     protected static function buildResponse($responseData, $status): JsonResponse
     {
         return JsonResponse::create(
-            [
-                $responseData,
-                $status
-            ]
+            ['data' => $responseData],
+            $status
         );
     }
 
