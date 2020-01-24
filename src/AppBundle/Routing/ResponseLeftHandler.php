@@ -11,6 +11,7 @@ use AppBundle\Exceptions\NotOfTheSameTypeException;
 use Doctrine\DBAL\Exception\ForeignKeyConstraintViolationException;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use function Widmogrod\Useful\match;
 use const Widmogrod\Functional\reThrow;
 use const Widmogrod\Useful\any;
@@ -38,6 +39,7 @@ class ResponseLeftHandler
         NotOfTheSameTypeException::class,
         UniqueConstraintViolationException::class,
         ForeignKeyConstraintViolationException::class,
+        BadRequestHttpException::class,
     ];
 
     public static function handle(): callable
